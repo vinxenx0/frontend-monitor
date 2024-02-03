@@ -1,0 +1,158 @@
+<!-- app/templates/tools/query.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mt-4">Consultas</h1>
+
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Generador de informes</li>
+</ol>
+
+  
+
+
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <form>
+        <!-- Primera Fila: Formulario de Búsqueda -->
+        <div class="form-group">
+          <legend><b>Filtro</b></legend>
+          <label for="busqueda"></label>
+          <input type="text" class="form-control" id="busqueda" placeholder="Ingrese su búsqueda">
+        </div>
+
+        <!-- Segunda Fila: Formulario para Buscar Entre Dos Fechas -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <legend><b>Fecha de Inicio:</b></legend>
+              <label for="fechaInicio"></label>
+              <input type="date" class="form-control" id="fechaInicio">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <legend><b>Fecha de Fin:</b></legend>
+              <label for="fechaFin"></label>
+              <input type="date" class="form-control" id="fechaFin">
+            </div>
+          </div>
+        </div>
+
+<!-- Tercera Fila: Cuatro Columnas con Switches Estilizados (Tipo, Sitio, Clase, Tipos de Archivo) -->
+<div class="row">
+    <div class="col-md-3">
+        <legend><b>Mensajes</b></legend>
+      <div class="form-group ml-5">
+        
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="errores">
+          <label class="form-check-label" for="errores">Errores</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="avisos">
+          <label class="form-check-label" for="avisos">Avisos</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="sugerencias">
+          <label class="form-check-label" for="sugerencias">Sugerencias</label>
+        </div>
+    </div>
+    </div>
+    <div class="col-md-3">
+        <legend><b>Webs</b></legend>
+      <div class="form-group ml-5">
+        
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="sitio1">
+          <label class="form-check-label" for="sitio1">mc-mutua.com</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="sitio2">
+          <label class="form-check-label" for="sitio2">portal.mc-mutua.com</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="sitio3">
+          <label class="form-check-label" for="sitio3">portal2.mc-mutua.com</label>
+        </div>
+    </div>
+    </div>
+    
+    <div class="col-md-3">
+        <legend><b>Tipos de Archivo</b></legend>
+      <div class="form-group ml-5">
+        
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="archivoWeb">
+          <label class="form-check-label" for="archivoWeb">Archivo Web</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="archivoMultimedia">
+          <label class="form-check-label" for="archivoMultimedia">Archivo Multimedia</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="documentoPDF">
+          <label class="form-check-label" for="documentoPDF">Documento PDF</label>
+        </div>
+    </div>
+    </div>
+  </div>
+  
+          <!-- Cuarta Fila: Una Columna con Switches Estilizados (Clase) -->
+          <div class="row">
+            <div class="col-md-12">
+                <legend><b>Monitores</b></legend>
+              <div class="form-group ml-5">
+                
+                <div class="row">
+                  <div class="col-md-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="seo">
+                      <label class="form-check-label" for="seo">SEO</label>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="accesibilidad">
+                      <label class="form-check-label" for="accesibilidad">Accesibilidad</label>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="usabilidad">
+                      <label class="form-check-label" for="usabilidad">Usabilidad</label>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="idioma">
+                      <label class="form-check-label" for="idioma">Idioma</label>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="general">
+                      <label class="form-check-label" for="general">General</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+       
+        <!-- Última Fila: Botones Enviar y Restablecer -->
+       
+          <button type="submit" class="btn btn-primary mr-2">Enviar</button>
+          <button type="reset" class="btn btn-secondary">Restablecer Filtro</button>
+      
+      </form>
+    </div>
+  </div>
+</div>
+
+  
+{% endblock %}

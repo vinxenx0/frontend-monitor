@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   
+    <title>MC-Mutual - Dashboard</title>
+    <meta name="description" content="" />
+   
+    {% include 'inc/header.html' %}
+
+</head>
+
+<body class="sb-nav-fixed">
+
+    {% include 'inc/top.html' %}
+
+    <div id="layoutSidenav">
+
+        {% include 'inc/nav.html' %}
+
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    {% block content %}{% endblock %}
+                </div>
+
+            </main>
+
+
+            {% include 'inc/footer.html' %}
+
+            
+
+        </div>
+
+
+    </div>
+<!-- Agrega este script al final del cuerpo del documento -->
+<script>
+    // Esta función se ejecutará cuando el documento esté completamente cargado
+    $(document).ready(function () {
+        // Manejar el envío del formulario
+        $('#analizarForm').submit(function (event) {
+            // Prevenir la acción por defecto del formulario (envío tradicional)
+            event.preventDefault();
+
+            // Realizar una solicitud AJAX para obtener los resultados
+            $.ajax({
+                type: $(this).attr('method'),
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (data) {
+                    // Crear un div para mostrar los resultados
+                    var modalContent = $('<div></div>').html(data);
+
+                    // Abrir un modal con los resultados
+                    modalContent.dialog({
+                        title: 'Resultados del análisis',
+                        modal: true,
+                        width: 'auto',
+                        height: 'auto',
+                        close: function () {
+                            // Cerrar el modal al hacer clic fuera de él
+                            $(this).dialog('close').remove();
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,146 @@
+<!-- app/templates/services/index.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Services</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Action</th>  <!-- New column for the switch button -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Web Server</td>
+                <td>
+                    <span id="web_serverStatus">
+                        {% if web_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="web_serverSwitch" {% if web_status == 'Running' %}checked{% endif %} onclick="toggleService('web_server')">
+                        <label class="custom-control-label" for="web_serverSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Email Service</td>
+                <td>
+                    <span id="email_serviceStatus">
+                        {% if email_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="email_serviceSwitch" {% if email_status == 'Running' %}checked{% endif %} onclick="toggleService('email_service')">
+                        <label class="custom-control-label" for="email_serviceSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>Task Scheduler</td>
+                <td>
+                    <span id="task_schedulerStatus">
+                        {% if task_scheduler_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="task_schedulerSwitch" {% if task_scheduler_status == 'Running' %}checked{% endif %} onclick="toggleService('task_scheduler')">
+                        <label class="custom-control-label" for="task_schedulerSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>DNS Resolver</td>
+                <td>
+                    <span id="dns_resolverStatus">
+                        {% if dns_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="dns_resolverSwitch" {% if dns_status == 'Running' %}checked{% endif %} onclick="toggleService('dns_resolver')">
+                        <label class="custom-control-label" for="dns_resolverSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Notification Service</td>
+                <td>
+                    <span id="notification_serviceStatus">
+                        {% if notification_service_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="notification_serviceSwitch" {% if notification_service_status == 'Running' %}checked{% endif %} onclick="toggleService('notification_service')">
+                        <label class="custom-control-label" for="notification_serviceSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>File Processor</td>
+                <td>
+                    <span id="file_processorStatus">
+                        {% if file_processor_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="file_processorSwitch" {% if file_processor_status == 'Running' %}checked{% endif %} onclick="toggleService('file_processor')">
+                        <label class="custom-control-label" for="file_processorSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Database Cleaner</td>
+                <td>
+                    <span id="database_cleanerStatus">
+                        {% if database_cleaner_status == 'Running' %}<span class="text-success">Running</span>{% else %}<span class="text-danger">Stopped</span>{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="database_cleanerSwitch" {% if database_cleaner_status == 'Running' %}checked{% endif %} onclick="toggleService('database_cleaner')">
+                        <label class="custom-control-label" for="database_cleanerSwitch"></label>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function toggleService(serviceName) {
+        // Use AJAX to toggle the service on the server
+        fetch('/toggle_service/' + serviceName, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Service ' + serviceName + ' is now ' + data.state);
+                    // Update the text in the UI based on the new state
+                    const statusElement = document.getElementById(`${serviceName}Status`);
+                    if (statusElement) {
+                        statusElement.innerText = data.state;
+                    }
+                } else {
+                    alert('Error toggling service ' + serviceName);
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling service:', error);
+            });
+    }
+</script>
+
+{% endblock %}

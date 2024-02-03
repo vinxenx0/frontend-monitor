@@ -1,0 +1,1 @@
+rsync -avz -e ssh /opt/code-workspace/scripts/offline/ vicente@81.19.160.10:/var/www/html/code-workspace/scripts/offline

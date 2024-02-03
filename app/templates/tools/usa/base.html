@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        
+        <title>MC-Mutual - Dashboard</title>
+        <meta name="description" content="" />
+                
+        {% include 'inc/header.html' %}
+        
+    </head>
+    <body class="sb-nav-fixed">
+        {% if current_user.is_authenticated %}
+        <!-- Info Bar -->
+        <nav class="sb-topnav navbar navbar-expand navbar-light bg-light">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="/">
+                <img src="{{ url_for('static', filename='images/logo_MC.png') }}" alt="MC Mutua" />
+            </a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+            <!-- Navbar-->
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <!-- Navbar Search
+                    <div class="me-auto">
+                        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                            <div class="input-group">
+                                <input class="form-control" type="text" placeholder="buscar..." aria-label="buscar..." aria-describedby="btnNavbarSearch" />
+                                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div> -->
+                    <!-- PDF 
+                    <div class="d-flex">
+                        <div class="pdf-btn me-3">
+                          <form action="#" method="post">
+                               <button type="submit" class="btn btn-primary">Generar PDF</button>
+                          </form>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+
+
+            <div class="d-flex">
+               <!--
+                <div class="pdf-btn me-3">
+                    <a href="{{ url_for('generate_pdf') }}" class="btn btn-info" target="_blank">PDF</a>
+                </div> 
+		-->
+
+                <!--
+                <div class="pdf-btn me-3">
+                    <form action="#" method="post">
+                         <button type="submit" class="btn btn-primary">EMAIL</button>
+                    </form>
+                </div>
+                <div class="pdf-btn me-3">
+                    <form action="#" method="post">
+                         <button type="submit" class="btn btn-primary">CSV</button>
+                    </form>
+                </div>
+                -->
+            </div>
+            
+            <!--
+            <ul class="navbar-nav d-none d-md-inline-block ms-auto me-0">
+                <li>
+                    <a class="nav-item" href="{{ url_for('logout') }}">{{ current_user.username }}(<strong>Salir</strong>)</a>
+                </li>
+            </ul>
+            -->
+     		<h2 class="mr-4" style="padding-right:12px;"><a class="nav-item" href="{{ url_for('logout') }}"><strong><i class="fa-solid fa-power-off"></i></strong></a></h2>
+        </nav>
+        {% endif %}
+        <div id="layoutSidenav">
+            {% if current_user.is_authenticated %}
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+                    {% include 'inc/nav.html' %}
+                </nav>
+            </div>
+            {% endif %}
+            <div id="layoutSidenav_content">
+                <main>
+                    
+                    
+                    <div class="container-fluid px-4">
+
+                        
+
+                        <!-- <div>
+                            <ol class="breadcrumb mb-4">
+                                <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                                <li class="breadcrumb-item active">estoy aqui</li>
+                            </ol>
+                        </div>
+                        -->
+			{% if messages %}
+                        <div class="card mt-5">
+                            <div class="card-body">
+                                <div>
+                                    <p class="text-center">
+                                    <!-- alert box -->
+                                    {% with messages = get_flashed_messages(with_categories=true) %}
+                                        {% if messages %}
+                                        {% for category, message in messages %}
+                                            <div class="alert alert-{{ category }}">
+                                            {{ message }}
+                                            </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endwith %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="container">
+				{% block content %}{% endblock %}
+			</div>
+                    
+                    </div>
+                    
+                </main>
+
+
+                {% include 'inc/footer.html' %}
+
+            </div>
+        </div>
+
+    </body>
+</html>

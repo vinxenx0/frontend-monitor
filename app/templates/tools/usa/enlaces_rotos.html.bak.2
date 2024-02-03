@@ -1,0 +1,1097 @@
+<!-- app/templates/tools/usa/enlaces_rotos.html -->
+{% macro get_intervalo_color_class(intervalo) %}
+    {% if intervalo == 'Enlaces inseguros' %}
+        intervalo-color-rojo
+    {% endif %}
+{% endmacro %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+   <title>MC-Mutual - Dashboard</title>
+   <meta name="description" content="" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+   <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/styles.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='custom/colors.css') }}" />
+
+   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> -->
+   <script src="{{ url_for('static', filename='dist/js/scripts.js') }}"></script>
+   <link rel="stylesheet" href="{{ url_for('static', filename='custom/colors.css') }}" />
+   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+<!--
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+-->
+
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+
+
+<style>
+   html, body, p, small, table, td,th,tr,div,span {
+font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+   }
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+strong,b {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+small {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  font-size: xx-small;
+  text-size: xx-small;
+}
+
+</style>
+
+   <style>
+      /* Agrega un límite de ancho al campo de la columna "Página" */
+      #resultadosTable td:nth-child(3) {
+          max-width: 150px; /* Ajusta el valor según sea necesario */
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .intervalo-color-violeta {
+            font-weight: bold;
+            color: violet; /* Texto blanco */
+         }
+
+         .intervalo-color-amarillo {
+         
+            color: orange; /* Texto oscuro */
+         }
+
+         .intervalo-color-rojo {
+           
+            color: red /* Texto oscuro */
+         }
+   </style>
+
+
+   <script>
+      // Recuperar el estado del collapse del localStorage para cada elemento colapsable
+      document.addEventListener('DOMContentLoaded', function () {
+         var collapseStates = JSON.parse(localStorage.getItem('collapseStates')) || {};
+
+         // Iterar sobre cada collapse y aplicar el estado correspondiente
+         Object.keys(collapseStates).forEach(function (collapseId) {
+            if (collapseStates[collapseId]) {
+               $('#' + collapseId).addClass('show');
+            }
+         });
+
+         // Manejar eventos del collapse para actualizar el localStorage
+         $('.collapse').on('show.bs.collapse', function () {
+            var collapseId = $(this).attr('id');
+            collapseStates[collapseId] = true;
+            localStorage.setItem('collapseStates', JSON.stringify(collapseStates));
+         });
+
+         $('.collapse').on('hide.bs.collapse', function () {
+            var collapseId = $(this).attr('id');
+            collapseStates[collapseId] = false;
+            localStorage.setItem('collapseStates', JSON.stringify(collapseStates));
+         });
+      });
+   </script>
+   <style>
+      /* Estilo para las tarjetas de ScanResults */
+      .scan-result-card {
+         background-color: #e9ecef;
+         /* Color de fondo gris claro */
+         border: 1px solid #ced4da;
+         /* Borde gris */
+         margin-bottom: 20px;
+         /* Margen inferior */
+      }
+
+      /* Estilo para las tarjetas de DomainStats */
+      .domain-stat-card {
+         background-color: #d4edda;
+         /* Color de fondo verde claro */
+         border: 1px solid #c3e6cb;
+         /* Borde verde */
+         margin-bottom: 20px;
+         /* Margen inferior */
+      }
+   </style>
+</head>
+
+<body class="sb-nav-fixed">
+   {% if current_user.is_authenticated %}
+   <!-- Info Bar -->
+   <nav class="sb-topnav navbar navbar-expand navbar-light bg-light">
+      <!-- Navbar Brand-->
+      <a class="navbar-brand ps-3" href="/">
+         <img src="{{ url_for('static', filename='images/logo_MC.png') }}" alt="MC Mutua" />
+      </a>
+      <!-- Sidebar Toggle-->
+      <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+            class="fas fa-bars"></i></button>
+      <!-- Navbar-->
+      <div class="container-fluid">
+         <div class="d-flex justify-content-between align-items-center w-100">
+            <!-- Navbar Search
+                  <div class="me-auto">
+                      <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                          <div class="input-group">
+                              <input class="form-control" type="text" placeholder="buscar..." aria-label="buscar..." aria-describedby="btnNavbarSearch" />
+                              <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                          </div>
+                      </form>
+                  </div> -->
+            <!-- PDF 
+                  <div class="d-flex">
+                      <div class="pdf-btn me-3">
+                        <form action="#" method="post">
+                             <button type="submit" class="btn btn-primary">Generar PDF</button>
+                        </form>
+                      </div>
+                  </div>
+                  -->
+         </div>
+      </div>
+      <div class="d-flex">
+         <!--
+               <div class="pdf-btn me-3">
+                   <form action="#" method="post">
+                        <button type="submit" class="btn btn-primary">EMAIL</button>
+                   </form>
+               </div>
+               <div class="pdf-btn me-3">
+                   <form action="#" method="post">
+                        <button type="submit" class="btn btn-primary">CSV</button>
+                   </form>
+               </div>
+               -->
+      </div>
+      <!--
+            <ul class="navbar-nav d-none d-md-inline-block ms-auto me-0">
+                <li>
+                    <a class="nav-item" href="{{ url_for('logout') }}">{{ current_user.username }}(<strong>Salir</strong>)</a>
+                </li>
+            </ul>
+            -->
+      <h2 class="mr-4" style="padding-right:12px;"><a class="nav-item" href="{{ url_for('logout') }}"><strong><i class="fa-solid fa-power-off"></i></strong></a></h2>
+   </nav>
+   {% endif %}
+   <div id="layoutSidenav">
+      {% if current_user.is_authenticated %}
+      <div id="layoutSidenav_nav">
+         <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+            {% include 'inc/nav.html' %}
+         </nav>
+      </div>
+      {% endif %}
+      <div id="layoutSidenav_content">
+         <main>
+            <div class="container-fluid px-4">
+               <!-- <div>
+                     <ol class="breadcrumb mb-4">
+                         <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                         <li class="breadcrumb-item active">estoy aqui</li>
+                     </ol>
+                     </div>
+                     -->
+               <div class="_card mt-5">
+                  <div class="card-body">
+                     <div>
+                        <p class="text-center">
+                           <!-- alert box -->
+                           {% with messages = get_flashed_messages(with_categories=true) %}
+                           {% if messages %}
+                           {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                           {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                        </p>
+                     </div>
+                  </div>
+               </div>
+               <h1 class="mt-4">Enlaces rotos</h1>
+               <!--
+               <div class="card control-card mb-4">
+                  <div class="card-body">
+                      <div class="mb-3 status-section">
+                        <div>
+                           <i class="fas fa-info-circle status-icon text-primary"></i>
+                           <span class="status-text">Estado: <strong>Activo</strong></span>
+                        </div>
+                        <div>
+                           <i class="fas fa-history status-icon text-success"></i>
+                           <span class="status-text">Ultima ejecución: <strong>{{ first_end_time }}</strong></span>
+                        </div>
+                     </div>
+                     <div class="control-buttons">
+                        <button class="btn btn-primary" type="button"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-warning" type="button"><i class="fas fa-pause"></i> Pause</button>
+                        <button class="btn btn-danger" type="button"><i class="fas fa-stop"></i> Stop</button>
+                     </div>
+                  </div>
+               </div>
+               -->
+               <ol class="breadcrumb mb-4">
+                  <li class="breadcrumb-item active">Busca enlaces rotos en el sitio</li>
+               </ol>
+
+<div class="row">
+    <!-- Columna izquierda con el Gráfico doughnut para el total de 404 de los 3 dominios -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total de 404</h5>
+                <canvas id="doughnutChart_total" width="250" height="250"></canvas>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Información adicional</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna derecha con dos filas -->
+    <div class="col-md-8">
+        <!-- Primera fila con dos columnas -->
+        <div class="row">
+            <!-- Porcentaje Enlaces Rotos 1 -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Porcentaje de Enlaces Rotos 1</h5>
+                        <h3 class="display-4"><span id="porcentajeEnlacesRotos"></span>%</h3>
+                        <p class="lead">media</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Información adicional</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Enlaces Rotos 1 -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Enlaces Rotos Totales 1</h5>
+                        <h3 class="display-4"><span id="totalEnlacesRotos"></span></h3>
+                        <p class="lead">totales</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Información adicional</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segunda fila con dos columnas -->
+        <div class="row">
+            <!-- Porcentaje Enlaces Rotos 2 -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Tiempo Respuesta</h5>
+                        <h3 class="display-4"><span id="tiempoMedioRespuesta"></span>ms</h3>
+                        <p class="lead">media</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Información adicional</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Enlaces Rotos 2 -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Duracion media</h5>
+                        <h3 class="display-4"><span id="totalTiempoEmpleado"></span></h3>
+                        <p class="lead">horas</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">Información adicional</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agrega esto donde desees mostrar los gráficos en una sola fila -->
+<div class="row">
+    <!-- Gráfico de barras comparativo -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Gráfico de Barras Comparativo</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="barChartComparativa" width="400" height="200"></canvas>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Información adicional</small>
+            </div>
+        </div>
+    </div>
+    <!-- Gráfico de radar comparativo -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Gráfico de Radar Comparativo</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="radarChartComparativa" width="400" height="200"></canvas>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Información adicional</small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <!-- Gráfico de línea comparativo -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Gráfico de Línea Comparativo</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="lineChartComparativa" width="400" height="200"></canvas>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Información adicional</small>
+            </div>
+        </div>
+    </div>
+    <!-- Gráfico polar comparativo -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Gráfico Polar Comparativo</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="polarChartComparativa" width="400" height="200"></canvas>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Información adicional</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Obtener datos del servidor Flask
+    var resumen = {{ graficos | safe }};
+    var dominios_ordenados = ['www.mc-mutual.com', 'mejoratuabsentismo.mc-mutual.com', 'prevencion.mc-mutual.com'];
+
+    // Crear un objeto para almacenar los datos de comparación
+    var datosComparativos = {
+        dominios: dominios_ordenados,
+        datos: []
+    };
+
+    // Iterar sobre cada dominio y buscar sus datos en resumen
+    dominios_ordenados.forEach(function (dominio) {
+        // Buscar el objeto correspondiente en resumen
+        var sumarioDominio = resumen.find(function (item) {
+            return item.dominio === dominio;
+        });
+
+        // Si se encuentra el objeto, agregar los datos a datosComparativos
+        if (sumarioDominio) {
+            datosComparativos.datos.push({
+                dominio: dominio,
+                // Ajusta los campos según lo que necesitas
+                total_404: sumarioDominio.total_404,
+                total_paginas: sumarioDominio.total_paginas,
+                tiempo_medio: sumarioDominio.tiempo_medio,
+                duracion_total: sumarioDominio.duracion_total
+                // Agrega más campos según sea necesario
+            });
+        } else {
+            // Si no se encuentra el objeto, agregar valores predeterminados
+            datosComparativos.datos.push({
+                dominio: dominio,
+                total_404: 0,
+                total_paginas: 0,
+                tiempo_medio: 0,
+                duracion_total: 0
+                // Agrega más campos según sea necesario
+            });
+        }
+    });
+
+    // Configuración del gráfico de barras comparativo
+    var ctxBarComparativa = document.getElementById('barChartComparativa').getContext('2d');
+    var barChartComparativa = new Chart(ctxBarComparativa, {
+        type: 'bar',
+        data: {
+            labels: datosComparativos.dominios,
+            datasets: [{
+                label: 'Total 404',
+                data: datosComparativos.datos.map(function (item) {
+                    return item.total_404;
+                }),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'category',
+                    position: 'bottom'
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Configuración del gráfico de línea comparativo
+    var ctxLineComparativa = document.getElementById('lineChartComparativa').getContext('2d');
+    var lineChartComparativa = new Chart(ctxLineComparativa, {
+        type: 'line',
+        data: {
+            labels: datosComparativos.dominios,
+            datasets: [{
+                label: 'Tiempo Medio',
+                data: datosComparativos.datos.map(function (item) {
+                    return item.tiempo_medio;
+                }),
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'category',
+                    position: 'bottom'
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Configuración del gráfico de radar comparativo
+    var ctxRadarComparativa = document.getElementById('radarChartComparativa').getContext('2d');
+    var radarChartComparativa = new Chart(ctxRadarComparativa, {
+       type: 'bar',
+        data: {
+            labels: datosComparativos.dominios,
+            datasets: [{
+                label: 'Total 404',
+                data: datosComparativos.datos.map(function (item) {
+                    return item.total_404;
+                }),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Total Páginas',
+                data: datosComparativos.datos.map(function (item) {
+                    return item.total_paginas;
+                }),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'category',
+                    position: 'bottom'
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Configuración del gráfico polar comparativo
+    var ctxPolarComparativa = document.getElementById('polarChartComparativa').getContext('2d');
+    var polarChartComparativa = new Chart(ctxPolarComparativa, {
+      type: 'bar',
+        data: {
+            labels: datosComparativos.dominios,
+            datasets: [{
+                label: 'Duracion Total',
+                data: datosComparativos.datos.map(function (item) {
+                    return (item.duracion_total / 60);
+                }),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Total Páginas',
+                data: datosComparativos.datos.map(function (item) {
+                    return item.total_paginas;
+                }),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'category',
+                    position: 'bottom'
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+
+    });
+</script>
+
+<!-- Agrega esto donde desees mostrar los gráficos doughnut -->
+<div class="row mt-4">
+    <!-- Gráfico doughnut para www.mc-mutual.com -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">www.mc-mutual.com</h5>
+                <canvas id="doughnutChart_www" width="400" height="400"></canvas>
+            </div>
+            <div class="card-footer text-muted">
+                Información adicional o pie de página
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico doughnut para mejoratuabsentismo.mc-mutual.com -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">mejoratuabsentismo.mc-mutual.com</h5>
+                <canvas id="doughnutChart_mejora" width="400" height="400"></canvas>
+            </div>
+            <div class="card-footer text-muted">
+                Información adicional o pie de página
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico doughnut para prevencion.mc-mutual.com -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">prevencion.mc-mutual.com</h5>
+                <canvas id="doughnutChart_prevencion" width="400" height="400"></canvas>
+            </div>
+            <div class="card-footer text-muted">
+                Información adicional o pie de página
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Obtener datos del servidor Flask
+    var resumen = {{ graficos | safe }};
+    var dominios_ordenados = ['www.mc-mutual.com', 'mejoratuabsentismo.mc-mutual.com', 'prevencion.mc-mutual.com'];
+
+    // Configuración de los gráficos doughnut
+    var doughnutConfig_www = {
+        type: 'doughnut',
+        data: {
+            labels: ['Total 404', 'Total Páginas'],
+            datasets: [{
+                data: [],
+                backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'],
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 1
+            }]
+        }
+    };
+
+    var doughnutConfig_mejora = JSON.parse(JSON.stringify(doughnutConfig_www));
+    var doughnutConfig_prevencion = JSON.parse(JSON.stringify(doughnutConfig_www));
+    var doughnutConfig_total = JSON.parse(JSON.stringify(doughnutConfig_www));
+
+    // Iterar sobre cada dominio y agregar datos a los gráficos doughnut
+    var total404 = 0;
+    var totalPaginas = 0;
+    // Calcular el tiempo medio de respuesta y el total de tiempo empleado
+    var tiempoMedioRespuesta = 0;
+    var totalTiempoEmpleado = 0;
+
+    dominios_ordenados.forEach(function (dominio) {
+        // Buscar el objeto correspondiente en resumen
+        var sumarioDominio = resumen.find(function (item) {
+            return item.dominio === dominio;
+        });
+
+        // Si se encuentra el objeto, agregar los datos a los gráficos doughnut
+        if (sumarioDominio) {
+            // Agregar datos directamente a los gráficos doughnut
+            if (dominio === 'www.mc-mutual.com') {
+                doughnutConfig_www.data.datasets[0].data = [sumarioDominio.total_404, sumarioDominio.total_paginas - sumarioDominio.total_404];
+            } else if (dominio === 'mejoratuabsentismo.mc-mutual.com') {
+                doughnutConfig_mejora.data.datasets[0].data = [sumarioDominio.total_404, sumarioDominio.total_paginas - sumarioDominio.total_404];
+            } else if (dominio === 'prevencion.mc-mutual.com') {
+                doughnutConfig_prevencion.data.datasets[0].data = [sumarioDominio.total_404, sumarioDominio.total_paginas - sumarioDominio.total_404];
+            }
+
+            // Sumar al total
+            total404 += sumarioDominio.total_404;
+            totalPaginas += sumarioDominio.total_paginas;
+            tiempoMedioRespuesta += sumarioDominio.tiempo_medio;
+            totalTiempoEmpleado += sumarioDominio.duracion_total;
+        }
+    });
+
+    // Convertir total de tiempo empleado a minutos
+    var totalTiempoEmpleadoMinutos = ( ( (totalTiempoEmpleado / 60) / 60) / 3);
+    var totalTiempoMedioRespuesta = tiempoMedioRespuesta / 3;
+
+    // Calcular el porcentaje de enlaces rotos
+    var porcentajeEnlacesRotos = total404 / totalPaginas * 100;
+
+
+    // Agregar datos al gráfico doughnut del total
+    doughnutConfig_total.data.datasets[0].data = [total404, totalPaginas - total404];
+
+    // Crear los gráficos doughnut
+    var ctxDoughnut_www = document.getElementById('doughnutChart_www').getContext('2d');
+    new Chart(ctxDoughnut_www, doughnutConfig_www);
+
+    var ctxDoughnut_mejora = document.getElementById('doughnutChart_mejora').getContext('2d');
+    new Chart(ctxDoughnut_mejora, doughnutConfig_mejora);
+
+    var ctxDoughnut_prevencion = document.getElementById('doughnutChart_prevencion').getContext('2d');
+    new Chart(ctxDoughnut_prevencion, doughnutConfig_prevencion);
+
+    var ctxDoughnut_total = document.getElementById('doughnutChart_total').getContext('2d');
+    new Chart(ctxDoughnut_total, doughnutConfig_total);
+
+</script>
+
+<script>
+    // Asignar los valores a los elementos HTML
+    document.getElementById('totalEnlacesRotos').textContent = total404;
+    document.getElementById('porcentajeEnlacesRotos').textContent = porcentajeEnlacesRotos.toFixed(2);
+  // Asignar los valores a los elementos HTML
+    document.getElementById('tiempoMedioRespuesta').textContent = totalTiempoMedioRespuesta.toFixed(2);
+    document.getElementById('totalTiempoEmpleado').textContent = totalTiempoEmpleadoMinutos.toFixed(2);
+
+</script>
+
+<!-- Agrega esto donde desees mostrar los gráficos de línea -->
+<div class="row mt-4">
+    <!-- Iterar sobre cada dominio y crear gráfico de línea -->
+    {% set dominios_ordenados = ["www.mc-mutual.com", "mejoratuabsentismo.mc-mutual.com", "prevencion.mc-mutual.com"] %}
+
+
+    {% for dominio in dominios_ordenados %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ dominio }} - Evolución 404</h5>
+                    <canvas id="lineChart_{{ dominio }}" width="400" height="400"></canvas>
+                </div>
+                <div class="card-footer text-muted">
+                    Información adicional o pie de página
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    var evolucion = {{ evolucion | safe }};
+    var dominios_ordenados = ['www.mc-mutual.com', 'mejoratuabsentismo.mc-mutual.com', 'prevencion.mc-mutual.com'];
+
+// Función para obtener datos por dominio
+function obtenerDatosPorDominio(dominio) {
+    return evolucion.map(function (item) {
+        // Verificar si el dominio existe en el objeto "evolucion"
+        if (item.dominio === dominio) {
+            return item.total_404;
+        } else {
+            return 0; // Si no hay datos para el dominio en la fecha actual, devolver cero
+        }
+    });
+}
+
+    // Iterar sobre cada dominio y agregar datos a los gráficos de línea
+    dominios_ordenados.forEach(function (dominio) {
+        var lineConfig = {
+            type: 'line',
+            data: {
+                labels: evolucion.map(function (item) { return item.fecha; }),
+                datasets: [{
+                    label: 'Total 404 - ' + dominio,
+                    data: obtenerDatosPorDominio(dominio),
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+
+        // Crear gráfico de línea para el dominio actual
+        var ctxLine = document.getElementById('lineChart_' + dominio).getContext('2d');
+        new Chart(ctxLine, lineConfig);
+    });
+</script>
+
+
+
+               
+
+               <div class="row">
+               <!-- Itera sobre los sumarios -->
+               {% set dominios___ordenados = ["www.mc-mutual.com", "mejoratuabsentismo.mc-mutual.com", "prevencion.mc-mutual.com"] %}
+
+               {% for dominio in dominios_ordenados %}
+                  {% for stat in resumen if stat.dominio == dominio %}
+                  <div class="col-md-4">
+                     <div class="card {% if (stat.total_404*100/stat.total_paginas) < 1 %} bg-success {% elif (stat.total_404*100/stat.total_paginas) < 5 %} bg-warning {% else %} bg-danger {% endif %} text-white mb-4">
+                        <div class="card-body">
+                           <h2 class="card-title font-weight-bolder text-white">{{ "%.2f"|format(stat.total_404 * 100 / stat.total_paginas) }} %</h2>
+			   <p class="card-title font-weight-bolder text-white">{{ stat.dominio }}</p>                           
+         
+                           <p class="card-text">
+                              <!-- Agrega otros campos según sea necesario -->
+                           </p>
+                        </div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                           <a class="small text-white stretched-link" data-bs-toggle="collapse"
+                               href="#collapse-{{stat.id_escaneo}}" role="button" aria-expanded="false"
+                               aria-controls="collapse-{{stat.id_escaneo}}">Ver Sugerencias</a>
+                           <div class="text-white"><h3 class="text-white"><i class="fas fa-lightbulb" data-bs-toggle="collapse"
+                               href="#collapse-{{stat.id_escaneo}}" role="button" aria-expanded="false"
+                               aria-controls="collapse-{{stat.id_escaneo}}"></i></h3></div>
+                       </div>
+                       <div class="collapse" id="collapse-{{stat.id_escaneo}}">
+                           <div class="card card-body">
+
+			      <p class="card-text text-dark">
+                              	<strong>Ultimo scan:</strong> {{ stat.fecha }}<br>
+                              	<strong>Páginas:</strong> {{ stat.total_paginas }}<br />
+                              	<strong>Rotas:</strong> <span class="text-danger font-weight-bolder"><strong>{{ stat.total_404 }}</strong></span><br />
+                              	<strong>Duración:</strong> {{ stat.duracion_total // 3600 }} horas y {{ (stat.duracion_total % 3600) // 60 }} minutos
+                               </p>
+                               <!-- Agrega aquí la tabla para los resultados de cargas por segundos -->
+                               <table class="table">
+                                   <thead>
+                                       <tr>
+                                           <th><strong>tipos de archivo</strong></th>
+                                           <th><strong>cant.<strong></th>
+                                       </tr>
+                                   </thead>
+                                   <tbody>
+                                    {% for dominio, intervalo, count in detalles[stat.id_escaneo] %}
+                                          <tr class="{{ get_intervalo_color_class(count) }}">
+                                             <td>{{ intervalo }}</td>
+                                             <td>{{ count }}</td>
+                                          </tr>
+                                    {% endfor %}
+                                   </tbody>
+                               </table>
+                               <!-- Fin de la tabla de cargas por segundos -->
+                               <!-- Agrega aquí la tabla para los resultados de cargas por segundos 
+                               <table class="table">
+                                 <thead>
+                                     <tr>
+                                         <th>tipo enlace</th>
+                                         <th>Cantidad</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                  {% for dominio, intervalo, count in detalles_dos[stat.id_escaneo] %}
+                                        <tr class="{{ get_intervalo_color_class(intervalo) }}">
+                                           <td>{{ intervalo }}</td>
+                                           <td>{{ count }}</td>
+                                        </tr>
+                                  {% endfor %}
+                                 </tbody>
+                               </table>
+                               -->
+                           </div>
+                       </div>
+                     </div>
+                     
+                </div>
+                  {% endfor %}
+               {% endfor %}
+               </div>
+
+               
+                  <div class="row">
+                     <!-- Primera columna con los checkboxes -->
+                     <div class="col-md-4 mb-4">
+                        <div class="card">
+                           <div class="card-body">
+                              <h5 class="card-title">Sitios Web</h5>
+                              <!-- Agregamos el dropdown en lugar de checkboxes -->
+                              <select id="targetUrlDropdown" class="form-select">
+                                 <option value="">Ver todos</option>
+                                 <option value="www.mc-mutual.com">www.mc-mutual.com</option>
+                                 <option value="mejoratuabsentismo.mc-mutual.com">
+                                    mejoratuabsentismo.mc-mutual.com</option>
+                                 <option value="prevencion.mc-mutual.com">prevencion.mc-mutual.com</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+
+                     <!-- Segunda columna con los campos de fecha -->
+                     <div class="col-md-4 mb-4">
+                        <div class="card">
+                           <div class="card-body">
+                              <h5 class="card-title">Desde:</h5>
+                              <input type="date" id="startDate" class="form-control" />
+                           </div>
+                        </div>
+                     </div>
+
+                     <div class="col-md-4 mb-4">
+                        <div class="card">
+                           <div class="card-body">
+                              <h5 class="card-title">Hasta:</h5>
+                              <input type="date" id="endDate" class="form-control" />
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row mb-4">
+                        <div class="col-md-12 text-end">
+                           <button type="button" class="btn btn-secondary" id="resetFilters">Resetear Filtros</button>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Enlaces rotos desde el último scan
+                     </div>
+                     <div class="card-body">
+                        <table id="datatablesSimple" class="display">
+                           <thead>
+                              <tr>
+                                 <th>fecha</th>
+                                 <th>origen</th>
+                                 <th>url rota</th>
+                                 <th>tiempo</th>
+                                
+                               
+                              </tr>
+
+                           </thead>
+                           <tfoot>
+                              <tr>
+                                 <th>Fecha</th>
+                                 <th>origen</th>
+                                 <th>Url rota</th>
+                                 <th>tiempo</th>
+                                
+                             
+                              </tr>
+                           </tfoot>
+                           <tbody>
+                              {% for result in resultados %}
+                              <tr>
+                                 <td><small>{{ result.fecha_escaneo }}</small></td>
+                                 <td><a href="{{ result.parent_url }}" target="_blank">{{ result.parent_url }}</a></td>
+                                 <td><a style="color:red;" href="{{ result.pagina }}" target="_blank">{{ result.pagina }}</a></td>
+                                 <td class="tiempo-celda {% if result.tiempo_medio is not none and result.tiempo_respuesta <= 5 %} tiempo-verde {% elif result.tiempo_respuesta <= 15 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
+                                    {{ result.tiempo_respuesta }}
+                                </td>
+                                 
+                              </tr>
+
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+
+                  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+                  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+                  <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+                  <script>
+                     document.addEventListener('DOMContentLoaded', function () {
+                        // Inicializamos DataTables
+                        const dataTable = $('#datatablesSimple').DataTable({
+   				"language": {
+				"sEmptyTable": "No hay datos disponibles en la tabla",
+			        "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+			        "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+			        "sInfoFiltered": "(filtrado de un total de _MAX_ entradas)",
+  			        "sInfoPostFix": "",
+			        "sInfoThousands": ",",
+			        "sLengthMenu": "&nbsp;Mostrar _MENU_ entradas",
+			        "sLoadingRecords": "Cargando...",
+			        "sProcessing": "Procesando...",
+			        "sSearch": "Buscar:",
+			        "sZeroRecords": "No se encontraron coincidencias",
+			        "oPaginate": {	
+			           "sFirst": "Primero",
+			           "sLast": "Último"	,
+			           "sNext": "Siguiente",
+			           "sPrevious": "Anterior"
+			        },
+			        "oAria": {
+			           "sSortAscending": ": Activar para ordenar la columna en orden ascendente",
+			           "sSortDescending": ": Activar para ordenar la columna en orden descendente"
+			        }
+			     },
+			     responsive: true,
+			     dom: 'Blfrtip', // Agregamos 'l' para incluir el dropdown de longitud de página
+			     buttons: ['copy', 'csv', 'excel', 'pdf'],
+			     lengthMenu: [10, 25, 50, 100, 200], // Definimos los valores por defecto del dropdown
+			     pageLength: 25, // Establecemos el valor por defecto
+			     columns: [
+			        { type: 'date', format: 'YYYY-MM-DD' },
+			        null, null, null
+			     ]
+			  });
+
+
+                        // Configuramos el evento de cambio para el dropdown y campos de fecha
+                        $('#targetUrlDropdown, #startDate, #endDate').change(updateFilter);
+
+                        // Configuramos el evento de click para el botón de reset
+                        $('#resetFilters').click(function () {
+                           // Limpiamos los valores de los controles y actualizamos el filtro
+                           $('#targetUrlDropdown').val('');
+                           $('#startDate').val('');
+                           $('#endDate').val('');
+                           updateFilter();
+                        });
+
+              
+
+                        function updateFilter() {
+                           var selectedTarget = $('#targetUrlDropdown').val();
+                           var startDate = $('#startDate').val();
+                           var endDate = $('#endDate').val();
+
+                           // Aplicamos el filtro de URL
+                           dataTable.column(1).search(selectedTarget).draw();
+
+
+
+                           // Filtramos por rango de fechas
+                           if (startDate && endDate) {
+                              dataTable.draw();
+                              var columnIndex = 0; // Índice de la columna de fecha
+                              var startMoment = moment(startDate, 'YYYY-MM-DD');
+                              var endMoment = moment(endDate, 'YYYY-MM-DD');
+
+                              // Filtramos las filas según el rango de fechas
+                              $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                                 var dateValue = moment(data[columnIndex], 'YYYY-MM-DD');
+                                 return dateValue.isBetween(startMoment, endMoment, null, '[]');
+                              });
+
+                              // Redibujamos la tabla
+                              dataTable.draw();
+
+                              // Eliminamos la función de filtrado para que no interfiera con futuros cambios
+                              $.fn.dataTable.ext.search.pop();
+                           } else {
+                              // No hay rango de fechas, mostramos todas las filas
+                              dataTable.draw();
+                           }
+                        }
+                     });
+                  </script>
+
+
+	    </div>
+         </div>
+      </div>   
+   </div>
+   </main>
+   <br clear="all">
+   <footer class="py-4 bg-light mt-auto">
+      <div class="container-fluid px-4">
+         <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; MC-Mutual 2023</div>
+            <div>
+               <a href="#">Aviso Legal</a>
+               &middot;
+               <a href="#">Términos &amp; Condiciones</a>
+            </div>
+         </div>
+      </div>
+   </footer>
+   </div>
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,491 @@
+<!-- app/templates/tools/usa/usa_broken_links.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8" />
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+   <title>MC-Mutual - Dashboard</title>
+   <meta name="description" content="" />
+
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"></script>
+
+   <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/styles.css') }}" />
+
+   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"> -->
+   <script src="{{ url_for('static', filename='dist/js/scripts.js') }}"></script>
+   <link rel="stylesheet" href="{{ url_for('static', filename='custom/colors.css') }}" />
+   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+   <!-- Gauge.js -->
+   <script src="https://cdn.jsdelivr.net/npm/progressbar.js@1.0.1/dist/progressbar.min.js"></script>
+
+   <style>
+      /* Agrega un límite de ancho al campo de la columna "Página" */
+      #resultadosTable td:nth-child(3) {
+          max-width: 150px; /* Ajusta el valor según sea necesario */
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+   </style>
+
+
+   <script>
+      // Recuperar el estado del collapse del localStorage para cada elemento colapsable
+      document.addEventListener('DOMContentLoaded', function () {
+         var collapseStates = JSON.parse(localStorage.getItem('collapseStates')) || {};
+
+         // Iterar sobre cada collapse y aplicar el estado correspondiente
+         Object.keys(collapseStates).forEach(function (collapseId) {
+            if (collapseStates[collapseId]) {
+               $('#' + collapseId).addClass('show');
+            }
+         });
+
+         // Manejar eventos del collapse para actualizar el localStorage
+         $('.collapse').on('show.bs.collapse', function () {
+            var collapseId = $(this).attr('id');
+            collapseStates[collapseId] = true;
+            localStorage.setItem('collapseStates', JSON.stringify(collapseStates));
+         });
+
+         $('.collapse').on('hide.bs.collapse', function () {
+            var collapseId = $(this).attr('id');
+            collapseStates[collapseId] = false;
+            localStorage.setItem('collapseStates', JSON.stringify(collapseStates));
+         });
+      });
+   </script>
+   <style>
+      /* Estilo para las tarjetas de ScanResults */
+      .scan-result-card {
+         background-color: #e9ecef;
+         /* Color de fondo gris claro */
+         border: 1px solid #ced4da;
+         /* Borde gris */
+         margin-bottom: 20px;
+         /* Margen inferior */
+      }
+
+      /* Estilo para las tarjetas de DomainStats */
+      .domain-stat-card {
+         background-color: #d4edda;
+         /* Color de fondo verde claro */
+         border: 1px solid #c3e6cb;
+         /* Borde verde */
+         margin-bottom: 20px;
+         /* Margen inferior */
+      }
+   </style>
+</head>
+
+<body class="sb-nav-fixed">
+   {% if current_user.is_authenticated %}
+   <!-- Info Bar -->
+   <nav class="sb-topnav navbar navbar-expand navbar-light bg-light">
+      <!-- Navbar Brand-->
+      <a class="navbar-brand ps-3" href="/">
+         <img src="{{ url_for('static', filename='images/logo_MC.png') }}" alt="MC Mutua" />
+      </a>
+      <!-- Sidebar Toggle-->
+      <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+            class="fas fa-bars"></i></button>
+      <!-- Navbar-->
+      <div class="container-fluid">
+         <div class="d-flex justify-content-between align-items-center w-100">
+            <!-- Navbar Search
+                  <div class="me-auto">
+                      <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                          <div class="input-group">
+                              <input class="form-control" type="text" placeholder="buscar..." aria-label="buscar..." aria-describedby="btnNavbarSearch" />
+                              <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                          </div>
+                      </form>
+                  </div> -->
+            <!-- PDF 
+                  <div class="d-flex">
+                      <div class="pdf-btn me-3">
+                        <form action="#" method="post">
+                             <button type="submit" class="btn btn-primary">Generar PDF</button>
+                        </form>
+                      </div>
+                  </div>
+                  -->
+         </div>
+      </div>
+      <div class="d-flex">
+         <div class="pdf-btn me-3">
+            <a href="{{ url_for('generate_pdf') }}" class="btn btn-info" target="_blank">PDF</a>
+         </div>
+         <!--
+               <div class="pdf-btn me-3">
+                   <form action="#" method="post">
+                        <button type="submit" class="btn btn-primary">EMAIL</button>
+                   </form>
+               </div>
+               <div class="pdf-btn me-3">
+                   <form action="#" method="post">
+                        <button type="submit" class="btn btn-primary">CSV</button>
+                   </form>
+               </div>
+               -->
+      </div>
+      <!--
+            <ul class="navbar-nav d-none d-md-inline-block ms-auto me-0">
+                <li>
+                    <a class="nav-item" href="{{ url_for('logout') }}">{{ current_user.username }}(<strong>Salir</strong>)</a>
+                </li>
+            </ul>
+            -->
+      <a class="nav-item" href="{{ url_for('logout') }}"><strong>Salir</strong></a>
+   </nav>
+   {% endif %}
+   <div id="layoutSidenav">
+      {% if current_user.is_authenticated %}
+      <div id="layoutSidenav_nav">
+         <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+            {% include 'inc/nav.html' %}
+         </nav>
+      </div>
+      {% endif %}
+      <div id="layoutSidenav_content">
+         <main>
+            <div class="container-fluid px-4">
+               <!-- <div>
+                     <ol class="breadcrumb mb-4">
+                         <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                         <li class="breadcrumb-item active">estoy aqui</li>
+                     </ol>
+                     </div>
+                     -->
+               <div class="_card mt-5">
+                  <div class="card-body">
+                     <div>
+                        <p class="text-center">
+                           <!-- alert box -->
+                           {% with messages = get_flashed_messages(with_categories=true) %}
+                           {% if messages %}
+                           {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                           {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                        </p>
+                     </div>
+                  </div>
+               </div>
+               <h1 class="mt-4">Enlaces rotos</h1>
+               <!--
+               <div class="card control-card mb-4">
+                  <div class="card-body">
+                      <div class="mb-3 status-section">
+                        <div>
+                           <i class="fas fa-info-circle status-icon text-primary"></i>
+                           <span class="status-text">Estado: <strong>Activo</strong></span>
+                        </div>
+                        <div>
+                           <i class="fas fa-history status-icon text-success"></i>
+                           <span class="status-text">Ultima ejecución: <strong>{{ first_end_time }}</strong></span>
+                        </div>
+                     </div>
+                     <div class="control-buttons">
+                        <button class="btn btn-primary" type="button"><i class="fas fa-play"></i> Start</button>
+                        <button class="btn btn-warning" type="button"><i class="fas fa-pause"></i> Pause</button>
+                        <button class="btn btn-danger" type="button"><i class="fas fa-stop"></i> Stop</button>
+                     </div>
+                  </div>
+               </div>
+               -->
+               <ol class="breadcrumb mb-4">
+                  <li class="breadcrumb-item active">Busca enlaces rotos en el sitio</li>
+               </ol>
+               <div class="row">
+                  <!-- Overall Satisfaction Score Doughnut Chart -->
+                  <div class="col-md-6 my-4">
+                     <h2 class="text-center">Score</h2>
+                     <div class="text-center">
+                        <h3 class="display-4 text-success font-weight-bolder">96.16%</h3>
+                        <p class="lead">enlaces buenos</p>
+                     </div>
+                  </div>
+
+                  <!-- Page Load Time KPI -->
+                  <div class="col-md-6 my-4">
+                     <h2 class="text-center">Tiempo de Respuesta</h2>
+                     <div class="text-center">
+                        <h3 class="display-4 text-danger font-weight-bolder">9.03m</h3>
+                        <p class="lead">media / página</p>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <!-- Itera sobre los últimos resultados de DomainStats -->
+                  {% for stat in resumen %}
+                  <div class="col-md-4">
+                     <div class="card domain-stat-card">
+                        <div class="card-body">
+                           <h5 class="card-title font-weight-bolder text-success">{{ stat.dominio }}</h5>
+                           <p class="card-text">
+                              <strong>Ultimo scan:</strong> {{ stat.fecha }}<br>
+                              <strong>Estado:</strong>{{ stat.id_escaneo }}<br>
+                              <strong>Páginas:</strong> {{ stat.total_paginas }}<br />
+                              <strong>Rotas:</strong> <span class="text-danger font-weight-bolder"><strong>{{
+                                    stat.total_404 }}</strong></span><br />
+                              <strong>Inicio:</strong> {{ stat.hora_inicio }}<br>
+                              <strong>Fin:</strong> {{ stat.hora_fin }}<br>
+                              <strong>Duración:</strong> {{ stat.duracion_total }}<br>
+
+                              <!-- Agrega otros campos según sea necesario -->
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+                  {% endfor %}
+               </div>
+
+               <div class="container">
+                  <div class="row mt-5">
+                     <!-- Primera columna con los checkboxes -->
+                     <div class="col-md-4 mb-4">
+                        <div class="card">
+                           <div class="card-body bg-dark text-white">
+                              <h5 class="card-title">URL:</h5>
+                              <!-- Agregamos el dropdown en lugar de checkboxes -->
+                              <select id="targetUrlDropdown" class="form-select">
+                                 <option value="">Ver todas</option>
+                                 <option value="www.mc-mutual.com">www.mc-mutual.com</option>
+                                 <option value="mejoratuabsentismo.mc-mutual.com">
+                                    mejoratuabsentismo.mc-mutual.com</option>
+                                 <option value="prevencion.mc-mutual.com">prevencion.mc-mutual.com</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+
+                     <!-- Segunda columna con los campos de fecha -->
+                     <div class="col-md-4 mb-4">
+                        <div class="card">
+                           <div class="card-body bg-dark text-white">
+                              <h5 class="card-title">Desde:</h5>
+                              <input type="date" id="startDate" class="form-control" />
+                           </div>
+                        </div>
+                     </div>
+
+                     <div class="col-md-4 mb-4">
+                        <div class="card">
+                           <div class="card-body bg-dark text-white">
+                              <h5 class="card-title">Hasta:</h5>
+                              <input type="date" id="endDate" class="form-control" />
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row mb-4">
+                        <div class="col-md-12 text-end">
+                           <button type="button" class="btn btn-secondary" id="resetFilters">Resetear Filtros</button>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Enlaces rotos desde el último scan
+                     </div>
+                     <div class="card-body">
+                        <table id="datatablesSimple" class="display">
+                           <thead>
+                              <tr>
+                                 <th>Fecha</th>
+                                 <th>Origen</th>
+                                 <th>Url rota</th>
+                                 <th>Acciones</th>
+                              </tr>
+
+                           </thead>
+                           <tfoot>
+                              <tr>
+                                 <th>Fecha</th>
+                                 <th>Dominio</th>
+                                 <th>Url rota</th>
+                                 <th>Acciones</th>
+                              </tr>
+                           </tfoot>
+                           <tbody>
+                              {% for result in resultados %}
+                              <tr>
+                                 <td>{{ result.fecha_escaneo }}</td>
+                                 <td>{{ result.dominio }}</td>
+                                 <td><a href="{{ result.pagina }}" target="_blank">{{ result.pagina }}</a></td>
+                                 <td>
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#infoModal{{ result.id }}">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </td>
+                              </tr>
+                              <!--
+                              <tr class="collapse" id="headingTagsCollapse{{ result.id }}">
+                                 <td colspan="4">
+                                     <pre>{{ result.heading_tags | tojson(indent=2) }}</pre>
+                                 </td>
+                             </tr>
+                             <tr class="collapse" id="metaTagsCollapse{{ result.id }}">
+                                 <td colspan="4">
+                                     <pre>{{ result.meta_tags | tojson(indent=2) }}</pre>
+                                 </td>
+                             </tr>
+                             <tr class="collapse" id="imagenesCollapse{{ result.id }}">
+                                 <td colspan="4">
+                                     <pre>{{ result.imagenes | tojson(indent=2) }}</pre>
+                                 </td>
+                             </tr>
+                             -->
+                             
+                              <div class="modal fade" id="infoModal{{ result.id }}" tabindex="-1"
+                                 aria-labelledby="infoModalLabel{{ result.id }}" aria-hidden="true">
+                                 <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-info text-dark">
+                                       <div class="modal-header">
+                                          <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias link
+                                             roto#{{ result.id }}</h5>
+
+                                          <button type="button" class="btn-close btn-close-white"
+                                             data-bs-dismiss="modal" aria-label="Close"></button>
+                                       </div>
+                                       <div class="modal-body">
+                                          <pre>{{ result.meta_tags | tojson(indent=2) }}</pre>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div> 
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+
+                  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+                  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+                  <script src="https://cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script>
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+
+                  <script>
+                     document.addEventListener('DOMContentLoaded', function () {
+                        // Inicializamos DataTables
+                        const dataTable = $('#datatablesSimple').DataTable({
+                           "language": {
+                              "sEmptyTable": "No hay datos disponibles en la tabla",
+                              "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                              "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                              "sInfoFiltered": "(filtrado de un total de _MAX_ entradas)",
+                              "sInfoPostFix": "",
+                              "sInfoThousands": ",",
+                              "sLengthMenu": "Mostrar _MENU_ entradas",
+                              "sLoadingRecords": "Cargando...",
+                              "sProcessing": "Procesando...",
+                              "sSearch": "Buscar:",
+                              "sZeroRecords": "No se encontraron coincidencias",
+                              "oPaginate": {
+                                 "sFirst": "Primero",
+                                 "sLast": "Último",
+                                 "sNext": "Siguiente",
+                                 "sPrevious": "Anterior"
+                              },
+                              "oAria": {
+                                 "sSortAscending": ": Activar para ordenar la columna en orden ascendente",
+                                 "sSortDescending": ": Activar para ordenar la columna en orden descendente"
+                              }
+                           }, responsive: true,
+                           columns: [
+                              { type: 'date', format: 'YYYY-MM-DD' },
+                              null, null, null
+                           ]
+                        });
+
+                        // Configuramos el evento de cambio para el dropdown y campos de fecha
+                        $('#targetUrlDropdown, #startDate, #endDate').change(updateFilter);
+
+                        // Configuramos el evento de click para el botón de reset
+                        $('#resetFilters').click(function () {
+                           // Limpiamos los valores de los controles y actualizamos el filtro
+                           $('#targetUrlDropdown').val('');
+                           $('#startDate').val('');
+                           $('#endDate').val('');
+                           updateFilter();
+                        });
+
+              
+
+                        function updateFilter() {
+                           var selectedTarget = $('#targetUrlDropdown').val();
+                           var startDate = $('#startDate').val();
+                           var endDate = $('#endDate').val();
+
+                           // Aplicamos el filtro de URL
+                           dataTable.column(1).search(selectedTarget).draw();
+
+
+
+                           // Filtramos por rango de fechas
+                           if (startDate && endDate) {
+                              dataTable.draw();
+                              var columnIndex = 0; // Índice de la columna de fecha
+                              var startMoment = moment(startDate, 'YYYY-MM-DD');
+                              var endMoment = moment(endDate, 'YYYY-MM-DD');
+
+                              // Filtramos las filas según el rango de fechas
+                              $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                                 var dateValue = moment(data[columnIndex], 'YYYY-MM-DD');
+                                 return dateValue.isBetween(startMoment, endMoment, null, '[]');
+                              });
+
+                              // Redibujamos la tabla
+                              dataTable.draw();
+
+                              // Eliminamos la función de filtrado para que no interfiera con futuros cambios
+                              $.fn.dataTable.ext.search.pop();
+                           } else {
+                              // No hay rango de fechas, mostramos todas las filas
+                              dataTable.draw();
+                           }
+                        }
+                     });
+                  </script>
+
+               </div>
+            </div>
+         </div>
+      </div>   
+   </div>
+   </main>
+   <br clear="all">
+   <footer class="py-4 bg-light mt-auto">
+      <div class="container-fluid px-4">
+         <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; MC-Mutual 2023</div>
+            <div>
+               <a href="#">Aviso Legal</a>
+               &middot;
+               <a href="#">Términos &amp; Condiciones</a>
+            </div>
+         </div>
+      </div>
+   </footer>
+   </div>
+
+
+
+
+
+</body>
+
+</html>

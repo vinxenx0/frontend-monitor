@@ -1,0 +1,346 @@
+@charset "UTF-8";
+/*!
+* corporate colors
+ */
+
+.sb-sidenav-light,
+.navbar-light .bg-light {
+  background-color: #005b72 !important;
+
+}
+
+.sb-sidenav-light .sb-sidenav-menu .nav-link {
+  color: #f9b000;
+}
+
+.sb-sidenav-light .sb-sidenav-menu .nav-link:hover,
+.sb-sidenav-light .sb-sidenav-menu .nav-link .sb-nav-link-icon {
+  color: #fff;
+}
+
+.sb-sidenav-light .sb-sidenav-menu .nav-link.active {
+  color: #fff;
+  font-weight: bolder;
+}
+
+.sb-sidenav-light .sb-sidenav-menu .nav-link.active .sb-nav-link-icon {
+  color: #fff;
+}
+
+.sb-sidenav-light .sb-sidenav-footer {
+  background-color: #f9b000;
+  color: #000;
+}
+
+.btn-primary {
+  color: #000;
+  background-color: #f9b000;
+  border-color: #f9b000;
+}
+
+.form-check-input:checked {
+  background-color: #f9b000;
+  border-color: #f9b000;
+}
+
+.btn-info {
+  --bs-btn-color: #f9b000;
+  --bs-btn-bg: #005b72 ;
+  --bs-btn-border-color: #005b72 ;
+  --bs-btn-hover-color: #005b72;
+  --bs-btn-hover-bg: #f9b000;
+  --bs-btn-hover-border-color: #005b72 ;
+  --bs-btn-focus-shadow-rgb: 11, 172, 204;
+  --bs-btn-active-color: #f9b000;
+  --bs-btn-active-bg: ##f9b000;
+  --bs-btn-active-border-color: #f9b000;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: grey;
+  --bs-btn-disabled-bg: grey;
+  --bs-btn-disabled-border-color: grey;
+  margin-right: 4px;
+}
+
+h1,
+h2,
+h3,
+h4,
+legend {
+  color: #005b72 !important;
+  font-weight: bolder;
+}
+
+.fa-circle-exclamation {
+  color: red;
+ }
+
+ .fa-check {
+  color:green;
+ }
+
+/*
+control form
+*/
+
+
+
+.control-card {
+  max-width: 600px;
+  /* margin: 50px auto; */
+}
+
+.status-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.status-text {
+  font-size: 18px;
+}
+
+.control-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.control-buttons button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+.status-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/*
+* datatables
+*/
+.buttons-pdf {
+
+  background-color: cyan;
+  color: black;
+}
+
+
+/*
+* fuentes
+*/
+
+html,
+body,
+p,
+small,
+table,
+td,
+th,
+tr,
+div,
+span {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+strong,
+b {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+small {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  font-size: xx-small;
+
+}
+
+/*
+* tablas de datos
+/* 
+
+    /* Agrega un límite de ancho al campo de la columna "Página" */
+#resultadosTable td:nth-child(3) {
+  max-width: 150px;
+  /* Ajusta el valor según sea necesario */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intervalo-color-violeta {
+  font-weight: bold;
+  color: violet;
+  /* Texto blanco */
+}
+
+.intervalo-color-amarillo {
+
+  color: orange;
+  /* Texto oscuro */
+}
+
+.intervalo-color-rojo {
+
+  color: red
+    /* Texto oscuro */
+}
+
+/*
+* dashboards
+*/
+/* Estilo para las tarjetas de ScanResults */
+.scan-result-card {
+  background-color: #e9ecef;
+  /* Color de fondo gris claro */
+  border: 1px solid #ced4da;
+  /* Borde gris */
+  margin-bottom: 20px;
+  /* Margen inferior */
+}
+
+/* Estilo para las tarjetas de DomainStats */
+.domain-stat-card {
+  background-color: #d4edda;
+  /* Color de fondo verde claro */
+  border: 1px solid #c3e6cb;
+  /* Borde verde */
+  margin-bottom: 20px;
+  /* Margen inferior */
+
+}
+
+.sb-sidenav-light .sb-sidenav-menu span .nav-link {
+  color: #ccc !important;
+}
+
+html,
+body,
+p,
+small,
+table,
+td,
+th,
+tr,
+div,
+span {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+strong,
+b {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+small {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  font-size: xx-small;
+}
+
+
+/* Agrega un límite de ancho al campo de la columna "Página" */
+#resultadosTable td:nth-child(3) {
+  max-width: 150px;
+  /* Ajusta el valor según sea necesario */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intervalo-color-violeta {
+  font-weight: bold;
+  color: violet;
+  /* Texto blanco */
+}
+
+.intervalo-color-amarillo {
+
+  color: orange;
+  /* Texto oscuro */
+}
+
+.intervalo-color-rojo {
+
+  color: red
+    /* Texto oscuro */
+}
+
+/* Estilo para las tarjetas de ScanResults */
+.scan-result-card {
+  background-color: #e9ecef;
+  /* Color de fondo gris claro */
+  border: 1px solid #ced4da;
+  /* Borde gris */
+  margin-bottom: 20px;
+  /* Margen inferior */
+}
+
+/* Estilo para las tarjetas de DomainStats */
+.domain-stat-card {
+  background-color: #d4edda;
+  /* Color de fondo verde claro */
+  border: 1px solid #c3e6cb;
+  /* Borde verde */
+  margin-bottom: 20px;
+  /* Margen inferior */
+}
+
+.topInfo {
+  font-weight: 900;
+  padding-bottom: 8px;
+}
+
+.custom-form {
+  color: #fff;
+  font-weight: bolder;
+  background-color: #005b72;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.control-form {
+  color: #005b72;
+  font-weight: bolder;
+  background-color: #f9b000;
+  border-color: #f9b000;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+}
+

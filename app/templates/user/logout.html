@@ -1,0 +1,9 @@
+<!-- app/templates/user/logout.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Hasta pronto!</h1>
+    <p>{{ get_flashed_messages()[0] }}</p>
+    <p><a href="{{ url_for('login') }}">Volver a la página de entrada</a></p>
+{% endblock %}

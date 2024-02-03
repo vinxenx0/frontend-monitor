@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+        <h2>Editar cuenta</h2>
+        <form method="POST" action="{{ url_for('edit_user', user_id=user.id) }}">
+            {{ form.csrf_token }}
+
+            <div class="form-group">
+                <label for="username">Username:</label>
+                {{ form.username(class="form-control", placeholder="nombre usuario") }}
+                {% for error in form.username.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                {{ form.email(class="form-control", placeholder="correo electronico") }}
+                {% for error in form.email.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.role.label(class="form-control-label") }}
+                {{ form.role(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+                {{ form.language.label(class="form-control-label") }}
+                {{ form.language(class="form-control") }}
+            </div>
+
+<!-- Dentro del formulario de edición -->
+<div class="form-group">
+    <label for="departamento">Departamento:</label>
+    {{ form.departamento(class="form-control", placeholder="Departamento") }}
+    {% for error in form.departamento.errors %}
+        <span class="text-danger">{{ error }}</span>
+    {% endfor %}
+</div>
+<div class="form-group form-check">
+    {{ form.recibir_correos(class="form-check-input") }}
+    <label class="form-check-label" for="recibir_correos">Recibir Correos</label>
+</div>
+
+
+
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+        </form>
+        <a href="{{ url_for('usuarios') }}" class="btn btn-secondary mt-3">Volver al listado</a>
+
+{% endblock %}
