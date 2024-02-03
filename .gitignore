@@ -1,3 +1,8 @@
+# custom
+config.py
+.logs/
+.databases/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
