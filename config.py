@@ -40,3 +40,7 @@ JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'your_jwt_secret_key'
 
 LOG_LEVEL = 'DEBUG' #os.environ.get('LOG_LEVEL') or 'INFO'
 LOG_FILE = '.logs/app.log' #os.environ.get('LOG_FILE') #no se crea en el directorio
+
+# dias a mostrar
+SCOPE_MONITOR = 1
+
