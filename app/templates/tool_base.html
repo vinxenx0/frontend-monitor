@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="description" content="" />
+
+    {% include 'inc/header.html' %}
+
+</head>
+
+<body class="sb-nav-fixed">
+
+    {% include 'inc/top.html' %}
+
+    <div id="layoutSidenav">
+
+        {% include 'inc/nav.html' %}
+
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+
+                    {% block head %}{% endblock %}
+
+
+
+                    <div class="row">
+                        <!-- Columna izquierda con el GrÃ¡fico doughnut para el total de 404 de los 3 dominios -->
+                        <div class="col-md-6 mb-4">
+                            <div class="custom-form card">
+
+                                <h5 class="card-title mb-3">Analisis rapido</h5>
+
+                                <form class="card-body" id="analizarForm" action="{{ url_for('analizar_url') }}"
+                                    method="POST">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" id="urlInput" width="155" size="155"
+                                            name="url" placeholder="Ingrese la URL" required>
+                                    </div>
+                                    <button type="submit" class="mt-4 btn btn-primary" id="analizarBtn">
+                                        <span id="btnText">ANALIZAR URL</span>
+                                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none"
+                                            role="status" aria-hidden="true"></span>
+                                    </button>
+
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="row">
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
+                                            <h3 class="display-4" id="porcentajeEnlacesDato"><span
+                                                    id="porcentajeEnlacesRotos"></span></h3>
+                                            <p class="lead text-light">media</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <small class="text-muted">Paginas con Errores</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h3 class="display-4"><span id="totalEnlacesRotos"></span></h3>
+                                            <p class="lead">totales</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <small class="text-muted">Total</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-md-3 mb-4">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h3 class="display-4"><span id="tiempoMedioRespuesta"></span>ms</h3>
+                                            <p class="lead">media</p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <small class="text-muted">Tiempo Respuesta</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                     <h3 class="display-4"><span id="totalTiempoEmpleado"></span></h3>
+                                    <p class="lead">horas</p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">Duracion media</small>
+                                </div>
+                            </div>
+                        </div>
+                    -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card control-form">
+                                <div class="card-body text-light ">
+                                    <h5 class="card-title">Sitios web
+                                        <span id="loadingSpinnerD" class="spinner-border spinner-border-sm d-none"
+                                            role="status" aria-hidden="true"></span>
+                                    </h5>
+                                    <form id="targetUrlDropdown">
+                                        <select class="form-select" id="dominio" name="domain"
+                                            onchange="changeDomain()">
+                                            {% for domain in dominios_ordenados %}
+                                            <option value="{{ domain }}" {% if domain==dominio_url %}selected{% endif
+                                                %}>{{ domain }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4 mb-4">
+                            <div class="card control-form text-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Desde:</h5>
+                                    <input type="date" id="startDate" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <div class="card control-form">
+                                <div class="card-body">
+                                    <h5 class="card-title text-light">Hasta:</h5>
+                                    <input type="date" id="endDate" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-12 text-end">
+                                <button type="button" class="btn btn-secondary" id="resetFilters">Resetear
+                                    Filtros</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {% block content %}{%endblock%}
+
+                    <div class="row mt-4 mb-4">
+                        <div class="row">
+                            <!-- Primera columna -->
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="">
+                                            {% for dominio in dominios_ordenados_dos %}
+                                            {% for stat in resumen if stat.dominio == dominio %}
+                                            <div
+                                                class="card {% if (stat.total_404*100/stat.total_paginas) < 1 %} bg-success {% elif (stat.total_404*100/stat.total_paginas) < 5 %} bg-warning {% else %} bg-danger {% endif %} text-white mb-4">
+                                                <div class="card-body">
+                                                    <h2 class="card-title font-weight-bolder text-white">{{ stat.dominio
+                                                        }}</h2>
+
+                                                    <h4 class="card-title font-weight-bolder text-white">{{
+                                                        "%.2f"|format(stat.total_404 *
+                                                        100 /
+                                                        stat.total_paginas) }} %</h4>
+                                                    <p class="card-title font-weight-bolder text-white">{{ stat.dominio
+                                                        }}</p>
+
+                                                    <p class="card-text">
+                                                        <!-- Agrega otros campos según sea necesario -->
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="card-footer d-flex align-items-center justify-content-between">
+                                                    <!-- <a class="small text-white stretched-link" data-bs-toggle="collapse"
+                                        href="#collapse-{{stat.id_escaneo}}" role="button" aria-expanded="false"
+                                        aria-controls="collapse-{{stat.id_escaneo}}">Ver Sugerencias</a>
+                                    <div class="text-white">
+                                        <h3 class="text-white"><i class="fas fa-lightbulb" data-bs-toggle="collapse"
+                                                href="#collapse-{{stat.id_escaneo}}" role="button" aria-expanded="false"
+                                                aria-controls="collapse-{{stat.id_escaneo}}"></i></h3>
+                                    </div> -->
+                                                </div>
+                                                <div class="card" id="card-no-collapse-{{stat.id_escaneo}}">
+                                                    <div class="card card-body">
+
+                                                        <p class="card-text text-dark">
+                                                            <strong>Ultimo scan:</strong> {{ stat.fecha }}<br>
+                                                            <strong>Páginas:</strong> {{ stat.total_paginas }}<br />
+                                                            <strong>Rotas:</strong> <span
+                                                                class="text-danger font-weight-bolder"><strong>{{
+                                                                    stat.total_404
+                                                                    }}</strong></span><br />
+                                                            <strong>Duración:</strong> {{ stat.duracion_total // 3600 }}
+                                                            horas y {{
+                                                            (stat.duracion_total %
+                                                            3600) // 60 }} minutos
+                                                        </p>
+
+
+                                                        <table class="table mb-3">
+
+                                                            <tbody>
+                                                                <!-- Sección SEO -->
+                                                                <tr class="table-info">
+                                                                    <td colspan="6" class="section-header"><i
+                                                                            class="fas fa-chart-area"></i>
+                                                                        SEO
+                                                                    </td>
+
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>Páginas</td>
+                                                                    <td>{{ "%0.0f"|format(stat.total_paginas or 0) }}
+                                                                    </td>
+                                                                    <td>
+                                                                        ({{ "%0.0f"|format(stat.total_paginas /
+                                                                        stat.total_paginas * 100)
+                                                                        }}%)
+                                                                    </td>
+
+                                                                    <td>
+                                                                        {% set variacion = stat.total_paginas -
+                                                                        (stat.total_paginas or 0) %}
+                                                                        {% if variacion > 0 %}
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="+{{ variacion }}"><i
+                                                                                class="fas fa-plus text-success"></i></span>
+                                                                        {% elif variacion < 0 %} <span
+                                                                            data-toggle="tooltip" data-placement="top"
+                                                                            title="-{{ variacion }}"><i
+                                                                                class="fas fa-minus text-danger"></i></span>
+                                                                            {% else %}
+                                                                            <span data-toggle="tooltip"
+                                                                                data-placement="top"
+                                                                                title="={{ variacion }}"><i
+                                                                                    class="fas fa-equals text-secondary"></i></span>
+                                                                            {% endif %}
+                                                                    </td>
+
+                                                                    <td>
+                                                                        {% set tendencia = 'ascenso' if variacion > 0
+                                                                        else 'descenso' %}
+                                                                        {% if tendencia == 'ascenso' %}
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="ascendente">
+                                                                            <i class="fas fa-arrow-up text-success"></i>
+                                                                        </span>
+                                                                        {% else %}
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="descendente">
+                                                                            <i
+                                                                                class="fas fa-arrow-down text-danger"></i>
+                                                                        </span>
+                                                                        {% endif %}
+                                                                    </td>
+
+                                                                </tr>
+
+
+
+                                                                <tr>
+                                                                    <td>Duración</td>
+                                                                    <td>{{ stat.duracion_total or 0}}</td>
+                                                                    <td>
+                                                                        ({{
+                                                                        "%0.2f"|format(stat.duracion_total/stat.total_paginas)
+                                                                        }}%)
+                                                                    </td>
+                                                                    <td>
+                                                                        {% set variacion = stat.duracion_total -
+                                                                        (stat.duracion_total or 0)
+                                                                        %}
+                                                                        {% if variacion > 0 %}
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="+{{ variacion }}"><i
+                                                                                class="fas fa-plus text-danger"></i></span>
+                                                                        {% elif variacion < 0 %} <span
+                                                                            data-toggle="tooltip" data-placement="top"
+                                                                            title="-{{ variacion }}"><i
+                                                                                class="fas fa-minus text-success"></i></span>
+                                                                            {% else %}
+                                                                            <span data-toggle="tooltip"
+                                                                                data-placement="top"
+                                                                                title="={{ variacion }}"><i
+                                                                                    class="fas fa-equals text-secondary"></i></span>
+                                                                            {% endif %}
+                                                                    </td>
+
+                                                                    <td>
+                                                                        {% set tendencia = 'ascenso' if variacion > 0
+                                                                        else 'descenso' %}
+                                                                        {% if tendencia == 'ascenso' %}
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="ascendente">
+                                                                            <i class="fas fa-arrow-up text-danger"></i>
+                                                                        </span>
+                                                                        {% else %}
+                                                                        <span data-toggle="tooltip" data-placement="top"
+                                                                            title="descendente">
+                                                                            <i
+                                                                                class="fas fa-arrow-down text-success"></i>
+                                                                        </span>
+                                                                        {% endif %}
+                                                                    </td>
+
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <!-- Agrega aquí la tabla para los resultados de cargas por segundos -->
+                                                        <table class="table">
+                                                            <thead>
+                                                                <!-- Sección SEO -->
+                                                                <tr class="table-info">
+                                                                    <td colspan="2" class="section-header"><i
+                                                                            class="fas fa-chart-area"></i>Archivos
+                                                                    </td>
+
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <th><strong>tipos de archivo</strong></th>
+                                                                    <th><strong>cant.</strong></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for dominio, intervalo, count in
+                                                                detalles[stat.id_escaneo] %}
+                                                                <tr class="{{ get_intervalo_color_class(count) }}">
+                                                                    <td>{{ intervalo }}</td>
+                                                                    <td>{{ count }}</td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Segunda columna -->
+                            <div class="col">
+                                <div class="row">
+                                    <!-- Primera fila de la segunda columna (2 columnas) -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <canvas id="doughnutChart_total" width="200px" height="200px"></canvas>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <canvas id="lineChart_header" width="400" height="300"></canvas>
+
+                                                <!--
+                                <div class="card-footer text-muted">
+                                    Evolución <strong>{{dominio}}</strong>
+                                </div>
+                                -->
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Segunda fila de la segunda columna (3 columnas) -->
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <canvas id="lineChartComparativa" width="400" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <canvas id="radarChartComparativa" width="400" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <canvas id="polarChartComparativa" width="400" height="200"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </main>
+
+
+            {% include 'inc/footer.html' %}
+
+
+
+        </div>
+
+
+    </div>
+    <!-- Agrega este script al final del cuerpo del documento -->
+    <script>
+        // Esta función se ejecutará cuando el documento esté completamente cargado
+        $(document).ready(function () {
+            // Manejar el envío del formulario
+            $('#analizarForm').submit(function (event) {
+                // Prevenir la acción por defecto del formulario (envío tradicional)
+                event.preventDefault();
+
+                // Realizar una solicitud AJAX para obtener los resultados
+                $.ajax({
+                    type: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        // Crear un div para mostrar los resultados
+                        var modalContent = $('<div></div>').html(data);
+
+                        // Abrir un modal con los resultados
+                        modalContent.dialog({
+                            title: 'Resultados del análisis',
+                            modal: true,
+                            width: 'auto',
+                            height: 'auto',
+                            close: function () {
+                                // Cerrar el modal al hacer clic fuera de él
+                                $(this).dialog('close').remove();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        function changeDomain() {
+            // Muestra el spinner de carga
+            $('#loadingSpinnerD').removeClass('d-none');
+
+            var selectedDomain = $("#dominio").val();
+            // Agrega una pausa de 500 milisegundos (medio segundo) para que el spinner se muestre
+            setTimeout(function () {
+                window.location.href = "/ortografia/" + selectedDomain;
+            }, 500);
+        }
+    </script>
+
+    {% block scripts %} {% endblock %}
+    <script>
+        // Obtener datos del servidor Flask
+        var resumen = {{ graficos | safe }};
+        var dominios_ordenados = {{ dominios_ordenados_dos | tojson }};
+
+        var color1 = 'rgb(0, 91, 114)';
+        var color2 = 'rgb(249, 176, 0)';
+
+
+        // Crear un objeto para almacenar los datos de comparación
+        var datosComparativos = {
+            dominios: dominios_ordenados,
+            datos: []
+        };
+
+        // Iterar sobre cada dominio y buscar sus datos en resumen
+        dominios_ordenados.forEach(function (dominio) {
+            // Buscar el objeto correspondiente en resumen
+            var sumarioDominio = resumen.find(function (item) {
+                return item.dominio === dominio;
+            });
+
+            // Si se encuentra el objeto, agregar los datos a datosComparativos
+            if (sumarioDominio) {
+                datosComparativos.datos.push({
+                    dominio: dominio,
+                    // Ajusta los campos según lo que necesitas
+                    total_404: sumarioDominio.total_404,
+                    total_paginas: sumarioDominio.total_paginas,
+                    tiempo_medio: sumarioDominio.tiempo_medio,
+                    duracion_total: sumarioDominio.duracion_total
+                    // Agrega más campos según sea necesario
+                });
+            } else {
+                // Si no se encuentra el objeto, agregar valores predeterminados
+                datosComparativos.datos.push({
+                    dominio: dominio,
+                    total_404: 0,
+                    total_paginas: 0,
+                    tiempo_medio: 0,
+                    duracion_total: 0
+                    // Agrega más campos según sea necesario
+                });
+            }
+        });
+
+        // Configuración del gráfico de línea comparativo
+        var ctxLineComparativa = document.getElementById('lineChartComparativa').getContext('2d');
+        var lineChartComparativa = new Chart(ctxLineComparativa, {
+            type: 'line',
+            data: {
+                labels: datosComparativos.dominios,
+                datasets: [{
+                    label: 'Tiempo Medio',
+                    data: datosComparativos.datos.map(function (item) {
+                        return item.tiempo_medio;
+                    }),
+                    fill: false,
+                    borderColor: color1,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category',
+                        position: 'bottom'
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Configuración del gráfico de radar comparativo
+        var ctxRadarComparativa = document.getElementById('radarChartComparativa').getContext('2d');
+        var radarChartComparativa = new Chart(ctxRadarComparativa, {
+            type: 'bar',
+            data: {
+                labels: datosComparativos.dominios,
+                datasets: [{
+                    label: 'Total 404',
+                    data: datosComparativos.datos.map(function (item) {
+                        return item.total_404;
+                    }),
+                    backgroundColor: color1,
+                    borderColor: color1,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Páginas',
+                    data: datosComparativos.datos.map(function (item) {
+                        return item.total_paginas;
+                    }),
+                    backgroundColor: color2,
+                    borderColor: color2,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category',
+                        position: 'bottom'
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Configuración del gráfico polar comparativo
+        var ctxPolarComparativa = document.getElementById('polarChartComparativa').getContext('2d');
+        var polarChartComparativa = new Chart(ctxPolarComparativa, {
+            type: 'bar',
+            data: {
+                labels: datosComparativos.dominios,
+                datasets: [{
+                    label: 'Duracion Total',
+                    data: datosComparativos.datos.map(function (item) {
+                        return (item.duracion_total / 60);
+                    }),
+                    backgroundColor: color1,
+                    borderColor: color1,
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Páginas',
+                    data: datosComparativos.datos.map(function (item) {
+                        return item.total_paginas;
+                    }),
+                    backgroundColor: color2,
+                    borderColor: color2,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category',
+                        position: 'bottom'
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+
+        });
+    </script>
+    <script>
+        var evolucion = {{ evolucion | safe }};
+        var dominios_ordenados = {{ dominios_ordenados_dos | tojson }};
+
+        var color1 = 'rgb(0, 91, 114)';
+        var color2 = 'rgb(249, 176, 0)';
+
+
+        // Función para obtener datos por dominio
+        function obtenerDatosPorDominio(dominio) {
+            return evolucion
+                .filter(function (item) {
+                    return item.dominio === dominio;
+                })
+                .map(function (item) {
+                    return { x: new Date(item.fecha), y: item.total_404 };
+                });
+        }
+
+        // Obtener las fechas únicas y ordenarlas
+        var fechasOrdenadas = evolucion.map(function (item) {
+            return item.fecha;
+        }).filter(function (value, index, self) {
+            return self.indexOf(value) === index;
+        }).sort(function (a, b) {
+            return new Date(a) - new Date(b);
+        });
+
+
+        // Iterar sobre cada dominio y agregar datos a los gráficos de línea
+        dominios_ordenados.forEach(function (dominio) {
+            var lineConfig = {
+                type: 'line',
+                data: {
+                    labels: fechasOrdenadas,
+                    datasets: [{
+                        label: 'Total 404 - ' + dominio,
+                        data: obtenerDatosPorDominio(dominio), //.slice(0, -1), // Elimina el último elemento del array
+                        backgroundColor: color1,
+                        borderColor: color1,
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+
+            };
+
+            console.log(lineConfig);
+
+            // Crear gráfico de línea para el dominio actual
+            var ctxLine = document.getElementById('lineChart_header').getContext('2d');
+            new Chart(ctxLine, lineConfig);
+        });
+    </script>
+
+    <script>
+        // Obtener datos del servidor Flask
+        var resumen = {{ graficos | safe }};
+        var dominios_ordenados = {{ dominios_ordenados_dos | tojson    }};
+
+        var color1 = 'rgb(0, 91, 114)';
+        var color2 = 'rgb(249, 176, 0)';
+
+        // Configuración de los gráficos doughnut
+        var doughnutConfig_www = {
+            type: 'doughnut',
+            data: {
+                labels: ['Total 404', 'Total Páginas'],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [color2, color1], //['rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'],
+                    borderColor: color1,
+                    borderWidth: 1
+                }]
+            }
+        };
+
+        var doughnutConfig_mejora = JSON.parse(JSON.stringify(doughnutConfig_www));
+        var doughnutConfig_prevencion = JSON.parse(JSON.stringify(doughnutConfig_www));
+        var doughnutConfig_total = JSON.parse(JSON.stringify(doughnutConfig_www));
+
+        // Iterar sobre cada dominio y agregar datos a los gráficos doughnut
+        var total404 = 0;
+        var totalPaginas = 0;
+        // Calcular el tiempo medio de respuesta y el total de tiempo empleado
+        var tiempoMedioRespuesta = 0;
+        var totalTiempoEmpleado = 0;
+
+        dominios_ordenados.forEach(function (dominio) {
+            // Buscar el objeto correspondiente en resumen
+            var sumarioDominio = resumen.find(function (item) {
+                return item.dominio === dominio;
+            });
+
+            // Si se encuentra el objeto, agregar los datos a los gráficos doughnut
+            if (sumarioDominio) {
+                // Agregar datos directamente a los grÃ¡ficos doughnut
+                if (dominio === dominios_ordenados[0]) {
+                    doughnutConfig_www.data.datasets[0].data = [sumarioDominio.total_404, sumarioDominio.total_paginas];
+                } else if (dominio === dominios_ordenados[1]) {
+                    doughnutConfig_mejora.data.datasets[0].data = [sumarioDominio.total_404, sumarioDominio.total_paginas];
+                } else if (dominio === dominios_ordenados[2]) {
+                    doughnutConfig_prevencion.data.datasets[0].data = [sumarioDominio.total_404, sumarioDominio.total_paginas];
+                }
+
+                // Sumar al total
+                total404 += sumarioDominio.total_404;
+                totalPaginas += sumarioDominio.total_paginas;
+                tiempoMedioRespuesta += sumarioDominio.tiempo_medio;
+                totalTiempoEmpleado += sumarioDominio.duracion_total;
+            }
+        });
+
+        // Convertir total de tiempo empleado a minutos
+        var totalTiempoEmpleadoMinutos = (((totalTiempoEmpleado / 60) / 60) / 3);
+        var totalTiempoMedioRespuesta = tiempoMedioRespuesta / 3;
+
+        // Calcular el porcentaje de enlaces rotos
+        var porcentajeEnlacesRotos = total404 / totalPaginas * 100;
+
+
+        // Agregar datos al gráfico doughnut del total
+        doughnutConfig_total.data.datasets[0].data = [total404, totalPaginas - total404];
+
+        // Crear los gráficos doughnut
+        //var ctxDoughnut_www = document.getElementById('doughnutChart_www').getContext('2d');
+        //new Chart(ctxDoughnut_www, doughnutConfig_www);
+
+        //var ctxDoughnut_mejora = document.getElementById('doughnutChart_mejora').getContext('2d');
+        //new Chart(ctxDoughnut_mejora, doughnutConfig_mejora);
+
+        //var ctxDoughnut_prevencion = document.getElementById('doughnutChart_prevencion').getContext('2d');
+        //new Chart(ctxDoughnut_prevencion, doughnutConfig_prevencion);
+
+        var ctxDoughnut_total = document.getElementById('doughnutChart_total').getContext('2d');
+        new Chart(ctxDoughnut_total, doughnutConfig_total);
+
+    </script>
+    <!-- Agrega esto al final de tu script existente -->
+
+
+<!-- fila de arriba de datos -->
+<script>
+    // Obtén el elemento HTML del porcentaje de enlaces rotos
+    var porcentajeEnlacesRotosElement = document.getElementById('porcentajeEnlacesRotos');
+    var porcentajeEnlacesDato = document.getElementById('porcentajeEnlacesDato');
+    var porcentajeEnlacesRotosCard = document.getElementById('porcentajeEnlacesRotosCard');
+
+    // Calcula el color basado en el porcentaje
+    var colorPorcentaje = '';
+    if (porcentajeEnlacesRotos < 5) {
+        colorPorcentaje = 'green';
+    } else if (porcentajeEnlacesRotos >= 5 && porcentajeEnlacesRotos <= 25) {
+
+        colorPorcentaje = 'yellow';
+    } else {
+        colorPorcentaje = 'red';
+    }
+
+    // Asigna el color al elemento y la tarjeta
+    porcentajeEnlacesRotosElement.textContent = porcentajeEnlacesRotos.toFixed(2) + "%";
+    porcentajeEnlacesRotosElement.style.color = "white"; //colorPorcentaje;
+    porcentajeEnlacesRotosCard.style.backgroundColor = colorPorcentaje;
+
+
+
+
+</script>
+<script>
+    // Asignar los valores a los elementos HTML
+    document.getElementById('totalEnlacesRotos').textContent = total404;
+    document.getElementById('porcentajeEnlacesRotos').textContent = porcentajeEnlacesRotos.toFixed(2);
+    // Asignar los valores a los elementos HTML
+    document.getElementById('tiempoMedioRespuesta').textContent = totalTiempoMedioRespuesta.toFixed(2);
+    document.getElementById('totalTiempoEmpleado').textContent = totalTiempoEmpleadoMinutos.toFixed(2);
+
+</script>
+
+</body>
+
+</html>
