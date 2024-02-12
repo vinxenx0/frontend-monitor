@@ -1,7 +1,13 @@
 # custom
-.logs/
-.databases/
+offline/
+logs/
+.logs
+.databases
+results/
+*.log
+*.csv
 config.py
+resumen_escaneo.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
