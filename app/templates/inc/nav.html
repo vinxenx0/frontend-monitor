@@ -92,22 +92,27 @@
                 <div class="collapse" id="collapseRanks" aria-labelledby="headingOne"
                     data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
+                        <!-- 
                         <span class="nav-link {% if request.endpoint == 'seo_health_check' %} active {% endif %}"
                             href="{{ url_for('seo_health_check') }}">Salud</span>
                         <span class="nav-link {% if request.endpoint == 'seo_posicionamiento' %} active {% endif %}"
                             href="{{ url_for('seo_posicionamiento') }}">Posicionamiento</span>
                         <span class="nav-link {% if request.endpoint == 'seo_keywords' %} active {% endif %}"
                             href="{{ url_for('seo_keywords') }}">Palabras Clave</span>
+                        -->
                         <!--
              <span class="nav-link {% if request.endpoint == 'seo_traffic' %} active {% endif %}" href="{{ url_for('seo_traffic') }}">Tráfico Orgánico</span>
                     <a class="nav-link {% if request.endpoint == 'seo_competencia' %} active {% endif %}" href="{{ url_for('seo_competencia') }}">Competencia</a>
                 -->
+                <!--
                         <span class="nav-link {% if request.endpoint == 'seo_backlinks' %} active {% endif %}"
                             href="{{ url_for('seo_backlinks') }}">Backlinks</span>
                         <span class="nav-link {% if request.endpoint == 'seo_indexing' %} active {% endif %}"
                             href="{{ url_for('seo_indexing') }}">Indexación</span>
+                             -->
                         <a class="nav-link {% if request.endpoint == 'velocidad' %} active {% endif %}"
                             href="{{ url_for('velocidad') }}">Velocidad</a>
+                   
                     </nav>
                 </div>
 
@@ -121,15 +126,19 @@
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link {% if request.endpoint == 'enlaces_rotos' %} active {% endif %}"
                             href="{{ url_for('enlaces_rotos') }}">Enlaces rotos</a>
+                            <!--
                         <span class="nav-link {% if request.endpoint == 'usa_nav' %} active {% endif %}"
                             href="{{ url_for('usa_nav') }}">Navegación</span>
+                            -->
                         <!--
                     <a class="nav-link {% if request.endpoint == 'usa_form' %} active {% endif %}" href="{{ url_for('usa_form') }}">Formularios</a>
                 -->
                         <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
                             href="{{ url_for('responsive') }}">Responsive</a>
+                             <!--
                         <span class="nav-link {% if request.endpoint == 'usa_font_colors' %} active {% endif %}"
                             href="{{ url_for('usa_font_colors') }}">Fuentes/Colores</span>
+                            -->
                         <!--
                     <a class="nav-link {% if request.endpoint == 'usa_w3c' %} active {% endif %}" href="{{ url_for('usa_w3c') }}">Estándares w3c</a>
                 -->
@@ -146,16 +155,20 @@
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
                             href="/analisis-aaa/www.mc-mutual.com">WCAG-AAA</a>
+                            <!-- 
                         <span class="nav-link {% if request.endpoint == 'acc_images' %} active {% endif %}"
                             href="{{ url_for('acc_images') }}">Imágenes</span>
+                            -->
                         <!-- 
                 <a class="nav-link {% if request.endpoint == 'acc_sintax' %} active {% endif %}" href="{{ url_for('acc_sintax') }}">Sintaxis</a>
                 <a class="nav-link {% if request.endpoint == 'acc_structure' %} active {% endif %}" href="{{ url_for('acc_structure') }}">Estructura</a>
                
                 <a class="nav-link {% if request.endpoint == 'acc_media' %} active {% endif %}" href="{{ url_for('acc_media') }}">Multimedia</a>
                  -->
+                 <!-- 
                         <span class="nav-link {% if request.endpoint == 'acc_contraste' %} active {% endif %}"
                             href="{{ url_for('acc_contraste') }}">Contraste</span>
+                            -->
                         <!-- 
                 <a class="nav-link {% if request.endpoint == 'acc_lectores' %} active {% endif %}" href="{{ url_for('acc_lectores') }}">Lectores</a>
                 <a class="nav-link {% if request.endpoint == 'acc_comp' %} active {% endif %}" href="{{ url_for('acc_comp') }}">Compatibilidad</a>
@@ -199,12 +212,14 @@
                         <!--
                 <a class="nav-link {% if request.endpoint == 'diag_domains' %} active {% endif %}" href="{{ url_for('diag_domains') }}">Dominios</a>
                 -->
+                <!--
                         <span class="nav-link {% if request.endpoint == 'diag_spam' %} active {% endif %}"
                             href="{{ url_for('diag_spam') }}">SPAM/BLs</span>
                         <span class="nav-link {% if request.endpoint == 'diag_gdpr' %} active {% endif %}"
                             href="{{ url_for('diag_gdpr') }}">GDPR/LSSI</span>
                         <span class="nav-link {% if request.endpoint == 'diag_textos_legales' %} active {% endif %}"
                             href="{{ url_for('diag_textos_legales') }}">Textos Legales</span>
+                            -->
                         <!--
                 <a class="nav-link {% if request.endpoint == 'diag_copyright' %} active {% endif %}" href="{{ url_for('diag_copyright') }}">Propiedad intelectual</a>
                 -->
@@ -215,12 +230,13 @@
 
                 {% if current_user.role == 'superadmin' %}
                 <div class="sb-sidenav-menu-heading">Sistema</div>
-
+           
+            <!--
                 <span class="nav-link" href="{{ url_for('tools_config') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-wrench"></i></div>
                     Configuración
                 </span>
-
+ -->
                 <a class="nav-link btn-link btn me-3" href="{{ url_for('usuarios') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
                     Usuarios
