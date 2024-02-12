@@ -233,7 +233,7 @@ def velocidad():
 
     # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
     paginas_velocidad = (
-        db.session.query(Resultado.fecha_escaneo, Resultado.dominio, Resultado.tiempo_respuesta, Resultado.pagina, Resultado.lang,
+        db.session.query(Resultado.fecha_escaneo, Resultado.dominio,Resultado.tipo_documento, Resultado.tiempo_respuesta, Resultado.pagina, Resultado.lang,
                         Resultado.imagenes, Resultado.images_1MB, Resultado.image_types, Resultado.id #is_pdf
                         )
         .filter(
@@ -242,6 +242,7 @@ def velocidad():
             Resultado.codigo_respuesta == 200,
             Resultado.tiempo_respuesta >= 1,
             Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            
             Resultado.tiempo_respuesta != '',
             Resultado.tiempo_respuesta.isnot(False) #,  # Filtrar resultados con tiempo_respuesta False
             #Resultado.tiempo_respuesta.isnot(None) 

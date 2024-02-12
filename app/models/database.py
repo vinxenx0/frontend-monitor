@@ -18,6 +18,7 @@ class Resultado(db.Model):
     tiempo_respuesta = Column(Float) #Column(Integer)
     pagina = Column(String(1383))
     parent_url = Column(String(1383))
+    tipo_documento = Column(String(255))
     meta_tags = Column(JSON)
     heading_tags = Column(JSON)
     imagenes = Column(JSON)

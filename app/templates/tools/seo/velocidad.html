@@ -621,6 +621,7 @@ var fechasOrdenadas = evolucion.map(function (item) {
                                   <th>web</th>
                                   <!-- <th>peso</th> -->
                                   <th>dirección</th>
+                                  <th>tipo</th>
                                   <th>img tot</th>
                                   <th>img mb</th>
                                   <th>segundos</th>
@@ -634,6 +635,7 @@ var fechasOrdenadas = evolucion.map(function (item) {
                                   <th>web</th>
                                  <!-- <td>peso</td> -->
                                   <th>dirección</th>
+                                  <th>tipo</th>
                                   <th>img tot</th>
                                   <th>img mb</th>
                                   <th>segundos</th>
@@ -648,6 +650,7 @@ var fechasOrdenadas = evolucion.map(function (item) {
                                         <td><small>{{ result.dominio }}</small></td>
                                        <!-- <td>{{ result.id }}</td> -->
                                         <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina }}</a></td>
+                                        <td>{{ result.tipo_documento }}</td>
                                         <td>{% if result.imagenes %}{{ result.imagenes|length }}{% endif %}</td>
                                         <td>{{ result.images_1MB }}</td>
                                         <td class="tiempo-celda {% if result.tiempo_medio is not none and result.tiempo_respuesta <= 5 %} tiempo-verde {% elif result.tiempo_respuesta <= 15 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
@@ -775,7 +778,7 @@ var fechasOrdenadas = evolucion.map(function (item) {
                            pageLength: 25, // Establecemos el valor por defecto
                           columns: [
                           { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
-                             null, null, null,  null, null, null
+                             null, null, null, null, null, null, null
                           ],
                           colReorder: {
                                 realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real
