@@ -584,20 +584,12 @@ def enlaces_rotos():
 @login_required
 def enlaces_rotos_dominio(domain):
 
-    # Consulta para obtener las fechas seleccionadas
+    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
     results = (db.session.query(distinct(Sumario.fecha)).order_by(
         Sumario.fecha.desc()).filter(Sumario.dominio == domain).limit(1).all())
 
     # Obtener los resultados para las fechas seleccionadas
     fechas_seleccionadas = [result[0] for result in results]
-
-    # Consulta para obtener el campo Sumario.total_paginas
-    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
-        Sumario.fecha == fechas_seleccionadas[0], Sumario.dominio == domain).first()
-
-    # Almacenar el valor de Sumario.total_paginas en una variable
-    total_paginas = total_paginas_result[0] if total_paginas_result else None
-
 
     #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
 
@@ -611,8 +603,8 @@ def enlaces_rotos_dominio(domain):
                     func.date(
                         Resultado.fecha_escaneo).in_(fechas_seleccionadas))
         #.filter(Resultado.id_escaneo.in_(ids_escaneo_especificos))
-        #.filter(
-        #    ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(
+            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
         #.filter(~Resultado.pagina.like('%redirect%'))  # Excluir URLs que contengan 'redirect'
         .all())
 
@@ -725,12 +717,7 @@ def enlaces_rotos_dominio(domain):
                            resumen=sumarios,
                            detalles=resultados_agrupados,
                            detalles_dos=resultados_agrupados_dos,
-                           graficos=json.dumps(sumarios_dict),
-                           indicador_1 = len(results),
-                           indicador_2 = ( ( len(results) * 100 ) / total_paginas ),
-                           indicador_3 = total_paginas
-                           )
-
+                           graficos=json.dumps(sumarios_dict))
 
 
 @app.route('/usabilidad/broken-links')
@@ -890,13 +877,6 @@ def analisis_aaa(dominio):
     # Obtener los resultados para las fechas seleccionadas
     fechas_seleccionadas = [result[0] for result in results]
 
-    # Consulta para obtener el campo Sumario.total_paginas
-    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
-        Sumario.fecha == fechas_seleccionadas[0], Sumario.dominio == dominio).first()
-
-    # Almacenar el valor de Sumario.total_paginas en una variable
-    total_paginas = total_paginas_result[0] if total_paginas_result else None
-
     #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
 
     # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
@@ -1016,11 +996,7 @@ def analisis_aaa(dominio):
                            evolucion=json.dumps(evoluciones_dict),
                            resultados=paginas_wcagaaa,
                            detalles=resultados_agrupados,
-                           resumen=sumarios,
-                           indicador_1 = len(paginas_wcagaaa),
-                           indicador_2 = ( ( len(paginas_wcagaaa) * 100 ) / total_paginas ),
-                           indicador_3 = total_paginas
-                           )
+                           resumen=sumarios)
 
 
 @app.route('/accesibilidad/compatible')
@@ -1082,13 +1058,6 @@ def ortografia(dominio):
 
     # Obtener los resultados para las fechas seleccionadas
     fechas_seleccionadas = [result[0] for result in results]
-
-    # Consulta para obtener el campo Sumario.total_paginas
-    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
-        Sumario.fecha == fechas_seleccionadas[0], Sumario.dominio == dominio).first()
-
-    # Almacenar el valor de Sumario.total_paginas en una variable
-    total_paginas = total_paginas_result[0] if total_paginas_result else None
 
     #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
 
@@ -1241,11 +1210,7 @@ def ortografia(dominio):
                            resultados=paginas_ortografia,
                            detalles_dos=resultados_agrupados_dos,
                            detalles=resultados_agrupados,
-                           resumen=sumarios,
-                           indicador_1 = len(paginas_ortografia),
-                           indicador_2 = ( ( len(paginas_ortografia) * 100 ) / total_paginas ),
-                           indicador_3 = total_paginas
-                           )
+                           resumen=sumarios)
 
 
 @app.route('/diccionarios/spanish')
@@ -1477,6 +1442,8 @@ def diag_textos_legales():
 def tools_config():
     return render_template('tools/config.html')
 
+
+# ...
 
 
 @app.route('/resultados-popup', methods=['GET'])
