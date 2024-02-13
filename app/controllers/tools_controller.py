@@ -6,7 +6,7 @@ from flask import render_template, jsonify, request
 from flask_login import login_required
 from app import app, db
 from sqlalchemy import and_, desc, distinct, func, case, literal, literal_column, text
-from app.models.database import Resultado, Sumario
+from app.models.database import Resultado, Sumario, Diccionario
 from config import DOMINIOS_ESPECIFICOS, URL_BASE
 from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER
 from sqlalchemy.orm import class_mapper
@@ -1430,6 +1430,64 @@ def mostrar_html_copy(resultado_id):
                            contenido_html=web_offline)
 
 
+@app.route('/diccionario')
+@login_required
+def diccionario():
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
+
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+    return render_template('tools/dicc/visor_diccionario.html', palabras_diccionario = palabras_diccionario)
+
+#
+#
+# DICCIONARIOS
+#
+
+@app.route('/agregar_palabra', methods=['POST'])
+def agregar_palabra():
+    nueva_palabra = request.form['palabra']
+    nueva_entrada = Diccionario(palabra=nueva_palabra)
+    db.session.add(nueva_entrada)
+    db.session.commit()
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
+
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+    return jsonify({'palabras_diccionario': palabras_diccionario})
+
+@app.route('/editar_palabra', methods=['POST'])
+def editar_palabra():
+    id = request.form['id']
+    palabra = request.form['palabra']
+    palabra_editar = Diccionario.query.get(id)
+    palabra_editar.palabra = palabra
+    db.session.commit()
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
+
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+    return jsonify({'palabras_diccionario': palabras_diccionario})
+
+@app.route('/borrar_palabra/<int:id>', methods=['DELETE'])
+def borrar_palabra(id):
+    palabra_borrar = Diccionario.query.get_or_404(id)
+    db.session.delete(palabra_borrar)
+    db.session.commit()
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
+
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+    return jsonify({'palabras_diccionario': palabras_diccionario})
+
 @app.route('/diccionarios/english')
 @login_required
 def dicc_english():
@@ -1638,3 +1696,4 @@ def verificar_enlace(enlace):
             response.status_code == 301 or response.status_code == 302)
     except requests.RequestException:
         return False
+
