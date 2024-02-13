@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataTables Editable Example</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+</head>
+<body>
+
+<table id="example" class="display">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Palabra</th>
+            <th>Idioma</th>
+            <th>Fecha Añadida</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td contenteditable="false">1</td>
+            <td contenteditable="true">Example</td>
+            <td class="editable-dropdown">
+                <select>
+                    <option value="Spanish" selected>Spanish</option>
+                    <option value="Catalonian">Catalonian</option>
+                </select>
+            </td>
+            <td contenteditable="true">2023-01-01</td>
+            <td><button class="delete-row" data-rowid="1">Delete</button></td>
+        </tr>
+        <!-- Agrega más filas según sea necesario -->
+    </tbody>
+</table>
+
+<button id="addRow">Add Row</button>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var table = $('#example').DataTable();
+
+        // Función para inicializar la fila como editable y con menú desplegable
+        function initializeRow(row) {
+            // Asigna una clase de edición a las celdas
+            $(row.node()).find('td[contenteditable="true"]').addClass('edit-mode');
+
+            // Inicializa el menú desplegable en la celda de idioma
+            $(row.node()).find('.editable-dropdown select').val('Spanish');
+        }
+
+        // Habilita la edición en celdas haciendo clic
+        $('#example').on('click', 'td[contenteditable="true"]', function() {
+            $(this).toggleClass('edit-mode');
+        });
+
+        // Captura el evento de cambio y envía la actualización al servidor
+        $('#example').on('blur', 'td[contenteditable="true"]', function() {
+            var row = table.row($(this).closest('tr'));
+            var cellIndex = $(this).index();
+            var cellData = $(this).text();
+
+            if ($(this).hasClass('editable-dropdown')) {
+                // Si es una celda con menú desplegable, obtén el valor seleccionado
+                cellData = $(this).find('select').val();
+            }
+
+            row.data()[cellIndex] = cellData;
+
+            $.ajax({
+                url: '/update-data',
+                method: 'POST',
+                data: {
+                    rowId: row.data().id,
+                    cellIndex: cellIndex,
+                    cellData: cellData
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        // Agrega nueva fila
+        $('#addRow').on('click', function() {
+            var newRowData = [null, "New Palabra", "Spanish", "2023-01-01", '<button class="delete-row" data-rowid="0">Delete</button>'];
+            var newRow = table.row.add(newRowData).draw();
+
+            // Inicializa la nueva fila
+            initializeRow(newRow);
+
+            // Envía la nueva fila al servidor para su inserción
+            $.ajax({
+                url: '/insert-data',
+                method: 'POST',
+                data: {
+                    rowData: newRowData
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        // Captura el evento de clic para eliminar una fila
+        $('#example').on('click', '.delete-row', function() {
+            var row = table.row($(this).closest('tr'));
+
+            // Envía el ID de la fila al servidor para su eliminación
+            $.ajax({
+                url: '/delete-data',
+                method: 'POST',
+                data: {
+                    rowId: row.data().id
+                },
+                success: function(response) {
+                    console.log(response);
+
+                    // Elimina la fila visualmente si la eliminación en el servidor es exitosa
+                    row.remove().draw();
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

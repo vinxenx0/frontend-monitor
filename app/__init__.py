@@ -49,7 +49,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Importa las clases Resultado y Sumario
-from app.models.database import Resultado, Sumario
+from app.models.database import Resultado, Sumario, Diccionario
 from app.controllers import user_controller
 from app.views import user_view
 from app.models.user_model import User
@@ -99,6 +99,18 @@ Talisman(app, content_security_policy=None)
 babel = Babel(app)
 # Configure Babel
 babel.init_app(app, default_locale='es')
+
+#def obtener_palabras_diccionario():
+#    global PALABRAS_DICCIONARIO
+#
+#    palabras = (
+#        db.session.query(Diccionario.id, Diccionario.palabra)
+#        .all()
+ #   )
+#
+#    PALABRAS_DICCIONARIO = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+#    print(PALABRAS_DICCIONARIO)
+
 
 def obtener_estado_spider() :
     
@@ -174,6 +186,8 @@ with app.app_context():
     
     obtener_estado_spider()
 
+    #obtener_palabras_diccionario()
+
 
     if not User.query.first():
        
@@ -214,10 +228,10 @@ def handle_exception(e):
     traceback.print_exc()
     return render_template('errors/500.html'), 500
 
-@app.before_request
-def log_request_info():
-    app.logger.debug('URL solicitada: %s', request.url)
-    app.logger.debug('Argumentos de la URL: %s', request.view_args)
+#@app.before_request
+#def log_request_info():
+#    app.logger.debug('URL solicitada: %s', request.url)
+#    app.logger.debug('Argumentos de la URL: %s', request.view_args)
 
 
 # Include the admin controller
