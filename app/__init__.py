@@ -14,7 +14,7 @@ from flask_babel import Babel, _
 #from werkzeug.utils import secure_filename
 #from werkzeug.utils import secure_filename, FileStorage
 from sqlalchemy.orm import aliased
-from sqlalchemy import and_, func
+from sqlalchemy import and_, distinct, func
 
 from config import DOMINIOS_ESPECIFICOS #, IDS_ESCANEO
 
@@ -100,6 +100,34 @@ babel = Babel(app)
 # Configure Babel
 babel.init_app(app, default_locale='es')
 
+def obtener_estado_spider() :
+    
+    global ESTADO_SPIDER
+    ESTADO_SPIDER ="Ejecutándose"
+
+def obtener_fecha_escaneo() :
+    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+   
+    ultima_fecha = (
+        db.session.query(Sumario.hora_inicio, Sumario.hora_fin, Sumario.fecha)    
+        .order_by(Sumario.fecha.desc())
+        .limit(1)
+        .first()  # Utiliza first() en lugar de all() para obtener solo una fila
+    )
+
+    global HORA_FIN, HORA_INICIO, FECHA_ESCANEO
+    
+    if ultima_fecha:
+        HORA_INICIO, HORA_FIN, FECHA_ESCANEO = ultima_fecha
+        
+        print("Fecha scan:")
+        print(FECHA_ESCANEO)
+        print(HORA_INICIO)
+        print(HORA_FIN)
+    else:
+        print("No se encontraron resultados.")
+
+
 def obtener_ultimos_ids_escaneo():
     # Subconsulta para obtener el máximo id para cada dominio
     subconsulta = (
@@ -131,7 +159,6 @@ def obtener_ultimos_ids_escaneo():
 
 
 
-
 # Add JWTManager for token-based authentication
 #jwt = JWTManager(app)
 
@@ -142,6 +169,10 @@ with app.app_context():
     
     # Obtiene los últimos IDs de escaneo y actualiza IDS_ESCANEO
     obtener_ultimos_ids_escaneo()
+    
+    obtener_fecha_escaneo()
+    
+    obtener_estado_spider()
 
 
     if not User.query.first():
