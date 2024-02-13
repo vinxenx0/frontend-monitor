@@ -1446,6 +1446,26 @@ def diccionario():
 # DICCIONARIOS
 #
 
+
+@app.route('/agregar_palabras_bulk', methods=['POST'])
+def agregar_palabras_bulk():
+    data = json.loads(request.data)
+    palabras = data['palabras']  # Obtener la lista de palabras del JSON
+    nuevas_entradas = []
+    for palabra in palabras:
+        if palabra.strip():  # Verificar si la palabra no está en blanco
+            nueva_entrada = Diccionario(palabra=palabra.strip())
+            nuevas_entradas.append(nueva_entrada)
+    db.session.add_all(nuevas_entradas)
+    db.session.commit()
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+    return jsonify({'palabras_diccionario': palabras_diccionario})
+
+
 @app.route('/agregar_palabra', methods=['POST'])
 def agregar_palabra():
     nueva_palabra = request.form['palabra']

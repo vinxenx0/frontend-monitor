@@ -100,16 +100,16 @@ babel = Babel(app)
 # Configure Babel
 babel.init_app(app, default_locale='es')
 
-def obtener_palabras_diccionario():
-    global PALABRAS_DICCIONARIO
-
-    palabras = (
-        db.session.query(Diccionario.id, Diccionario.palabra)
-        .all()
-    )
-
-    PALABRAS_DICCIONARIO = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
-    print(PALABRAS_DICCIONARIO)
+#def obtener_palabras_diccionario():
+#    global PALABRAS_DICCIONARIO
+#
+#    palabras = (
+#        db.session.query(Diccionario.id, Diccionario.palabra)
+#        .all()
+ #   )
+#
+#    PALABRAS_DICCIONARIO = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+#    print(PALABRAS_DICCIONARIO)
 
 
 def obtener_estado_spider() :
@@ -186,7 +186,7 @@ with app.app_context():
     
     obtener_estado_spider()
 
-    obtener_palabras_diccionario()
+    #obtener_palabras_diccionario()
 
 
     if not User.query.first():
