@@ -35,6 +35,8 @@ DOMINIOS_ESPECIFICOS = ["www.mc-mutual.com","mejoratuabsentismo.mc-mutual.com","
 
 SECRET_KEY = 'your_secret_key_here'
 
+URL_BASE = "https://mc-monitor.zonnox.net"
+
 SECRET_KEY = os.environ.get('SECRET_KEY') or 'your_secret_key'
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'your_jwt_secret_key'
 

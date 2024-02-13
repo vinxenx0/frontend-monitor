@@ -87,11 +87,25 @@
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
 
-                                {% set popup = '/offline/' ~ result.dominio ~ '/' ~ result.id ~ '.html' %}
+                                {% set popup = 'offline/' ~ result.dominio ~ '/' ~ result.id ~ '.html' %}
 
-                                <a class="btn btn-info" target="_blank" href="{{popup}}">
+                                <a class="btn btn-info" href="#" onclick="openPopup('{{ url_base }}/{{popup}}')">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </a>
+                                
+                                <script>
+                                    function openPopup(url) {
+                                        // Especifica el tamaño y otras opciones del popup según tus necesidades
+                                        var width = 800;
+                                        var height = 640;
+                                        var left = (window.innerWidth - width) / 2;
+                                        var top = (window.innerHeight - height) / 2;
+                                        var options = 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',resizable=yes,scrollbars=yes';
+                                
+                                        // Abre el popup con las opciones especificadas
+                                        window.open(url, 'popup', options);
+                                    }
+                                </script>
 
                                 <a class="btn btn-info" target="_blank" href="{{ result.pagina }}">
                                     <i class="fa-solid fa-right-from-bracket"></i>
@@ -260,17 +274,7 @@
     dataTable.on('length.dt', updateCustomInfo);
 </script>
 
-<script>
-    function abrirPopup(dominio, Id) {
-        // Construir la URL para la nueva ventana
-        var url = 'https://mc-monitor.zonnox.net/offline/' + dominio + '/' + Id + '.html';
 
-        // Configurar las opciones de la ventana
-        var opcionesVentana = 'width=800,height=600,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=yes';
 
-        // Abrir la nueva ventana
-        window.open(url, 'Popup', opcionesVentana);
-    }
-</script>
 
 {% endblock %}

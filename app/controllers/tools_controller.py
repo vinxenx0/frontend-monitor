@@ -7,8 +7,8 @@ from flask_login import login_required
 from app import app, db
 from sqlalchemy import and_, desc, distinct,func, case, literal, literal_column, text
 from app.models.database import Resultado, Sumario
-from config import DOMINIOS_ESPECIFICOS
-from app import IDS_ESCANEO
+from config import DOMINIOS_ESPECIFICOS, URL_BASE
+from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER
 from sqlalchemy.orm import class_mapper
 from flask import request
 from bs4 import BeautifulSoup
@@ -19,6 +19,16 @@ from urllib.parse import parse_qs, unquote
 from flask import Flask, render_template, request, redirect, url_for, session
 
 
+# Decorador de contexto para pasar variables globales a todas las plantillas
+@app.context_processor
+def inject_global_variables():
+    return dict(
+        fecha_escaneo=FECHA_ESCANEO,
+        hora_inicio=HORA_INICIO,
+        hora_fin=HORA_FIN,
+        estado_spider = ESTADO_SPIDER,
+        url_base = URL_BASE
+    )
 
 # Implementación del filtro fromjson
 def fromjson(value):
@@ -192,12 +202,12 @@ def seo_indexing():
 @login_required
 def seo_resumen():
     
-    dominios_especificos = ["zonnox.net", "mc-mutuadeb.zonnox.net"]
+    # dominios_especificos = ["zonnox.net", "mc-mutuadeb.zonnox.net"]
     
     # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas
     sumarios = (
         db.session.query(Sumario)
-        .filter(Sumario.dominio.in_(dominios_especificos))
+        .filter(Sumario.dominio.in_(DOMINIOS_ESPECIFICOS))
         .all()
     )
     
@@ -209,7 +219,7 @@ def seo_resumen():
             sumario_dict[column.name] = getattr(sumario, column.name)
         sumarios_dict.append(sumario_dict)
 
-    return render_template('resumen.html', sumario=json.dumps(sumarios_dict), dominios=dominios_especificos)
+    return render_template('resumen.html', sumario=json.dumps(sumarios_dict), dominios=DOMINIOS_ESPECIFICOS)
   
 
 @app.route('/velocidad')
