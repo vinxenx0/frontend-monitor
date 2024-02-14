@@ -5,83 +5,16 @@
             <div class="nav">
 
                 <div class="sb-sidenav-menu-heading">Informes</div>
-
-                <a class="nav-link collapsed  {% if request.endpoint == 'informe_resumen_dominio' %}active{% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseArchivo" aria-expanded="false" aria-controls="collapseLayouts">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-chart-simple"></i></div>
-                    Resumen
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                <a class="nav-link {% if request.endpoint == 'informe_resumen_dominio' %}active{% endif %}"
+                    href="/informes/resumen/www.mc-mutual.com">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-chart-simple"></i></i></div>
+                    Res&uacute;menes
                 </a>
-                <div class="collapse" id="collapseArchivo" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="/informes/resumen/www.mc-mutual.com">MC-Mutual</a>
-                        <a class="nav-link" href="/informes/resumen/mejoratuabsentismo.mc-mutual.com">Absentismo</a>
-                        <a class="nav-link" href="/informes/resumen/prevencion.mc-mutual.com">Prevencion</a>
-                    </nav>
-                </div>
 
-<!--
-
-                <a class="nav-link {% if request.endpoint == 'consultas' %} active {% endif %}"
-                    href="{{ url_for('consultas') }}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-                    Informes
-                </a>
-                <span class="nav-link {% if request.endpoint == 'mejoras' %} active {% endif %}"
-                    href="{{ url_for('mejoras') }}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-comments"></i></div>
-                    Sugerencias
-                </span>
--->
-                <!--
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseArchivo" aria-expanded="false" aria-controls="collapseLayouts">
-            <div class="sb-nav-link-icon"><i class="fa-solid fa-inbox"></i></div>
-            Históricos
-            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-        </a>
-        <div class="collapse" id="collapseArchivo" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-            <nav class="sb-sidenav-menu-nested nav">
-                <a class="nav-link" href="#">Semanas</a>
-                <a class="nav-link" href="#">Meses</a>
-                <a class="nav-link" href="#">Años</a>
-            </nav>
-        </div>
-        -->
-                <!--
-        <a class="nav-link" href="/">
-            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-            Otro tipo
-        </a>
-        -->
 
                 {% if is_admin() or current_user.role == 'superadmin' %}
                 <div class="sb-sidenav-menu-heading">Herramientas</div>
-               
-                <a class="nav-link  btn-link btn me-3 {%  if request.endpoint == 'enlaces_rotos_dominio'  %} active {% endif %} "
-                    href="/enlaces-rotos/www.mc-mutual.com">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-link-slash"></i></div>
-                    Enlaces rotos
-                </a>
 
-                <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %} btn-link btn me-3"
-                    href="/ortografia/www.mc-mutual.com">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-pen"></i></div>
-                    Ortografia
-                </a>
-
-
-                <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
-                    href="/analisis-aaa/www.mc-mutual.com">
-                    <div class="sb-nav-link-icon"><i class="fa-brands fa-accessible-icon"></i></div>
-                    WCAG-AA
-                </a>
-
-
-                <!--
-            <a class="nav-link {% if request.endpoint == 'usuarios' %} active {% endif %} btn-link btn me-3" href="{{ url_for('usuarios') }}">
-                <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
-                Usuarios
-            </a>
--->
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseRanks"
                     aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
@@ -92,27 +25,23 @@
                 <div class="collapse" id="collapseRanks" aria-labelledby="headingOne"
                     data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <!-- 
-                        <span class="nav-link {% if request.endpoint == 'seo_health_check' %} active {% endif %}"
-                            href="{{ url_for('seo_health_check') }}">Salud</span>
-                        <span class="nav-link {% if request.endpoint == 'seo_posicionamiento' %} active {% endif %}"
-                            href="{{ url_for('seo_posicionamiento') }}">Posicionamiento</span>
-                        <span class="nav-link {% if request.endpoint == 'seo_keywords' %} active {% endif %}"
-                            href="{{ url_for('seo_keywords') }}">Palabras Clave</span>
-                        -->
-                        <!--
-             <span class="nav-link {% if request.endpoint == 'seo_traffic' %} active {% endif %}" href="{{ url_for('seo_traffic') }}">Tráfico Orgánico</span>
-                    <a class="nav-link {% if request.endpoint == 'seo_competencia' %} active {% endif %}" href="{{ url_for('seo_competencia') }}">Competencia</a>
-                -->
-                <!--
-                        <span class="nav-link {% if request.endpoint == 'seo_backlinks' %} active {% endif %}"
-                            href="{{ url_for('seo_backlinks') }}">Backlinks</span>
-                        <span class="nav-link {% if request.endpoint == 'seo_indexing' %} active {% endif %}"
-                            href="{{ url_for('seo_indexing') }}">Indexación</span>
-                             -->
-                        <a class="nav-link {% if request.endpoint == 'velocidad' %} active {% endif %}"
-                            href="{{ url_for('velocidad') }}">Velocidad</a>
-                   
+                        <a class="nav-link {% if request.endpoint == 'seo_resumen_dominio' %} active {% endif %}"
+                        href="/seo/resumen/www.mc-mutual.com">Resumen</a>
+
+                        <a class="nav-link {% if request.endpoint == 'salud_seo' %} active {% endif %}"
+                        href="/salud-seo/www.mc-mutual.com">Salud SEO</a>
+
+                        <a class="nav-link {% if request.endpoint == 'meta_tags' %} active {% endif %}"
+                        href="/meta-tags/www.mc-mutual.com">Meta Tags</a>
+
+                        <a class="nav-link {% if request.endpoint == 'encabezados' %} active {% endif %}"
+                        href="/encabezados/www.mc-mutual.com">Encabezados</a>
+
+                        <a class="nav-link {% if request.endpoint == 'indexabilidad' %} active {% endif %}"
+                        href="/indexabilidad/www.mc-mutual.com">Indexabilidad</a>
+                       <a class="nav-link {% if request.endpoint == 'velocidad_url' %} active {% endif %}"
+                            href="/velocidad/www.mc-mutual.com">Velocidad</a>
+
                     </nav>
                 </div>
 
@@ -124,24 +53,15 @@
                 </a>
                 <div class="collapse" id="collapseSEO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link {% if request.endpoint == 'enlaces_rotos' %} active {% endif %}"
+                        <a class="nav-link {% if request.endpoint == 'usabilidad_resumen_dominio' %} active {% endif %}"
+                            href=" /usabilidad/resumen/www.mc-mutual.com">Resumen</a>
+
+                        <a class="nav-link {% if request.endpoint == 'enlaces_rotos_dominio' %} active {% endif %}"
                             href="/enlaces-rotos/www.mc-mutual.com">Enlaces rotos</a>
-                            <!--
-                        <span class="nav-link {% if request.endpoint == 'usa_nav' %} active {% endif %}"
-                            href="{{ url_for('usa_nav') }}">Navegación</span>
-                            -->
-                        <!--
-                    <a class="nav-link {% if request.endpoint == 'usa_form' %} active {% endif %}" href="{{ url_for('usa_form') }}">Formularios</a>
-                -->
-                        <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
-                            href="{{ url_for('responsive') }}">Responsive</a>
-                             <!--
-                        <span class="nav-link {% if request.endpoint == 'usa_font_colors' %} active {% endif %}"
-                            href="{{ url_for('usa_font_colors') }}">Fuentes/Colores</span>
-                            -->
-                        <!--
-                    <a class="nav-link {% if request.endpoint == 'usa_w3c' %} active {% endif %}" href="{{ url_for('usa_w3c') }}">Estándares w3c</a>
-                -->
+
+                            <a class="nav-link {% if request.endpoint == 'titulos' %} active {% endif %}"
+                            href="/titulos/www.mc-mutual.com">Titulos</a>
+                    
                     </nav>
                 </div>
 
@@ -153,26 +73,22 @@
                 </a>
                 <div class="collapse" id="collapseAcce" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
+                       
+                        <a class="nav-link {% if request.endpoint == 'accesibilidad_resumen_dominio' %} active {% endif %}"
+                            href=" /accesibilidad/resumen/www.mc-mutual.com">Resumen</a>
+
                         <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
                             href="/analisis-aaa/www.mc-mutual.com">WCAG-AAA</a>
-                            <!-- 
-                        <span class="nav-link {% if request.endpoint == 'acc_images' %} active {% endif %}"
-                            href="{{ url_for('acc_images') }}">Imágenes</span>
-                            -->
-                        <!-- 
-                <a class="nav-link {% if request.endpoint == 'acc_sintax' %} active {% endif %}" href="{{ url_for('acc_sintax') }}">Sintaxis</a>
-                <a class="nav-link {% if request.endpoint == 'acc_structure' %} active {% endif %}" href="{{ url_for('acc_structure') }}">Estructura</a>
-               
-                <a class="nav-link {% if request.endpoint == 'acc_media' %} active {% endif %}" href="{{ url_for('acc_media') }}">Multimedia</a>
-                 -->
-                 <!-- 
-                        <span class="nav-link {% if request.endpoint == 'acc_contraste' %} active {% endif %}"
-                            href="{{ url_for('acc_contraste') }}">Contraste</span>
-                            -->
-                        <!-- 
-                <a class="nav-link {% if request.endpoint == 'acc_lectores' %} active {% endif %}" href="{{ url_for('acc_lectores') }}">Lectores</a>
-                <a class="nav-link {% if request.endpoint == 'acc_comp' %} active {% endif %}" href="{{ url_for('acc_comp') }}">Compatibilidad</a>
-                -->
+
+                            <a class="nav-link {% if request.endpoint == 'legibilidad' %} active {% endif %}"
+                            href="/legibilidad/www.mc-mutual.com">Legibilidad</a>
+
+                            <a class="nav-link {% if request.endpoint == 'imagenes' %} active {% endif %}"
+                            href="/imagenes/www.mc-mutual.com">Im&aacute;genes</a>
+
+                            <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
+                            href="/responsive/www.mc-mutual.com">Responsive</a>
+                    
 
                     </nav>
                 </div>
@@ -189,13 +105,10 @@
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %}"
                             href="/ortografia/www.mc-mutual.com">An&aacute;lisis</a>
-                            <!--
-                        <a class="nav-link {% if request.endpoint == 'dicc_spanish' %} active {% endif %}"
-                            href="{{ url_for('dicc_spanish') }}">Español</a>
-                        <a class="nav-link {% if request.endpoint == 'dicc_catalan' %} active {% endif %}"
-                            href="{{ url_for('dicc_catalan') }}">Catalán</a>
--->
 
+                        <a class="nav-link {% if request.endpoint == 'diccionario' %} active {% endif %}"
+                            href="{{ url_for('diccionario') }}">Diccionarios</a>
+                
                     </nav>
                 </div>
 
@@ -210,20 +123,10 @@
                 <div class="collapse" id="collapseMonitores" aria-labelledby="headingOne"
                     data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <!--
-                <a class="nav-link {% if request.endpoint == 'diag_domains' %} active {% endif %}" href="{{ url_for('diag_domains') }}">Dominios</a>
-                -->
-                <!--
-                        <span class="nav-link {% if request.endpoint == 'diag_spam' %} active {% endif %}"
-                            href="{{ url_for('diag_spam') }}">SPAM/BLs</span>
-                        <span class="nav-link {% if request.endpoint == 'diag_gdpr' %} active {% endif %}"
-                            href="{{ url_for('diag_gdpr') }}">GDPR/LSSI</span>
-                        <span class="nav-link {% if request.endpoint == 'diag_textos_legales' %} active {% endif %}"
-                            href="{{ url_for('diag_textos_legales') }}">Textos Legales</span>
-                            -->
-                        <!--
-                <a class="nav-link {% if request.endpoint == 'diag_copyright' %} active {% endif %}" href="{{ url_for('diag_copyright') }}">Propiedad intelectual</a>
-                -->
+
+                        <a class="nav-link {% if request.endpoint == 'seguridad' %} active {% endif %}"
+                            href="/seguridad/www.mc-mutual.com"> Seguridad</a>
+
                     </nav>
                 </div>
 
@@ -231,37 +134,23 @@
 
                 {% if current_user.role == 'superadmin' %}
                 <div class="sb-sidenav-menu-heading">Sistema</div>
-           
-            <!--
-                <span class="nav-link" href="{{ url_for('tools_config') }}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-wrench"></i></div>
-                    Configuración
-                </span>
- -->
+
+         
+ <a class="nav-link btn-link btn me-3" href="{{ url_for('usuarios') }}">
+    <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div>
+    Configuracion
+</a>
+
                 <a class="nav-link btn-link btn me-3" href="{{ url_for('usuarios') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
                     Usuarios
                 </a>
-                <!--
-        <a class="nav-link" href="{{ url_for('services') }}">
-            <div class="sb-nav-link-icon"><i class="fa-solid fa-server"></i></div>
-            Nube
-        </a>
-         
-        <a class="nav-link" href="{{ url_for('view_logs') }}">
-            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-            Logs
-        </a>
-        <a class="nav-link" href="{{ url_for('view_system') }}">
-            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-            Sistema
-        </a>
-        -->
-
+   
 
                 {% endif %}
             </div>
         </div>
+        <!--
         <div class="sb-sidenav-footer">
             <div class="small">
                 <ul class="navbar-nav d-none d-md-inline-block ms-auto me-0 me-md-3 my-2 my-md-0">
@@ -282,6 +171,7 @@
                 </ul>
             </div>
         </div>
+        -->
     </nav>
 </div>
 {% endif %}

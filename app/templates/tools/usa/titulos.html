@@ -1,0 +1,265 @@
+<!-- app/templates/usa/titulos.html -->
+{% extends 'tool_base.html' %}
+
+{% block title %}Accesibilidad imagenes{% endblock %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo >= 200 %}
+
+{% elif intervalo >= 100 %}
+
+{% elif intervalo >= 20 %}
+
+{% endif %}
+{% endmacro %}
+
+{% block head %}
+
+<h1 class="mt-4">T&iacute;tulos</h1>
+
+<ol class="breadcrumb mb-4">
+   <li class="breadcrumb-item active">T&iacute;tulos de paginas</li>
+</ol>
+
+
+
+{% endblock %}
+
+{% if dominio_url %}
+{% set dominios_ordenados_dos = [dominio_url] %}
+{% else %}
+{% set dominios_ordenados_dos = dominios_ordenados %}
+{%endif%}
+
+{% block content %}
+
+
+<div class="row">
+   <div class="card mb-4">
+      <div class="card-header">
+         <i class="fas fa-table me-1"></i>
+         Analisis titulos de pagina
+      </div>
+      <div class="card-body">
+
+         <table id="datatablesSimple" class="display">
+            <thead>
+               <tr>
+                <!--
+                       Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.e_title,
+            Resultado.title_long,
+            Resultado.title_short,
+            Resultado.id,
+            Resultado.title_duplicate,
+            Resultado.titulos_pagina_menos_30_caracteres,
+            Resultado.titulos_pagina_mas_60_caracteres,
+            Resultado.titulos_pagina_igual_h1,
+            Resultado.titulos_pagina_duplicado,
+            Resultado.c_title
+                -->
+                  <th>fecha</th>
+                  <th>dirección</th>
+                  <th>e_title</th>
+                  <th>title_short</th>
+                  <th>title_long</th>
+                  <th>title_duplicate</th>
+                  <th>titulos_pagina_menos_30_caracteres</th>
+                  <th>titulos_pagina_mas_60_caracteres</th>
+                  <th>titulos_pagina_igual_h1</th>
+                  <th>titulos_pagina_duplicado</th>
+                  <th>tipo</th>
+                  <th><i class="fas fa-lightbulb"></i></th>
+                  
+               </tr>
+            </thead>
+            <tfoot>
+               <tr>
+                <th>fecha</th>
+                <th>dirección</th>
+                <th>e_title</th>
+                <th>title_short</th>
+                <th>title_long</th>
+                <th>title_duplicate</th>
+                <th>titulos_pagina_menos_30_caracteres</th>
+                <th>titulos_pagina_mas_60_caracteres</th>
+                <th>titulos_pagina_igual_h1</th>
+                <th>titulos_pagina_duplicado</th>
+                <th>tipo</th>
+                <th><i class="fas fa-lightbulb"></i></th>
+               </tr>
+            </tfoot>
+            <tbody>
+               {% for result in resultados %}
+               <tr>
+                  <td>{{ result.fecha_escaneo }}</td>
+                  <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina }}</a>
+                  </td>
+                  <td>{% if result.e_title != 1 or result.e_title is none %}<i
+                        class="fa-solid fa-lg fa-circle-exclamation"></i>{% else %}<i
+                        class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
+                  <td>{{ result.title_short }}</td>
+                  <td>{{ result.title_long }}</td>
+                  <td>{% if result.titulos_pagina_duplicado != 0 or result.titulos_pagina_duplicado is none %}<i
+                    class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i
+                    class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
+                  <td>{% if result.titulos_pagina_menos_30_caracteres != 0 or result.titulos_pagina_menos_30_caracteres is none %}<i
+                        class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i
+                        class="fa-solid  fa-lg fa-check"></i>{% endif %}</td>
+                  <td>{% if result.titulos_pagina_mas_60_caracteres != 0 or result.titulos_pagina_mas_60_caracteres is none %}<i
+                            class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i
+                            class="fa-solid  fa-lg fa-check"></i>{% endif %}</td>
+                            <td>{% if result.titulos_pagina_igual_h1 != 0 or result.response_valid is none %}<i
+                                class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i
+                                class="fa-solid  fa-lg fa-check"></i>{% endif %}</td>
+                  
+                  <td>{% if result.title_duplicate != 0 or result.title_duplicate is none %}<i
+                        class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i
+                        class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
+                  
+                  <td>
+                     <small>{{ result.tipo_documento}}</small>
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                       data-bs-target="#infoModal{{ result.id }}">
+                       <i class="fas fa-plus"></i>
+                    </button>
+                 </td>
+               </tr>
+               {% if result.responsive_valid is not none and result.responsive_valid != 1 %}
+
+               <div class="modal fade" id="infoModal{{ result.id }}" tabindex="-1"
+                  aria-labelledby="infoModalLabel{{ result.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                     <div class="modal-content bg-info text-dark">
+                        <div class="modal-header">
+                           <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias link
+                              roto#{{ result.id }}</h5>
+
+                           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                              aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                           <pre>{{ result.meta_tags | tojson(indent=2) }}</pre>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               {% endif %}
+               {% endfor %}
+            </tbody>
+         </table>
+
+      </div>
+   </div>
+</div>
+
+
+   <script>
+      document.addEventListener('DOMContentLoaded', function () {
+         // Inicializamos DataTables
+         const dataTable = $('#datatablesSimple').DataTable({
+            "language": {
+               "sEmptyTable": "No hay datos disponibles en la tabla",
+               "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+               "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+               "sInfoFiltered": "(filtrado de un total de _MAX_ entradas)",
+               "sInfoPostFix": "",
+               "sInfoThousands": ",",
+               "sLengthMenu": "Mostrar _MENU_ entradas",
+               "sLoadingRecords": "Cargando...",
+               "sProcessing": "Procesando...",
+               "sSearch": "Buscar:",
+               "sZeroRecords": "No se encontraron coincidencias",
+               "oPaginate": {
+                  "sFirst": "Primero",
+                  "sLast": "Último",
+                  "sNext": "Siguiente",
+                  "sPrevious": "Anterior"
+               },
+               "oAria": {
+                  "sSortAscending": ": Activar para ordenar la columna en orden ascendente",
+                  "sSortDescending": ": Activar para ordenar la columna en orden descendente"
+               },
+               "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas", // Agregamos el mensaje de información arriba
+            }, responsive: true,
+            columns: [
+               { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
+               null, null, null, null, null, null, null, null, null, null, null
+            ],
+            colReorder: {
+               realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real
+            }
+         });
+
+         // Configuramos el evento de cambio para el dropdown y campos de fecha
+         $('#targetUrlDropdown, #startDate, #endDate').change(updateFilter);
+
+         // Configuramos el evento de click para el botón de reset
+         $('#resetFilters').click(function () {
+            // Limpiamos los valores de los controles y actualizamos el filtro
+            $('#targetUrlDropdown').val('');
+            $('#startDate').val('');
+            $('#endDate').val('');
+            updateFilter();
+         });
+
+
+
+         function updateFilter() {
+            var selectedTarget = $('#targetUrlDropdown').val();
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+
+            // Aplicamos el filtro de URL
+            dataTable.column(1).search(selectedTarget).draw();
+
+
+
+            // Filtramos por rango de fechas
+            if (startDate && endDate) {
+               dataTable.draw();
+               var columnIndex = 0; // Índice de la columna de fecha
+               var startMoment = moment(startDate, 'YYYY-MM-DD');
+               var endMoment = moment(endDate, 'YYYY-MM-DD');
+
+               // Filtramos las filas según el rango de fechas
+               $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                  var dateValue = moment(data[columnIndex], 'YYYY-MM-DD');
+                  return dateValue.isBetween(startMoment, endMoment, null, '[]');
+               });
+
+               // Redibujamos la tabla
+               dataTable.draw();
+
+               // Eliminamos la función de filtrado para que no interfiera con futuros cambios
+               $.fn.dataTable.ext.search.pop();
+            } else {
+               // No hay rango de fechas, mostramos todas las filas
+               dataTable.draw();
+            }
+         }
+      });
+
+
+      // Agregamos un elemento HTML personalizado arriba de la tabla
+      const customInfo = $('<div id="customInfo"></div>');
+      $('#datatablesSimple_wrapper').prepend(customInfo);
+
+      function updateCustomInfo() {
+         const info = dataTable.page.info();
+         customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
+      }
+
+      // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
+      dataTable.on('draw.dt', updateCustomInfo);
+      dataTable.on('length.dt', updateCustomInfo);
+   </script>
+
+
+   {% endblock %}

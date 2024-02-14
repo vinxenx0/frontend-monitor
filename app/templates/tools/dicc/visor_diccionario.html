@@ -1,145 +1,360 @@
 <!-- app/templates/tools/dicc/visor_diccinario.html -->
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block head %}
+<head>
 
-{% endblock %}
+    <title>{% block title %}Diccionarios{% endblock %}</title>
+    <meta name="description" content="" />
 
-{% block content %}
-<h1 class="mt-4">Diccionario</h1>
+    {% include 'inc/header.html' %}
 
-<ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">
-        <h5>Palabras excluidas en los análisis</h5>
-    </li>
-</ol>
-<button id="addRow">Add Row</button>
+</head>
 
-<form id="bulkForm">
-    <textarea id="bulkInput" rows="4" cols="50" placeholder="Ingresa las palabras una por línea"></textarea>
-    <button type="submit">Agregar Palabras en Bulk</button>
-</form>
+<body class="sb-nav-fixed">
 
-<table id="example" class="display">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Palabra</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Agrega filas según las palabras en PALABRAS_DICCIONARIO -->
-        {% for palabra in palabras_diccionario %}
-        <tr>
-            <td>{{ palabra.id }}</td>
-            <td contenteditable="true" class="editable" data-field="palabra">{{ palabra.palabra }}</td>
-            <td>
-                <button class="edit-row" data-rowid="{{ palabra.id }}">Editar Palabra</button>
-                <button class="delete-row" data-rowid="{{ palabra.id }}">Delete</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    {% include 'inc/top.html' %}
 
-<script>
-$(document).ready(function () {
-    var table = $('#example').DataTable();
+    <div id="layoutSidenav">
 
-    $('#addRow').on('click', function () {
-        var nuevaPalabra = prompt('Introduce una nueva palabra:');
-        if (nuevaPalabra) {
-            $.ajax({
-                url: '/agregar_palabra',
-                method: 'POST',
-                data: { palabra: nuevaPalabra },
-                success: function (response) {
-                    actualizarTabla(response.palabras_diccionario);
+        {% include 'inc/nav.html' %}
+
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+
+                    <h1 class="mt-4">Diccionario</h1>
+
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active">
+                            <h5>Palabras excluidas en los análisis</h5>
+                        </li>
+                    </ol>
+
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="custom-form card">
+
+                                <h5 class="card-title mb-3">Añadir Lote</h5>
+
+                                <form id="bulkForm">
+                                    
+                                    <textarea id="bulkInput" rows="4" cols="50"
+                                        placeholder="Ingresa las palabras una por línea"></textarea>
+
+                                        <div>
+                                            <select id="bulkIdioma" class="mt-4 btn btn-primary">
+                                                <option value="Spanish">Spanish</option>
+                                                <option value="Catalonian">Catalonian</option>
+                                            </select>
+    
+                                        </div>
+
+                                    <div>
+                                        <button class="mt-4 btn btn-primary" type="submit">Agregar Palabras en
+                                            Bulk</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <div class="custom-form card">
+
+                                <h5 class="card-title mb-3">Nueva palabra</h5>
+
+                                <form id="addWordForm">
+                                    
+                                    <div>
+                                        <input type="text" id="nuevaPalabra" size="50" name="nuevaPalabra" required />
+
+                                    </div>
+                                    <select id="selectIdioma" name="idioma" class="mt-4 btn btn-primary">
+                                        <option value="Spanish">Spanish</option>
+                                        <option value="Catalonian">Catalonian</option>
+                                        <!-- Agrega más opciones según sea necesario -->
+                                    </select>
+
+                                    <div>
+                                        <button class="mt-4 btn btn-primary" type="submit">Agregar Palabra</button>
+
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+                        <div class="col-md-2 mb-4">
+                            <div class="card">
+                                <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
+                                    <h3 class="display-4" id="porcentajeEnlacesDato"><span
+                                            id="porcentajeEnlacesRotos_">{{indicador_1}}</span></h3>
+                                    <p class="lead text-dark">total palabras</p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">Palabras excluidas</small>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!--
+            <div class="col-md-3 mb-4">
+                <canvas id="doughnutChart_indicador" width="250px" height="250px"></canvas>
+            </div>
+        -->
+                    </div>
+
+
+
+
+
+                    <table id="example" class="display">
+
+                        <thead>
+
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Palabra</th>
+                                <th>Idioma</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Agrega filas según las palabras en PALABRAS_DICCIONARIO -->
+                            {% for palabra in palabras_diccionario %}
+                            <tr>
+                                <td>{{ palabra.id }} <span id="loadingSpinner"
+                                        class="spinner-border spinner-border-sm d-none" role="status"
+                                        aria-hidden="true"></span>
+                                </td>
+                                <td contenteditable="true" class="editable" data-field="palabra">{{ palabra.palabra }}
+                                </td>
+                                <td class="editable-dropdown" data-field="idioma">
+                                    <select name="idioma" id="selectIdioma">
+                                        <option value="Spanish" {{ 'selected' if palabra.idioma=='Spanish' else '' }}>
+                                            Spanish</option>
+                                        <option value="Catalonian" {{ 'selected' if palabra.idioma=='Catalonian' else ''
+                                            }}>Catalonian
+                                        </option>
+                                        <!-- Agrega más opciones según sea necesario -->
+                                    </select>
+                                </td>
+
+                                <td>
+                                    <button class="delete-row" data-rowid="{{ palabra.id }}">Delete</button>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </main>
+
+
+            {% include 'inc/footer.html' %}
+
+
+
+        </div>
+
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable({
+                "columns": [
+                    null,  // Para la primera columna (ID)
+                    null,  // Para la segunda columna (Palabra)
+                    null,
+                    { "orderable": false }  // Para la tercera columna (Acción)
+                ]
+            });
+
+
+
+            $('#addRow').on('click', function () {
+                var nuevaPalabra = prompt('Introduce una nueva palabra:');
+                var idioma = $('#selectIdioma').val(); // Obtén el valor seleccionado del elemento select
+                if (nuevaPalabra) {
+                    $.ajax({
+                        url: '/agregar_palabra',
+                        method: 'POST',
+                        data: { palabra: nuevaPalabra, idioma: idioma },
+                        success: function (response) {
+                            actualizarTabla(response.palabras_diccionario);
+                        }
+                    });
                 }
             });
-        }
-    });
-
-    $('#bulkForm').submit(function (event) {
-    event.preventDefault();
-    var palabrasBulk = $('#bulkInput').val().split('\n');  // Convertir a lista de palabras
-    // Convertir la lista de palabras a JSON
-    var jsonData = JSON.stringify({ palabras: palabrasBulk });
-    $.ajax({
-        url: '/agregar_palabras_bulk',
-        method: 'POST',
-        data: jsonData,  // Enviar los datos como JSON
-        contentType: 'application/json',  // Indicar que el tipo de contenido es JSON
-        success: function (response) {
-            actualizarTabla(response.palabras_diccionario);
-        }
-    });
-});
 
 
+            // Evento submit del formulario
+            $('#addWordForm').submit(function (event) {
+                event.preventDefault();
+                var nuevaPalabra = $('#nuevaPalabra').val();
+                var idioma = $('#selectIdioma').val();
 
-    $('#example').on('dblclick', 'td.editable', function () {
-        $(this).attr('contenteditable', true).focus();
-    });
+                // Verificar si la palabra no está vacía
+                if (nuevaPalabra.trim() !== "") {
+                    $.ajax({
+                        url: '/agregar_palabra',
+                        method: 'POST',
+                        data: { palabra: nuevaPalabra, idioma: idioma },
+                        success: function (response) {
+                            actualizarTabla(response.palabras_diccionario);
+                        }
+                    });
+                }
+            });
 
-    $('#example').on('blur', 'td[contenteditable="true"]', function () {
-        var id = $(this).closest('tr').find('td:first').text();
-        var palabra = $(this).text();
-        var data = { id: id, palabra: palabra };
-        $.ajax({
-            url: '/editar_palabra',
-            method: 'POST',
-            data: data,
-            success: function (response) {
-                actualizarTabla(response.palabras_diccionario);
+            $('#bulkForm').submit(function (event) {
+                event.preventDefault();
+                var palabrasBulk = $('#bulkInput').val().split('\n');  // Convertir a lista de palabras
+                var idioma = $('#bulkIdioma').val();  // Obtén el valor seleccionado del elemento select
+                // Convertir la lista de palabras a JSON
+                var jsonData = JSON.stringify({ palabras: palabrasBulk, idioma: idioma });
+                $.ajax({
+                    url: '/agregar_palabras_bulk',
+                    method: 'POST',
+                    data: jsonData,  // Enviar los datos como JSON
+                    contentType: 'application/json',  // Indicar que el tipo de contenido es JSON
+                    success: function (response) {
+                        actualizarTabla(response.palabras_diccionario);
+                    }
+                });
+            });
+
+
+            // En la función editar_palabra, incluir el campo "idioma"
+            $('#example').on('dblclick', 'td.editable', function () {
+                $(this).attr('contenteditable', true).focus();
+            });
+
+            // En la función blur, muestra el spinner al inicio y ocúltalo al final
+            $('#example').on('blur', 'td.editable', function () {
+                var row = $(this).closest('tr');
+                var spinner = row.find('.spinner-border');
+
+                // Muestra el spinner
+                spinner.removeClass('d-none');
+
+                var palabra = $(this).text();
+                var id = row.find('td:first').text();
+                var idioma = row.find('td:nth-child(3) select option:selected').val();
+
+                var data = { id: id, palabra: palabra, idioma: idioma };
+
+                $.ajax({
+                    url: '/editar_palabra',
+                    method: 'POST',
+                    data: data,
+                    success: function (response) {
+                        actualizarTabla(response.palabras_diccionario);
+                        // Oculta el spinner al final
+                        spinner.addClass('d-none');
+                    }
+                });
+
+                $(this).attr('contenteditable', false);
+            });
+
+            // En la función change, muestra el spinner al inicio y ocúltalo al final
+            $('#example').on('change', 'td.editable-dropdown select', function () {
+                var row = $(this).closest('tr');
+                var spinner = row.find('.spinner-border');
+
+                // Muestra el spinner
+                spinner.removeClass('d-none');
+
+                var palabra = row.find('td:nth-child(2)').text();
+                var id = row.find('td:first').text();
+                var idioma = $(this).find('option:selected').val();
+
+                var data = { id: id, palabra: palabra, idioma: idioma };
+
+                $.ajax({
+                    url: '/editar_palabra',
+                    method: 'POST',
+                    data: data,
+                    success: function (response) {
+                        actualizarTabla(response.palabras_diccionario);
+                        // Oculta el spinner al final
+                        spinner.addClass('d-none');
+                    }
+                });
+            });
+
+            // Función para inicializar los selectores de idioma
+            function initializeSelects() {
+                $('#example td.editable-dropdown select').each(function () {
+                    var selectedValue = $(this).closest('tr').find('td:nth-child(3)').text().trim();
+                    $(this).val(selectedValue);
+                });
             }
-        });
-    });
 
-    function actualizarTabla(palabras_diccionario) {
-        table.clear().draw(); // Limpiar y redibujar la tabla
-        palabras_diccionario.forEach(function (palabra) {
-            table.row.add([palabra.id, palabra.palabra, '<button class="edit-row" data-rowid="' + palabra.id + '">Editar Palabra</button><button class="delete-row" data-rowid="' + palabra.id + '">Delete</button>']).draw();
-        });
+            function actualizarTabla(palabras_diccionario) {
+                table.clear().draw(); // Limpiar y redibujar la tabla
+                palabras_diccionario.forEach(function (palabra) {
+                    // Agregar fila a la tabla
+                    var row = table.row.add([
+                        palabra.id + ' <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>',
+                        palabra.palabra,
+                        '<select name="idioma" class="selectIdioma">' +
+                        '<option value="Spanish" ' + (palabra.idioma === 'Spanish' ? 'selected' : '') + '>Spanish</option>' +
+                        '<option value="Catalonian" ' + (palabra.idioma === 'Catalonian' ? 'selected' : '') + '>Catalonian</option>' +
+                        '</select>',
+                        '<button class="delete-row" data-rowid="' + palabra.id + '">Delete</button>'
+                    ]).draw().node();
 
-        // Después de actualizar la tabla, asegúrate de que las celdas sigan siendo editables
-        $('#example td.editable').attr('contenteditable', true);
-    }
+                    // Agregar los atributos data-field a la fila después de dibujarla
+                    $(row).find('td:eq(2)').attr('data-field', 'idioma');
+                    $(row).find('td:eq(2)').attr('class', 'editable-dropdown');
+                    $(row).find('td:eq(1)').attr('data-field', 'palabra');
+                    $(row).find('td:eq(1)').attr('contenteditable', 'true');
+                    $(row).find('td:eq(1)').attr('class', 'editable');
 
-    $('#example').on('click', '.delete-row', function () {
-        var rowid = $(this).closest('tr').find('td:first').text();
-        var row = $(this).closest('tr');
-        if (confirm('¿Estás seguro de que quieres borrar esta palabra?')) {
-            $.ajax({
-                url: '/borrar_palabra/' + rowid,
-                method: 'DELETE',
-                success: function (response) {
-                    actualizarTabla(response.palabras_diccionario);
+                });
+
+                // Después de actualizar la tabla, asegúrate de que las celdas sigan siendo editables
+                $('#example td.editable').attr('contenteditable', true);
+
+                // Inicializar los selectores de idioma
+                //initializeSelects();
+            }
+
+
+
+            $('#example').on('click', '.delete-row', function () {
+                var rowid = $(this).closest('tr').find('td:first').text();
+                var row = $(this).closest('tr');
+                if (confirm('¿Estás seguro de que quieres borrar esta palabra?')) {
+                    $.ajax({
+                        url: '/borrar_palabra/' + rowid,
+                        method: 'DELETE',
+                        success: function (response) {
+                            actualizarTabla(response.palabras_diccionario);
+                        }
+                    });
                 }
             });
-        }
-    });
+        });
 
-    $('#example').on('click', '.edit-row', function () {
-        var rowid = $(this).data('rowid');
-        var palabra = $(this).closest('tr').find('td:eq(1)').text(); // Obtiene la palabra de la segunda columna
-        var nuevaPalabra = prompt('Editar Palabra:', palabra);
-        if (nuevaPalabra !== null) {
-            var data = { id: rowid, palabra: nuevaPalabra };
-            $.ajax({
-                url: '/editar_palabra',
-                method: 'POST',
-                data: data,
-                success: function (response) {
-                    actualizarTabla(response.palabras_diccionario);
-                }
-            });
-        }
-    });
+    </script>
+</body>
 
-});
-
-</script>
-
-{% endblock %}
+</html>

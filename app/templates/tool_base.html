@@ -50,11 +50,11 @@
                             </div>
                         </div>
 
-                        
+
 
                         <div class="col-md-6 mb-4">
                             <div class="row">
-                               
+
                                 <div class="col-md-4 mb-4">
                                     <div class="card">
                                         <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
@@ -70,14 +70,15 @@
 
 
                                 <div class="col-md-4 mb-4">
-                                    <div class="card">
+                                    <div
+                                        class="card {% if indicador_2 > 50 %} bg-danger {% elif indicador_2 > 25 %} bg-warning {%else%} bg-success{%endif%}">
                                         <div class="card-body text-center">
-                                            <h3 class="display-4"><span
+                                            <h3 class="display-4 {% if indicador_2 > 50 %} text-light {%endif%}"><span
                                                     id="totalEnlacesRotos_">{{"%.2f"|format(indicador_2)}}%</span></h3>
-                                            <p class="lead">totales</p>
+                                            <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}">totales</p>
                                         </div>
                                         <div class="card-footer">
-                                            <small class="text-muted">Total</small>
+                                            <small class="{% if indicador_2 > 50 %} text-light {%endif%}">Total</small>
                                         </div>
                                     </div>
                                 </div>
@@ -250,34 +251,34 @@
     {% block scripts %} {% endblock %}
 
 
-<script>
-    var dominios_ordenados = {{ dominios_ordenados_dos | tojson    }};
+    <script>
+        var dominios_ordenados = {{ dominios_ordenados_dos | tojson    }};
 
-    var color1 = 'rgb(0, 91, 114)';
-    var color2 = 'rgb(249, 176, 0)';
+        var color1 = 'rgb(0, 91, 114)';
+        var color2 = 'rgb(249, 176, 0)';
 
-    // Configuración de los gráficos doughnut
-    var doughnutConfig_www = {
-        type: 'doughnut',
-        data: {
-           // labels: ['Errores', 'Total Páginas'],
-            datasets: [{
-                data: [],
-                backgroundColor: [color2, color1], //['rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'],
-                borderColor: color1,
-                borderWidth: 1
-            }]
-        }
-    };
+        // Configuración de los gráficos doughnut
+        var doughnutConfig_www = {
+            type: 'doughnut',
+            data: {
+                // labels: ['Errores', 'Total Páginas'],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [color2, color1], //['rgba(255, 99, 132, 0.5)', 'rgba(255, 206, 86, 0.5)'],
+                    borderColor: color1,
+                    borderWidth: 1
+                }]
+            }
+        };
 
-    var grafico_indicador = JSON.parse(JSON.stringify(doughnutConfig_www));
+        var grafico_indicador = JSON.parse(JSON.stringify(doughnutConfig_www));
 
-    grafico_indicador.data.datasets[0].data = [{{indicador_1}}, {{indicador_3 }}];
+        grafico_indicador.data.datasets[0].data = [{{ indicador_1 }}, {{ indicador_3 }}];
 
-    var ctxDoughnut_total = document.getElementById('doughnutChart_indicador').getContext('2d');
-    new Chart(ctxDoughnut_total, grafico_indicador);
+        var ctxDoughnut_total = document.getElementById('doughnutChart_indicador').getContext('2d');
+        new Chart(ctxDoughnut_total, grafico_indicador);
 
-</script>
+    </script>
 
 </body>
 

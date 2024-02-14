@@ -1,0 +1,1289 @@
+<!-- app/templates/tools/usa/resumen_usa.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+
+<style>
+  td.section-header {
+    background-color: #005b72;
+    color: #f9b000;
+    font-size: large;
+    font-weight: bolder;
+  }
+
+  .progreso {
+    width: 10%;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    height: 20px !important;
+    /* Puedes ajustar el valor según tus necesidades */
+    overflow: hidden;
+    /* Para ocultar cualquier contenido que pueda desbordar */
+
+  }
+
+  .prog-verde {
+    background: linear-gradient(90deg, #28a745 0%, #28a745 100%);
+  }
+
+  .prog-amarillo {
+    background: linear-gradient(90deg, #ffc107 0%, #ffc107 100%);
+  }
+
+  .prog-rojo {
+    background: linear-gradient(90deg, #dc3545 0%, #dc3545 100%);
+  }
+</style>
+
+<h1 class="mt-4">&Uacute;ltimo Resumen</h1>
+<h3 class="mt-4">{{solo_uno}}</h3>
+
+<ol class="breadcrumb mb-4">
+  <li class="breadcrumb-item active">Informe general del último scan</li>
+
+</ol>
+
+<div class="row mt-4">
+  {% set total_porcentaje_general = 0 %}
+  {% set total_porcentaje_seccion = 0 %}
+  {% set total_porcentaje_seo = 0 %}
+  {% set total_porcentaje_usabilidad = 0 %}
+  {% set total_porcentaje_accesibilidad = 0 %}
+  {% set total_porcentaje_otros_diagnosticos = 0 %}
+
+
+  <div class="row mt-4">
+    {% for dominio_id in dominios_ordenados %}
+    {% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
+    {% set stat_ayer = resumen_ayer %}
+    {% set stat_quince = resumen_quince %}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <table class="table mb-3">
+            <tbody>
+              <!-- Sección SEO -->
+              <tr class="table-info">
+                <td colspan="6" class="section-header"><i class="fas fa-chart-area"></i> SEO </td>
+
+              </tr>
+
+              <tr>
+                <td>Páginas</td>
+                <td>{{ "%0.0f"|format(stat.total_paginas or 0) }}</td>
+                <td>
+                  ({{ "%0.0f"|format(stat.total_paginas / stat.total_paginas * 100) }}%)
+                </td>
+
+                <td>
+                  {% set variacion = stat.total_paginas - (stat_ayer.total_paginas or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-success"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-danger"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-success"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-danger"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_paginas is not none and (stat.total_paginas / stat.total_paginas) * 100 == 100 %} prog-verde
+                  {% elif stat.total_paginas is not none and (stat.total_paginas / stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_paginas is not none and
+                  (stat.total_paginas / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+
+
+
+              <tr>
+                <td>Duración</td>
+                <td>{{ stat.duracion_total or 0}}</td>
+                <td>
+                  ({{ "%0.2f"|format(stat.duracion_total/stat.total_paginas) }}%)
+                </td>
+                <td>
+                  {% set variacion = stat.duracion_total - (stat_ayer.duracion_total or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.duracion_total is not none and (stat.duracion_total / stat.total_paginas) * 100 == 100 %} prog-verde
+                {% elif stat.duracion_total is not none and (stat.duracion_total/ stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                </td>
+
+                {% set total_porcentaje_seo = total_porcentaje_seo + (stat.duracion_total is not none and
+                (stat.duracion_total / stat.total_paginas) or 0) %}
+
+              </tr>
+
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>HTML Valido</td>
+                <td>{{ stat.html_valid_count or 0}}</td>
+                <td>
+                  ({{ "%0.2f"|format(stat.html_valid_count / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = stat.html_valid_count - (stat_ayer.html_valid_count or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-success"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-danger"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-success"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-danger"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.html_valid_count  is not none and (stat.html_valid_count  / stat.total_paginas) * 100 == 100 %} prog-verde
+                {% elif stat.html_valid_count is not none and (stat.html_valid_count  / stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.html_valid_count is not none and
+                  (stat.html_valid_count / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>Contenido indexable</td>
+                <td>{{ stat.content_valid_count or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format(stat.content_valid_count / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = stat.content_valid_count - (stat_ayer.content_valid_count or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-success"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-danger"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-success"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-danger"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.content_valid_count is not none and (stat.content_valid_count / stat.total_paginas) * 100 == 100 %} prog-verde
+                {% elif stat.content_valid_count is not none and (stat.content_valid_count / stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.content_valid_count is not none and
+                  (stat.content_valid_count / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+
+
+              </tr>
+              <tr>
+                <td>Peso Total </td>
+                <td>{{ stat.peso_total_paginas or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format(stat.peso_total_paginas / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = stat.peso_total_paginas - (stat_ayer.peso_total_paginas or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.peso_total_paginas is not none and (stat.peso_total_paginas / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.peso_total_paginas is not none and (stat.peso_total_paginas / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.peso_total_paginas is not none and
+                  (stat.peso_total_paginas / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>Paginas Responsive</td>
+                <td>{{ stat.responsive_valid_count or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format(stat.responsive_valid_count / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = stat.responsive_valid_count - (stat_ayer.responsive_valid_count or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-success"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-danger"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-success"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-danger"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.responsive_valid_count  is not none and (stat.responsive_valid_count / stat.total_paginas) * 100 == 100 %} prog-verde
+                {% elif stat.responsive_valid_count  is not none and (stat.responsive_valid_count  / stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.responsive_valid_count is not none and
+                  (stat.responsive_valid_count / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>WACGA AAA cumplen</td>
+                <td>{{ stat.valid_aaaa_pages or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format(stat.valid_aaaa_pages / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = stat.valid_aaaa_pages - (stat_ayer.total_paginas or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-success"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-danger"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-success"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-danger"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.valid_aaaa_pages is not none and (stat.valid_aaaa_pages / stat.total_paginas) * 100 == 100 %} prog-verde
+                {% elif stat.valid_aaaa_pages is not none and (stat.valid_aaaa_pages / stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.valid_aaaa_pages is not none and
+                  (stat.valid_aaaa_pages / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+
+
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>Códigos de Respuesta</td>
+                <td colspan="4">{{ stat.codigos_respuesta|tojson or 0 }}</td>
+              </tr>
+
+
+              {% set codigos_respuesta = stat.codigos_respuesta|default({}) %}
+              {% for codigo, count in codigos_respuesta.items() %}
+              <tr>
+                <td>{{ codigo }}</td>
+                <td>{{ count }}</td>
+                <td colspan="3">
+                  ({{ "%0.2f"|format(count / stat.total_paginas * 100) }}%)
+                </td>
+                <td
+                  class="progreso {% if stat.total_paginas is not none and (stat.total_paginas / stat.total_paginas) * 100 == 100 %} prog-verde
+                {% elif stat.total_paginas is not none and (stat.total_paginas / stat.total_paginas) * 100 <= 50 %} prog-amarillo {% else %} prog-rojo {% endif %}">
+                  <i class="fas fa-circle"></i>
+                </td>
+
+
+              </tr>
+              {% endfor %}
+
+
+
+              <tr>
+                <td>Descripciones Largas</td>
+                <td>{{ stat.pages_desc_long or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.pages_desc_long is not none or 0) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.pages_desc_long is not none or 0) - (stat_ayer.total_paginas or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.pages_desc_long  is not none and (stat.pages_desc_long  / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.pages_desc_long  is not none and (stat.pages_desc_long  / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.pages_desc_long is not none and
+                  (stat.total_paginas - stat.pages_desc_long / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+
+              </tr>
+              <tr>
+                <td>Descripciones cortas</td>
+                <td>{{ stat.pages_desc_short or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.pages_desc_short is not none or 0) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.pages_desc_short is not none or 0) - (stat_ayer.pages_desc_short or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.pages_desc_short is not none and (stat.pages_desc_short / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.pages_desc_short is not none and (stat.pages_desc_short / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.pages_desc_short is not none and
+                  (stat.pages_desc_short / stat.total_paginas) * 100) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>H1 Duplicados</td>
+                <td>{{ stat.pages_h1_dup or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format(((stat.pages_h1_dup) / stat.total_paginas) * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.pages_h1_dup is not none or 0) - (stat_ayer.total_paginas or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.pages_h1_dup is not none and (stat.pages_h1_dup / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.pages_h1_dup is not none and (stat.pages_h1_dup / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.pages_h1_dup is not none and
+                  (stat.pages_h1_dup / stat.total_paginas) * 100) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Imagenes +1Mb</td>
+                <td>{{ stat.pages_img_1mb or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.pages_img_1mb) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.pages_img_1mb is not none or 0) - (stat_ayer.pages_img_1mb or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.pages_img_1mb is not none and (stat.pages_img_1mb / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.pages_img_1mb is not none and (stat.pages_img_1mb / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.pages_img_1mb is not none and
+                  (stat.total_paginas - stat.pages_img_1mb / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Meta Description Largas</td>
+                <td>{{ stat.total_meta_description_mas_155_caracteres or 0 }}</td>
+
+                <td>
+                  ({{ "%0.2f"|format((stat.total_meta_description_mas_155_caracteres) /
+                  stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_meta_description_mas_155_caracteres is not none or 0) -
+                  (stat_ayer.total_meta_description_mas_155_caracteres or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="progreso {% if (stat.total_meta_description_mas_155_caracteress is not none) and ((stat.total_meta_description_mas_155_caracteres / stat.total_paginas) * 100) == 100 %} prog-rojo
+                {% elif stat.total_meta_description_mas_155_caracteress is not none and stat.total_paginas is not none and (stat.total_meta_description_mas_155_caracteres / stat.total_paginas) * 100 >= 50 %} prog-amarillo
+                {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_meta_description_mas_155_caracteres
+                  is not none and (stat.total_meta_description_mas_155_caracteres / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Meta Description Duplicado</td>
+                <td>{{ stat.total_meta_description_duplicado or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_meta_description_duplicado) / stat.total_paginas *
+                  100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_meta_description_duplicado is not none or 0) -
+                  (stat_ayer.total_meta_description_duplicado or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_meta_description_duplicado is not none and (stat.total_meta_description_duplicado / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_meta_description_duplicado is not none and (stat.total_meta_description_duplicado / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_meta_description_duplicado is not
+                  none and (stat.total_meta_description_duplicado / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Falta Meta Description</td>
+                <td>{{ stat.total_meta_description_falta or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_meta_description_falta) / stat.total_paginas * 100)
+                  }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_meta_description_falta is not none or 0)-
+                  (stat_ayer.total_meta_description_falta or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_meta_description_falta is not none and (stat.total_meta_description_falta / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_meta_description_falta is not none and (stat.total_meta_description_falta / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_meta_description_falta is not none
+                  and (stat.total_meta_description_falta / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Título menor 30 caract.</td>
+                <td>{{ stat.total_titulos_pagina_menos_30_caracteres or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_titulos_pagina_menos_30_caracteres) * 100 /
+                  stat.total_paginas) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_titulos_pagina_menos_30_caracteres is not none or 0)-
+                  (stat_ayer.total_titulos_pagina_menos_30_caracteres or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_titulos_pagina_menos_30_caracteres is not none and (stat.total_titulos_pagina_menos_30_caracteres / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_titulos_pagina_menos_30_caracteres is not none and (stat.total_titulos_pagina_menos_30_caracteres / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_titulos_pagina_menos_30_caracteres is
+                  not none and (stat.total_titulos_pagina_menos_30_caracteres / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Meta Description corto</td>
+                <td>{{ stat.total_meta_description_menos_70_caracteres or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_meta_description_menos_70_caracteres) /
+                  stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_meta_description_menos_70_caracteres is not none or 0) -
+                  (stat_ayer.total_meta_description_menos_70_caracteres or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_meta_description_menos_70_caracteres is not none and (stat.total_meta_description_menos_70_caracteres / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_meta_description_menos_70_caracteres is not none and (stat.total_meta_description_menos_70_caracteres / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_meta_description_menos_70_caracteres
+                  is not none and (stat.total_meta_description_menos_70_caracteres / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Títulos largos</td>
+                <td>{{ stat.total_titulos_pagina_mas_60_caracteres or 0}}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_titulos_pagina_mas_60_caracteres) / stat.total_paginas
+                  * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_titulos_pagina_mas_60_caracteres is not none or 0)-
+                  (stat_ayer.total_titulos_pagina_mas_60_caracteres or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_titulos_pagina_mas_60_caracteres is not none and (stat.total_titulos_pagina_mas_60_caracteres / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_titulos_pagina_mas_60_caracteres is not none and (stat.total_titulos_pagina_mas_60_caracteres / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_titulos_pagina_mas_60_caracteres is
+                  not none and (stat.total_titulos_pagina_mas_60_caracteres / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Título igual a H1</td>
+                <td>{{ stat.total_titulos_pagina_igual_h1 or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_titulos_pagina_igual_h1) / stat.total_paginas * 100)
+                  }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_titulos_pagina_igual_h1 is not none or 0)-
+                  (stat_ayer.total_titulos_pagina_igual_h1 or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_titulos_pagina_igual_h1 is not none and (stat.total_titulos_pagina_igual_h1 / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_titulos_pagina_igual_h1 is not none and (stat.total_titulos_pagina_igual_h1 / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_titulos_pagina_igual_h1 is not none
+                  and (stat.total_titulos_pagina_igual_h1 / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Títulos duplicados</td>
+                <td>{{ stat.total_titulos_pagina_duplicado or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_titulos_pagina_duplicado) / stat.total_paginas * 100)
+                  }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_titulos_pagina_duplicado is not none or 0) -
+                  (stat_ayer.total_titulos_pagina_duplicado or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_titulos_pagina_duplicado is not none and (stat.total_titulos_pagina_duplicado / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_titulos_pagina_duplicado is not none and (stat.total_titulos_pagina_duplicado / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_titulos_pagina_duplicado is not none
+                  and (stat.total_titulos_pagina_duplicado / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>H2 Duplicados</td>
+                <td>{{ stat.total_h2_duplicado or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_h2_duplicado) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_h2_duplicado is not none or 0) - (stat_ayer.total_h2_duplicado or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_h2_duplicado  is not none and (stat.total_h2_duplicado  / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_h2_duplicado  is not none and (stat.total_h2_duplicado  / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_h2_duplicado is not none and
+                  (stat.total_h2_duplicado / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>H2 muy largos</td>
+                <td>{{ stat.total_h2_mas_70_caracteres or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_h2_mas_70_caracteres) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_h2_mas_70_caracteres is not none or 0) -
+                  (stat_ayer.total_h2_mas_70_caracteres or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_h2_mas_70_caracteres is not none and (stat.total_h2_mas_70_caracteres / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_h2_mas_70_caracteres is not none and (stat.total_h2_mas_70_caracteres / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_h2_mas_70_caracteres is not none and
+                  (stat.total_h2_mas_70_caracteres / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>H2 multiples</td>
+                <td>{{ stat.total_h2_multiple or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_h2_multiple) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_h2_multiple is not none or 0)- (stat_ayer.total_h2_multiple or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_h2_multiple is not none and (stat.total_h2_multiple / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_h2_multiple is not none and (stat.total_h2_multiple / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_h2_multiple is not none and
+                  (stat.total_h2_multiple / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>Falta H2</td>
+                <td>{{ stat.total_h2_falta or 0 }}</td>
+                <td>
+                  ({{ "%0.2f"|format((stat.total_h2_falta) / stat.total_paginas * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_h2_falta is not none or 0) - (stat_ayer.total_h2_faltas or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_h2_falta is not none and (stat.total_h2_falta / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_h2_falta is not none and (stat.total_h2_falta / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_h2_falta is not none and
+                  (stat.total_h2_falta / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+              <tr>
+                <td>H2 no secuencial</td>
+                <td>{{ stat.total_h2_no_secuencial or 0 }}</td>
+                <td>
+                  ({{ "%0.3f"|format(((stat.total_h2_no_secuencial) / stat.total_paginas) * 100) }}%)
+                </td>
+                <td>
+                  {% set variacion = (stat.total_h2_no_secuencial is not none or 0) - (stat_ayer.total_h2_no_secuencial
+                  or 0) %}
+                  {% if variacion > 0 %}
+                  <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
+                      class="fas fa-plus text-danger"></i></span>
+                  {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
+                      class="fas fa-minus text-success"></i></span>
+                    {% else %}
+                    <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
+                        class="fas fa-equals text-secondary"></i></span>
+                    {% endif %}
+                </td>
+
+                <td>
+                  {% set tendencia = 'ascenso' if variacion > 0 else 'descenso' %}
+                  {% if tendencia == 'ascenso' %}
+                  <span data-toggle="tooltip" data-placement="top" title="ascendente">
+                    <i class="fas fa-arrow-up text-danger"></i>
+                  </span>
+                  {% else %}
+                  <span data-toggle="tooltip" data-placement="top" title="descendente">
+                    <i class="fas fa-arrow-down text-success"></i>
+                  </span>
+                  {% endif %}
+                </td>
+                <td
+                  class="progreso {% if stat.total_h2_no_secuencial  is not none and (stat.total_h2_no_secuencial  / stat.total_paginas) * 100 == 100 %} prog-rojo
+                {% elif stat.total_h2_no_secuencial  is not none and (stat.total_h2_no_secuencial  / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
+                  <i class="fas fa-circle"></i>
+                  {% set total_porcentaje_seo = total_porcentaje_seo + (stat.total_h2_no_secuencial is not none and
+                  (stat.total_h2_no_secuencial / stat.total_paginas) * 100 or 0) %}
+                </td>
+
+              </tr>
+
+
+
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <table>
+            <tr>
+              <td colspan="6">
+                <!-- Agrega este div donde quieras mostrar el gráfico -->
+                <div style="width: 400px; height: 400px;">
+                  <canvas id="doughnutChart_seo_{{stat.id_escaneo}}"></canvas>
+                </div>
+              </td>
+            </tr>
+            <tr class="section-footer">
+              <td colspan="5">
+                SEO Score
+              </td>
+              <td>
+                ({{ "%0.2f"|format(total_porcentaje_seo / 4500 ) }}%)
+              </td>
+            </tr>
+
+
+
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                // Obtén los datos de tu backend o define un ejemplo aquí
+                var scores = {{ total_porcentaje_seo / 2300 }};
+
+                var color1 = 'rgb(0, 91, 114)';
+                var color2 = 'rgb(249, 176, 0)';
+
+
+                // Configura los datos para el gráfico
+                var data = {
+                  labels: ['Score', 'Total'],
+                  datasets: [{
+                    data: [scores, 100 - scores], // Ajusta según tus necesidades
+                    backgroundColor: [color2, color1],
+                    borderColor: color1,
+                    borderWidth: 1
+                  }]
+                };
+
+
+                // Configura las opciones del gráfico
+                var options = {
+                  cutoutPercentage: 50, // Ajusta este valor según tus preferencias
+                  responsive: true,
+                };
+
+
+
+                // Obtén el contexto del canvas y crea el gráfico
+                var ctx = document.getElementById('doughnutChart_seo_{{ stat.id_escaneo }}').getContext('2d');
+                var doughnutChart = new Chart(ctx, {
+                  type: 'doughnut',
+                  data: data,
+                  options: options
+                });
+              });
+            </script>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <table class="table">
+            <tbody>
+
+              <tr class="table-danger">
+                <td colspan="2" class="section-header">Registro</td>
+              </tr>
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>ID</td>
+                <td>{{ stat.id or 'Fail' }}</td>
+              </tr>
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>HASH</td>
+                <td><!--
+                  {{ stat.id_escaneo or 'Fail' }}
+                -->
+                </td>
+              </tr>
+              <tr>
+                <td>Hora de Inicio</td>
+                <td>{{ stat.hora_inicio or 'Fail' }}</td>
+              </tr>
+              <tr>
+                <td>Hora de Fin</td>
+                <td>{{ stat.hora_fin or 'Fail' }}</td>
+              </tr>
+              <tr>
+                <td>Fecha</td>
+                <td>{{ stat.fecha or 'Fail' }}</td>
+              </tr>
+
+
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Obtén los datos de tu backend o define un ejemplo aquí
+
+        var scores = [{{ total_porcentaje_seo / 2300 }}, {{ 100-(total_porcentaje_usabilidad / 6) }},
+        {{ 100-(total_porcentaje_accesibilidad / 6) }}, {{ total_porcentaje_otros_diagnosticos / 6}}];
+
+      var colors = ['rgb(0, 53, 66)', 'rgb(249, 176, 0)', 'rgb(0, 91, 114)', 'rgb(184, 130, 0)'];
+
+
+      var color1 = 'rgb(0, 91, 114)';
+      var color2 = 'rgb(249, 176, 0)';
+
+
+      // Configura los datos para el gráfico
+      var data = {
+        labels: ['seo', 'usa', 'acc', 'otro'],
+        datasets: [{
+          data: scores, // Ajusta según tus necesidades
+          backgroundColor: colors,
+          borderColor: colors,
+          borderWidth: 1
+        }]
+      };
+
+
+      // Configura las opciones del gráfico
+      var options = {
+        cutoutPercentage: 50, // Ajusta este valor según tus preferencias
+        responsive: true,
+      };
+
+
+
+      // Obtén el contexto del canvas y crea el gráfico
+      var ctx = document.getElementById('doughnutChart_global_{{ stat.id_escaneo }}').getContext('2d');
+      var doughnutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: options
+      });
+      });
+    </script>
+
+
+    {% endfor %}
+    {% endfor %}
+
+    {% set total_porcentaje_general = total_porcentaje_seo + total_porcentaje_usabilidad +
+    total_porcentaje_accesibilidad + total_porcentaje_otros_diagnosticos %}
+    {% set total_porcentaje_seccion = total_porcentaje_seo + total_porcentaje_usabilidad +
+    total_porcentaje_accesibilidad + total_porcentaje_otros_diagnosticos %}
+
+
+
+
+
+  </div>
+
+
+
+</div>
+
+<script>
+  $(document).ready(function () {
+    // Calcula el nuevo porcentaje y actualiza la celda
+    var nuevoPorcentaje = ({{ total_porcentaje_seo / 23}});
+    $('#porcentaje-seo').text('(' + nuevoPorcentaje.toFixed(0) + '%)');
+  });
+</script>
+
+{% endblock %}
