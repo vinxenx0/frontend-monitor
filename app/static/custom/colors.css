@@ -344,3 +344,26 @@ small {
   width: 100%;
 }
 
+.tiempo-celda {
+  width: 10%;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px;
+  border-radius: 5px;
+  height: 20px !important; /* Puedes ajustar el valor según tus necesidades */
+  overflow: hidden; /* Para ocultar cualquier contenido que pueda desbordar */
+
+}
+
+.tiempo-verde {
+  background: linear-gradient(90deg, #28a745 0%, #28a745 100%);
+}
+
+.tiempo-amarillo {
+  background: linear-gradient(90deg, #ffc107 0%, #ffc107 100%);
+}
+
+.tiempo-rojo {
+  background: linear-gradient(90deg, #dc3545 0%, #dc3545 100%);
+}

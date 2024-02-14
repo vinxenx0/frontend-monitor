@@ -17,6 +17,8 @@ from flask import render_template, request, redirect, url_for
 import urllib.parse
 from urllib.parse import parse_qs, unquote
 from flask import Flask, render_template, request, redirect, url_for, session
+from urllib.parse import urlparse, urljoin
+
 
 ids_escaneo_especificos = IDS_ESCANEO
 dominios_especificos = DOMINIOS_ESPECIFICOS
@@ -96,6 +98,132 @@ def informe_resumen():
                            dominios_ordenados=DOMINIOS_ESPECIFICOS,
                            ids_especificos=IDS_ESCANEO)
 
+@app.route('/usabilidad/resumen/<string:dominio>')
+@login_required
+def usabilidad_resumen_dominio(dominio):
+    # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas para un dominio específico
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).filter(
+            Sumario.id_escaneo.in_(IDS_ESCANEO)).all())
+
+    # Convertir objetos Sumario a diccionarios
+    sumarios_dict = []
+    for sumario in sumarios:
+        sumario_dict = {}
+        for column in class_mapper(Sumario).columns:
+            sumario_dict[column.name] = getattr(sumario, column.name)
+        sumarios_dict.append(sumario_dict)
+
+    # Consulta para obtener la segunda coincidencia ordenando por sumario.id de mayor a menor
+    sumario_ayer = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).order_by(desc(
+            Sumario.id)).offset(1).limit(1).first())
+
+    # Consulta para obtener la segunda coincidencia ordenando por sumario.id de mayor a menor
+    sumario_quince = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).order_by(desc(
+            Sumario.id)).offset(14).limit(1).first())
+
+    # Verifica si se encontró la segunda coincidencia antes de intentar iterar sobre ella
+    if sumario_ayer:
+        # Puedes acceder a las propiedades del objeto Sumario directamente
+        print(f"ID: {sumario_ayer.id}, Dominio: {sumario_ayer.dominio}")
+    else:
+        print("No se encontraron coincidencias.")
+
+    return render_template('tools/usa/resumen_usa.html',
+                           dominio=dominio,
+                           solo_uno=dominio,
+                           resumen_ayer=sumario_ayer,
+                           resumen=sumarios,
+                           dominio_actual=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           ids_especificos=IDS_ESCANEO)
+
+@app.route('/accesibilidad/resumen/<string:dominio>')
+@login_required
+def accesibilidad_resumen_dominio(dominio):
+    # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas para un dominio específico
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).filter(
+            Sumario.id_escaneo.in_(IDS_ESCANEO)).all())
+
+    # Convertir objetos Sumario a diccionarios
+    sumarios_dict = []
+    for sumario in sumarios:
+        sumario_dict = {}
+        for column in class_mapper(Sumario).columns:
+            sumario_dict[column.name] = getattr(sumario, column.name)
+        sumarios_dict.append(sumario_dict)
+
+    # Consulta para obtener la segunda coincidencia ordenando por sumario.id de mayor a menor
+    sumario_ayer = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).order_by(desc(
+            Sumario.id)).offset(1).limit(1).first())
+
+    # Consulta para obtener la segunda coincidencia ordenando por sumario.id de mayor a menor
+    sumario_quince = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).order_by(desc(
+            Sumario.id)).offset(14).limit(1).first())
+
+    # Verifica si se encontró la segunda coincidencia antes de intentar iterar sobre ella
+    if sumario_ayer:
+        # Puedes acceder a las propiedades del objeto Sumario directamente
+        print(f"ID: {sumario_ayer.id}, Dominio: {sumario_ayer.dominio}")
+    else:
+        print("No se encontraron coincidencias.")
+
+    return render_template('tools/acc/resumen_acc.html',
+                           dominio=dominio,
+                           solo_uno=dominio,
+                           resumen_ayer=sumario_ayer,
+                           resumen=sumarios,
+                           dominio_actual=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           ids_especificos=IDS_ESCANEO)
+
+@app.route('/seo/resumen/<string:dominio>')
+@login_required
+def seo_resumen_dominio(dominio):
+    # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas para un dominio específico
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).filter(
+            Sumario.id_escaneo.in_(IDS_ESCANEO)).all())
+
+    # Convertir objetos Sumario a diccionarios
+    sumarios_dict = []
+    for sumario in sumarios:
+        sumario_dict = {}
+        for column in class_mapper(Sumario).columns:
+            sumario_dict[column.name] = getattr(sumario, column.name)
+        sumarios_dict.append(sumario_dict)
+
+    # Consulta para obtener la segunda coincidencia ordenando por sumario.id de mayor a menor
+    sumario_ayer = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).order_by(desc(
+            Sumario.id)).offset(1).limit(1).first())
+
+    # Consulta para obtener la segunda coincidencia ordenando por sumario.id de mayor a menor
+    sumario_quince = (db.session.query(Sumario).filter(
+        Sumario.dominio == dominio).order_by(desc(
+            Sumario.id)).offset(14).limit(1).first())
+
+    # Verifica si se encontró la segunda coincidencia antes de intentar iterar sobre ella
+    if sumario_ayer:
+        # Puedes acceder a las propiedades del objeto Sumario directamente
+        print(f"ID: {sumario_ayer.id}, Dominio: {sumario_ayer.dominio}")
+    else:
+        print("No se encontraron coincidencias.")
+
+    return render_template('tools/seo/resumen_seo.html',
+                           dominio=dominio,
+                           solo_uno=dominio,
+                           resumen_ayer=sumario_ayer,
+                           resumen=sumarios,
+                           dominio_actual=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           ids_especificos=IDS_ESCANEO)
+
 
 @app.route('/informes/resumen/<string:dominio>')
 @login_required
@@ -150,6 +278,135 @@ def consultas():
 @login_required
 def mejoras():
     return render_template('tools/performance.html')
+
+
+@app.route('/meta-tags/<string:dominio>')
+@login_required
+def meta_tags(dominio):
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
+    paginas_metatags = (
+        db.session.query(
+            Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.meta_tags,
+            Resultado.desc_short,
+            Resultado.desc_long,
+            Resultado.id,
+            Resultado.meta_description_duplicado,
+            Resultado.meta_description_mas_155_caracteres,
+            Resultado.meta_description_menos_70_caracteres,
+            Resultado.meta_description_falta,
+            Resultado.meta_og_card,
+            Resultado.meta_og_title,
+            Resultado.meta_og_image
+        ).filter(
+            #Resultado.id_escaneo.in_(ids_escaneo_especificos),
+            Resultado.dominio == dominio,
+            Resultado.codigo_respuesta == 200,
+            Resultado.meta_description_falta != 0 or Resultado.meta_description_menos_70_caracteres != 0
+            or Resultado.desc_short != 0 or Resultado.desc_long != 0 or Resultado.meta_description_duplicado != 0 or Resultado.meta_description_mas_155_caracteres != 0
+            #Resultado.tiempo_respuesta > 0,
+            #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            #Resultado.tiempo_respuesta != '',
+            #Resultado.tiempo_respuesta.isnot(False) #,  # Filtrar resultados con tiempo_respuesta False
+            #Resultado.tiempo_respuesta.isnot(None)
+            #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
+        )
+        #.filter(
+        #    ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        #.filter(
+        #    ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/documents/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%redirect%')
+        #        )  # Excluir URLs que contengan 'redirect'
+        .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        .filter(
+            Resultado.tipo_documento.like('%text%'))
+        #.filter(Resultado.lang.in_(['es','ca','en','fr']))
+        .all())
+    # Consulta para obtener la información de carga agrupada por segundos
+    resultados_agrupados = {}
+
+    # Utilizamos una sola consulta para mejorar la eficiencia
+    resultados_por_escaneo = (
+        db.session.query(
+            Resultado.id_escaneo,
+            Resultado.dominio,
+            case(
+                (and_(Resultado.e_viewport != 1,
+                      Resultado.e_viewport.isnot(None)),
+                 'Sin etiqueta viewport'),
+                (and_(Resultado.html_valid != 1,
+                      Resultado.html_valid.isnot(None)),
+                 'Sin estructura HTML valida'),
+                (and_(Resultado.responsive_valid != 1,
+                      Resultado.responsive_valid.isnot(None)),
+                 'No cumple con estándares '),
+                (and_(Resultado.valid_aaa != 1,
+                      Resultado.valid_aaa.isnot(None)),
+                 'No validan con WACG - AAA '),
+                else_=
+                'Otros motivos'  # Puedes cambiar 'Otra etiqueta' por lo que desees
+            ).label('intervalo_carga'),
+            func.count().label('count')).filter(
+                Resultado.id_escaneo.in_(ids_escaneo_especificos),
+                Resultado.codigo_respuesta == 200).
+        filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%redirect%')
+                )  # Excluir URLs que contengan 'redirect'
+        .group_by(Resultado.id_escaneo, 'intervalo_carga',
+                  Resultado.dominio).all())
+
+    # Procesamos los resultados para estructurarlos en un diccionario
+    for resultado in resultados_por_escaneo:
+        id_escaneo = resultado.id_escaneo
+        dominio = resultado.dominio
+        intervalo_carga = resultado.intervalo_carga
+        count = resultado.count
+
+        if id_escaneo not in resultados_agrupados:
+            resultados_agrupados[id_escaneo] = []
+
+        resultados_agrupados[id_escaneo].append(
+            (dominio, intervalo_carga, count))
+
+    # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.id_escaneo.in_(ids_escaneo_especificos)).all())
+
+    # Enviamos los resultados al template
+    return render_template('tools/seo/metatags.html',
+                           dominio_url=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           resultados=paginas_metatags,
+                           detalles=resultados_agrupados,
+                           resumen=sumarios,
+                           indicador_1=len(paginas_metatags),
+                           indicador_2=((len(paginas_metatags) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
 
 
 @app.route('/seo/health')
@@ -217,18 +474,25 @@ def seo_resumen():
                            dominios=DOMINIOS_ESPECIFICOS)
 
 
-@app.route('/velocidad')
+
+@app.route('/velocidad/<string:domain>')
 @login_required
-def velocidad():
+def velocidad_url(domain):
 
-    # IDs de escaneo específicos ids_escaneo_especificos = IDS_ESCANEO
-
-    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+    # Consulta para obtener las fechas seleccionadas
     results = (db.session.query(distinct(Sumario.fecha)).order_by(
-        Sumario.fecha.desc()).limit(15).all())
+        Sumario.fecha.desc()).filter(Sumario.dominio == domain).limit(1).all())
 
     # Obtener los resultados para las fechas seleccionadas
     fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == domain).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
 
     #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
 
@@ -247,9 +511,9 @@ def velocidad():
             Resultado.id  #is_pdf
         ).filter(
             #Resultado.id_escaneo.in_(ids_escaneo_especificos),
-            Resultado.dominio.in_(DOMINIOS_ESPECIFICOS),
+            Resultado.dominio==domain,
             Resultado.codigo_respuesta == 200,
-            Resultado.tiempo_respuesta >= 1,
+            Resultado.tiempo_respuesta > .7,
             Resultado.tiempo_respuesta.isnot(
                 None),  # Filtrar resultados con tiempo_respuesta no nulo
             Resultado.tiempo_respuesta != '',
@@ -420,6 +684,7 @@ def velocidad():
 
     # Enviamos los resultados al template
     return render_template('tools/seo/velocidad.html',
+                           dominio_url = domain,
                            dominios_ordenados=DOMINIOS_ESPECIFICOS,
                            graficos=json.dumps(sumarios_dict),
                            evolucion=json.dumps(evoluciones_dict),
@@ -428,7 +693,10 @@ def velocidad():
                            detalles_dos=cargas_por_segundos_dos,
                            detalles=cargas_por_segundos,
                            resumen=sumarios,
-                           sumario=json.dumps(sumarios_dict))
+                           sumario=json.dumps(sumarios_dict),
+                           indicador_1=len(paginas_velocidad),
+                           indicador_2=((len(paginas_velocidad) * 100) / total_paginas),
+                           indicador_3=total_paginas)
 
 
 @app.route('/enlaces-rotos')
@@ -751,62 +1019,70 @@ def usa_form():
 def usa_nav():
     return render_template('tools/usa/usa_nav.html')
 
-
-@app.route('/usabilidad/responsive')
+@app.route('/titulos/<string:dominio>')
 @login_required
-def usa_responsive():
-    return render_template('tools/usa/usa_responsive.html')
-
-
-@app.route('/responsive')
-@login_required
-def responsive():
-
-    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+def titulos(dominio):
     results = (db.session.query(distinct(Sumario.fecha)).order_by(
-        Sumario.fecha.desc()).limit(15).all())
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
 
     # Obtener los resultados para las fechas seleccionadas
     fechas_seleccionadas = [result[0] for result in results]
 
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
     #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
 
     # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
-    paginas_responsive = (
+    paginas_titulos = (
         db.session.query(
             Resultado.fecha_escaneo,
             Resultado.dominio,
             Resultado.pagina,
             Resultado.lang,
-            Resultado.e_viewport,
-            Resultado.html_valid,
-            Resultado.responsive_valid,
+            Resultado.e_title,
+            Resultado.title_long,
+            Resultado.title_short,
             Resultado.id,
-            Resultado.valid_aaa,
-            Resultado.meta_tags  #is_pdf
+            Resultado.title_duplicate,
+            Resultado.titulos_pagina_menos_30_caracteres,
+            Resultado.titulos_pagina_mas_60_caracteres,
+            Resultado.titulos_pagina_igual_h1,
+            Resultado.titulos_pagina_duplicado,
+            Resultado.c_title,
+            Resultado.meta_tags
         ).filter(
             #Resultado.id_escaneo.in_(ids_escaneo_especificos),
-            Resultado.dominio.in_(DOMINIOS_ESPECIFICOS),
+            Resultado.dominio == dominio,
             Resultado.codigo_respuesta == 200,
-            Resultado.e_viewport != 1 or Resultado.html_valid != 1
-            or Resultado.responsive_valid != 1
+            Resultado.e_title != 1 or Resultado.title_long != 0
+            or Resultado.title_short != 0 or Resultado.title_duplicate != 0 or Resultado.titulos_pagina_duplicado != 0 or Resultado.titulos_pagina_igual_h1 != 0
             #Resultado.tiempo_respuesta > 0,
             #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
             #Resultado.tiempo_respuesta != '',
             #Resultado.tiempo_respuesta.isnot(False) #,  # Filtrar resultados con tiempo_respuesta False
             #Resultado.tiempo_respuesta.isnot(None)
             #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
-        ).filter(
-            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
-        .filter(
-            ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%/documents/%')
-                )  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%/document_library/%')
-                )  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%redirect%')
-                )  # Excluir URLs que contengan 'redirect'
+        )
+        #.filter(
+        #    ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        #.filter(
+        #    ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/documents/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%redirect%')
+        #        )  # Excluir URLs que contengan 'redirect'
         .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        .filter(
+            Resultado.tipo_documento.like('%text%'))
         #.filter(Resultado.lang.in_(['es','ca','en','fr']))
         .all())
     # Consulta para obtener la información de carga agrupada por segundos
@@ -860,11 +1136,356 @@ def responsive():
         Sumario.id_escaneo.in_(ids_escaneo_especificos)).all())
 
     # Enviamos los resultados al template
-    return render_template('tools/usa/responsive.html',
+    return render_template('tools/usa/titulos.html',
+                           dominio_url=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           resultados=paginas_titulos,
+                           detalles=resultados_agrupados,
+                           resumen=sumarios,
+                           indicador_1=len(paginas_titulos),
+                           indicador_2=((len(paginas_titulos) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
+
+
+@app.route('/responsive/<string:dominio>')
+@login_required
+def responsive(dominio):
+
+# Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
+    paginas_responsive = (
+        db.session.query(
+            Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.e_viewport,
+            Resultado.html_valid,
+            Resultado.responsive_valid,
+            Resultado.id,
+            Resultado.valid_aaa,
+            Resultado.meta_tags  #is_pdf
+        ).filter(
+            #Resultado.id_escaneo.in_(ids_escaneo_especificos),
+            Resultado.dominio == dominio,
+            Resultado.codigo_respuesta == 200,
+            Resultado.e_viewport != 1 or Resultado.html_valid != 1
+            or Resultado.responsive_valid != 1
+            #Resultado.tiempo_respuesta > 0,
+            #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            #Resultado.tiempo_respuesta != '',
+            #Resultado.tiempo_respuesta.isnot(False) #,  # Filtrar resultados con tiempo_respuesta False
+            #Resultado.tiempo_respuesta.isnot(None)
+            #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
+        )
+        #.filter(
+        #    ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        #.filter(
+        #    ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/documents/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%redirect%')
+        #        )  # Excluir URLs que contengan 'redirect'
+        .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        .filter(
+            Resultado.tipo_documento.like('%text%'))
+        #.filter(Resultado.lang.in_(['es','ca','en','fr']))
+        .all())
+    # Consulta para obtener la información de carga agrupada por segundos
+    resultados_agrupados = {}
+
+    # Utilizamos una sola consulta para mejorar la eficiencia
+    resultados_por_escaneo = (
+        db.session.query(
+            Resultado.id_escaneo,
+            Resultado.dominio,
+            case(
+                (and_(Resultado.e_viewport != 1,
+                      Resultado.e_viewport.isnot(None)),
+                 'Sin etiqueta viewport'),
+                (and_(Resultado.html_valid != 1,
+                      Resultado.html_valid.isnot(None)),
+                 'Sin estructura HTML valida'),
+                (and_(Resultado.responsive_valid != 1,
+                      Resultado.responsive_valid.isnot(None)),
+                 'No cumple con estándares '),
+                (and_(Resultado.valid_aaa != 1,
+                      Resultado.valid_aaa.isnot(None)),
+                 'No validan con WACG - AAA '),
+                else_=
+                'Otros motivos'  # Puedes cambiar 'Otra etiqueta' por lo que desees
+            ).label('intervalo_carga'),
+            func.count().label('count')).filter(
+                Resultado.id_escaneo.in_(ids_escaneo_especificos),
+                Resultado.codigo_respuesta == 200).
+        filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%redirect%')
+                )  # Excluir URLs que contengan 'redirect'
+        .group_by(Resultado.id_escaneo, 'intervalo_carga',
+                  Resultado.dominio).all())
+
+    # Procesamos los resultados para estructurarlos en un diccionario
+    for resultado in resultados_por_escaneo:
+        id_escaneo = resultado.id_escaneo
+        dominio = resultado.dominio
+        intervalo_carga = resultado.intervalo_carga
+        count = resultado.count
+
+        if id_escaneo not in resultados_agrupados:
+            resultados_agrupados[id_escaneo] = []
+
+        resultados_agrupados[id_escaneo].append(
+            (dominio, intervalo_carga, count))
+
+    # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.id_escaneo.in_(ids_escaneo_especificos)).all())
+
+    # Enviamos los resultados al template
+    return render_template('tools/acc/responsive.html',
+                            dominio_url=dominio,
                            dominios_ordenados=DOMINIOS_ESPECIFICOS,
                            resultados=paginas_responsive,
                            detalles=resultados_agrupados,
-                           resumen=sumarios)
+                           resumen=sumarios,
+                           indicador_1=len(paginas_responsive),
+                           indicador_2=((len(paginas_responsive) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
+
+
+@app.route('/seguridad/<string:dominio>')
+@login_required
+def seguridad(dominio):
+    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
+    seguridad_results = (
+        db.session.query(
+            Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.falta_encabezado_x_content_type_options,
+            Resultado.falta_encabezado_secure_referrer_policy,
+            Resultado.falta_encabezado_x_frame_options,
+            Resultado.version_http,
+            Resultado.enlaces_inseguros,
+            Resultado.id,
+            Resultado.tipo_documento,
+            Resultado.meta_tags  #is_pdf
+        ).filter(
+            #Resultado.id_escaneo.in_(ids_escaneo_especificos),
+            Resultado.dominio == dominio,
+            Resultado.codigo_respuesta == 200,
+            Resultado.falta_encabezado_x_content_type_options != 0 or Resultado.falta_encabezado_secure_referrer_policy != 0 or Resultado.falta_encabezado_x_frame_options != 0
+            #Resultado.tiempo_respuesta > 0,
+            #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            #Resultado.wcagaaa != [] or Resultado.wcagaaa != {} or Resultado.wcagaaa != {"pa11y_results": []}
+            #Resultado.errores_ortograficos == False #,  # Filtrar resultados con tiempo_respuesta False
+            #Resultado.tiempo_respuesta.isnot(None)
+            #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
+        ).filter(
+            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(
+            ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%/asset_publisher/%')
+                )  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%/document_library/%')
+                )  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%estaticos%')
+                )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%redirect%')
+                )  # Excluir URLs que contengan 'redirect'
+        .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        #.filter(Resultado.lang.in_(['es','ca','en','fr']))
+        .all())
+
+    return render_template('tools/diag/seguridad.html',
+                           dominio_url=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           resultados=seguridad_results,
+                           indicador_1=len(seguridad_results),
+                           indicador_2=((len(seguridad_results) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
+
+
+@app.route('/imagenes/<string:dominio>')
+@login_required
+def imagenes(dominio):
+    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
+    imagenes_results = (
+        db.session.query(
+            Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.alt_vacias,
+            Resultado.image_types,
+            Resultado.tiempo_respuesta,
+            Resultado.images_1MB,
+            Resultado.imagenes_rotas,
+            Resultado.id,
+            Resultado.tipo_documento,
+            Resultado.imagenes  #is_pdf
+        ).filter(
+            #Resultado.id_escaneo.in_(ids_escaneo_especificos),
+            Resultado.dominio == dominio,
+            Resultado.codigo_respuesta == 200,
+            Resultado.imagenes_rotas != 0 or Resultado.alt_vacias != 0
+            
+            #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            #Resultado.wcagaaa != [] or Resultado.wcagaaa != {} or Resultado.wcagaaa != {"pa11y_results": []}
+            #Resultado.errores_ortograficos == False #,  # Filtrar resultados con tiempo_respuesta False
+            #Resultado.tiempo_respuesta.isnot(None)
+            #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
+        ).filter(
+            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(
+            Resultado.tipo_documento.like('%text%'))
+        .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        #.filter(Resultado.lang.in_(['es','ca','en','fr']))
+        .all())
+
+    return render_template('tools/acc/imagenes.html',
+                           dominio_url=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           resultados=imagenes_results,
+                           indicador_1=len(imagenes_results),
+                           indicador_2=((len(imagenes_results) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
+
+
+
+@app.route('/legibilidad/<string:dominio>')
+@login_required
+def legibilidad(dominio):
+    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
+    legibilidad_results = (
+        db.session.query(
+            Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.num_palabras,
+            Resultado.frases,
+            Resultado.media_palabras_frase,
+            Resultado.flesh_score,
+            Resultado.num_errores_ortograficos,
+            Resultado.id,
+            Resultado.tipo_documento,
+            Resultado.content_valid  #is_pdf
+        ).filter(
+            #Resultado.id_escaneo.in_(ids_escaneo_especificos),
+            Resultado.dominio == dominio,
+            Resultado.codigo_respuesta == 200,
+            #Resultado.tiempo_respuesta > 0,
+            #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            #Resultado.wcagaaa != [] or Resultado.wcagaaa != {} or Resultado.wcagaaa != {"pa11y_results": []}
+            #Resultado.errores_ortograficos == False #,  # Filtrar resultados con tiempo_respuesta False
+            #Resultado.tiempo_respuesta.isnot(None)
+            #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
+        ).filter(
+            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(
+            Resultado.tipo_documento.like('%text%'))
+        .filter(
+            ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%/asset_publisher/%')
+                )  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%/document_library/%')
+                )  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%estaticos%')
+                )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%redirect%')
+                )  # Excluir URLs que contengan 'redirect'
+        .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        #.filter(Resultado.lang.in_(['es','ca','en','fr']))
+        .all())
+
+    return render_template('tools/acc/legibilidad.html',
+                           dominio_url=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           resultados=legibilidad_results,
+                           indicador_1=len(legibilidad_results),
+                           indicador_2=((len(legibilidad_results) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
 
 
 @app.route('/usabilidad/w3c')
@@ -1441,7 +2062,8 @@ def diccionario():
         'idioma': palabra[2]
     } for palabra in palabras]
     return render_template('tools/dicc/visor_diccionario.html',
-                           palabras_diccionario=palabras_diccionario)
+                           palabras_diccionario=palabras_diccionario,
+                           indicador_1=len(palabras_diccionario))
 
 
 #
@@ -1479,7 +2101,8 @@ def agregar_palabras_bulk():
 @app.route('/agregar_palabra', methods=['POST'])
 def agregar_palabra():
     nueva_palabra = request.form['palabra']
-    nuevo_idioma = request.form['idioma']  # Agrega la lógica para obtener el idioma desde el formulario
+    nuevo_idioma = request.form[
+        'idioma']  # Agrega la lógica para obtener el idioma desde el formulario
 
     nueva_entrada = Diccionario(palabra=nueva_palabra, idioma=nuevo_idioma)
     db.session.add(nueva_entrada)
@@ -1669,8 +2292,6 @@ def analizar_url():
 
     return redirect(url_for('resultados_popup'))
 
-
-from urllib.parse import urlparse, urljoin
 
 
 def contar_enlaces(response_text, url):
