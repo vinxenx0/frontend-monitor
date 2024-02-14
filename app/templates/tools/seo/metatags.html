@@ -131,10 +131,15 @@ intervalo-color-rojo
                         <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina
                                 }}</a></td>
                         <td>{{ result.meta_tags|length }}</td>
-                        <td>{{ result.meta_description_falta }}</td>
+                        <td>{{ result.direccion }}</td>
                         <td>{{ result.desc_short }}</td>
+                        <td>{{ result.desc_long }}</td>
+                        
+                        
                         <td>{{ result.meta_description_duplicado }} </td>
+                        <td>{{ result.meta_description_mas_155_caracteres }}</td>
                         <td>{{ result.meta_description_menos_70_caracteres }}</td>
+                        <td>{{ result.meta_description_falta }}</td>
                         <td>
                             {{ result.meta_og_card }}
                         </td>
@@ -231,7 +236,7 @@ intervalo-color-rojo
             pageLength: 25, // Establecemos el valor por defecto
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
-                null, null, null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null, null, null, null, null, null, null
             ],
             colReorder: {
                 realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real
