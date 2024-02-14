@@ -1,0 +1,288 @@
+<!-- app/templates/seo/encabezados.html -->
+{% extends 'tool_base.html' %}
+
+{% block title %}Velocidad{% endblock %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo >= 200 %}
+
+{% elif intervalo >= 100 %}
+
+{% elif intervalo >= 20 %}
+
+{% endif %}
+{% endmacro %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo == '60 a 90 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '30 a 60 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '15 a 30 segundos' %}
+intervalo-color-rojo
+{% endif %}
+{% endmacro %}
+{% set peso_total_img = 0 %}
+
+{% block head %}
+
+<h1 class="mt-4">Encabezados</h1>
+
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Encabezados en el dominio </li>
+</ol>
+
+{% endblock %}
+
+{% if dominio_url %}
+{% set dominios_ordenados_dos = [dominio_url] %}
+{% else %}
+{% set dominios_ordenados_dos = dominios_ordenados %}
+{%endif%}
+
+{% block content %}
+
+<div class="row">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Etiquetas H
+        </div>
+        <div class="card-body">
+
+            <table id="datatablesSimple" class="display">
+                <thead>
+                    <tr>
+                        <!--
+                     Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.heading_tags,
+            Resultado.h2_duplicado,
+            Resultado.h2_multiple,
+            Resultado.id,
+            Resultado.h2_falta,
+            Resultado.h2_no_secuencial,
+            Resultado.titulos_pagina_igual_h1,
+            Resultado.h1_duplicate
+                        -->
+                        <th>fecha</th>
+                        <th>pagina</th>
+                        <th>heading_tags</th>
+                        <th>h1_duplicate</th>
+                        <th>titulos_pagina_igual_h1</th>
+                        <th>h2_falta</th>
+                        <th>h2_multiple</th>
+                        <th>h2_duplicado</th>
+                        <th>h2_no_secuencial</th>
+
+                        <th><i class="fas fa-lightbulb"></i></th>
+
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>fecha</th>
+                        <th>pagina</th>
+                        <th>heading_tags</th>
+                        <th>h1_duplicate</th>
+                        <th>titulos_pagina_igual_h1</th>
+                        <th>h2_falta</th>
+                        <th>h2_multiple</th>
+                        <th>h2_duplicado</th>
+                        <th>h2_no_secuencial</th>
+
+                        <th><i class="fas fa-lightbulb"></i></th>
+
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for result in resultados %}
+                    <!--
+                          <th>fecha</th>
+                        <th>pagina</th>
+                        <th>heading_tags</th>
+                        <th>h1_duplicate</th>
+                        <th>titulos_pagina_igual_h1</th>
+                        <th>h2_falta</th>
+                        <th>h2_multiple</th>
+                        <th>h2_duplicado</th>
+                        <th>h2_no_secuencial</th>
+
+                        <th><i class="fas fa-lightbulb"></i></th>
+                    -->
+                    <tr>
+                        <td><small>{{ result.fecha_escaneo }}</small></td>
+
+                        <!-- <td>{{ result.id }}</td> -->
+                        <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina
+                                }}</a></td>
+                        <td>{{ result.heading_tags|length }}</td>
+                        <td>{{ result.h1_duplicate }}</td>
+                        <td>{{ result.titulos_pagina_igual_h1 }}</td>
+                        <td>{{ result.h2_falta }}</td>
+                        
+                        
+                        <td>{{ result.h2_multiple }} </td>
+                        <td>{{ result.h2_duplicado }}</td>
+                        <td>{{ result.h2_no_secuencial }}</td>
+                        
+                        <td>
+                             <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                data-bs-target="#infoModal{{ result.id }}">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                          
+                        </td>
+
+                    </tr>
+                    <div class="modal fade" id="infoModal{{ result.id }}" tabindex="-1"
+                        aria-labelledby="infoModalLabel{{ result.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content bg-white text-dark">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias velocidad #{{
+                                        result.id }}</h5>
+                                    <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="suggestion">
+                                        <div class="label"><b>Headings:</b></div>
+                                        <div class="value">
+                                            {% for key, value in result.heading_tags %}
+                                            <!-- <div class="{{ 'row odd' if loop.index is odd else 'row even' }}">
+                                    <div class="col-md-2">{{ key|safe }}:</div>
+                                    <div class="col-md-10">{{ value|safe }}</div>
+                                </div>
+                               
+                              -->
+                                            <strong>{{ key|safe }}:</strong>{{ value|safe }} |
+                                            {% endfor %}
+                                        </div>
+                                        <hr />
+                                    </div>
+
+                           
+                                  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializamos DataTables
+        const dataTable = $('#datatablesSimple').DataTable({
+            "language": {
+                "sEmptyTable": "No hay datos disponibles en la tabla",
+                "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ entradas)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ",",
+                "sLengthMenu": "Mostrar _MENU_ entradas",
+                "sLoadingRecords": "Cargando...",
+                "sProcessing": "Procesando...",
+                "sSearch": "Buscar:",
+                "sZeroRecords": "No se encontraron coincidencias",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna en orden ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna en orden descendente"
+                },
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas", // Agregamos el mensaje de información arriba
+            },
+            responsive: true,
+            dom: 'Blfrtip', // Agregamos 'l' para incluir el dropdown de longitud de página
+            buttons: ['copy', 'csv', 'excel', 'pdf'],
+            lengthMenu: [10, 25, 50, 100, 200], // Definimos los valores por defecto del dropdown
+            pageLength: 25, // Establecemos el valor por defecto
+            columns: [
+                { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
+                null, null, null, null, null, null, null, null, null
+            ],
+            colReorder: {
+                realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real
+            }
+        });
+
+        // Configuramos el evento de cambio para el dropdown y campos de fecha
+        $('#targetUrlDropdown, #startDate, #endDate').change(updateFilter);
+
+        // Configuramos el evento de click para el botón de reset
+        $('#resetFilters').click(function () {
+            // Limpiamos los valores de los controles y actualizamos el filtro
+            $('#targetUrlDropdown').val('');
+            $('#startDate').val('');
+            $('#endDate').val('');
+            updateFilter();
+        });
+
+
+
+        function updateFilter() {
+            var selectedTarget = $('#targetUrlDropdown').val();
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+
+            // Aplicamos el filtro de URL
+            dataTable.column(1).search(selectedTarget).draw();
+
+
+
+            // Filtramos por rango de fechas
+            if (startDate && endDate) {
+                dataTable.draw();
+                var columnIndex = 0; // Índice de la columna de fecha
+                var startMoment = moment(startDate, 'YYYY-MM-DD');
+                var endMoment = moment(endDate, 'YYYY-MM-DD');
+
+                // Filtramos las filas según el rango de fechas
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    var dateValue = moment(data[columnIndex], 'YYYY-MM-DD');
+                    return dateValue.isBetween(startMoment, endMoment, null, '[]');
+                });
+
+                // Redibujamos la tabla
+                dataTable.draw();
+
+                // Eliminamos la función de filtrado para que no interfiera con futuros cambios
+                $.fn.dataTable.ext.search.pop();
+            } else {
+                // No hay rango de fechas, mostramos todas las filas
+                dataTable.draw();
+            }
+        }
+    });
+
+
+    // Agregamos un elemento HTML personalizado arriba de la tabla
+    const customInfo = $('<div id="customInfo"></div>');
+    $('#datatablesSimple_wrapper').prepend(customInfo);
+
+    function updateCustomInfo() {
+        const info = dataTable.page.info();
+        customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
+    }
+
+    // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
+    dataTable.on('draw.dt', updateCustomInfo);
+    dataTable.on('length.dt', updateCustomInfo);
+</script>
+{% endblock %}
