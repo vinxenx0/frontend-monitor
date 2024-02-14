@@ -661,11 +661,132 @@ def indexabilidad(dominio):
                            indicador_3=total_paginas)
 
 
-
-@app.route('/seo/health')
+@app.route('/salud-seo/<string:dominio>')
 @login_required
-def seo_health_check():
-    return render_template('tools/seo/seo_health.html')
+def salud_seo(dominio):
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).filter(
+            Sumario.dominio == dominio).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    # Consulta para obtener el campo Sumario.total_paginas
+    total_paginas_result = db.session.query(Sumario.total_paginas).filter(
+        Sumario.fecha == fechas_seleccionadas[0],
+        Sumario.dominio == dominio).first()
+
+    # Almacenar el valor de Sumario.total_paginas en una variable
+    total_paginas = total_paginas_result[0] if total_paginas_result else None
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    # Consulta para obtener las páginas de la tabla Resultados con código de respuesta 200 y tiempo de respuesta mayor que 0
+    paginas_salud = (
+        db.session.query(
+            Resultado.fecha_escaneo,
+            Resultado.dominio,
+            Resultado.pagina,
+            Resultado.lang,
+            Resultado.e_robots,
+            Resultado.canonicals_falta,
+            Resultado.e_title,
+            Resultado.id,
+            Resultado.e_charset,
+            Resultado.tiempo_respuesta,
+            Resultado.html_valid,
+            Resultado.directivas_noindex,
+            Resultado.meta_tags
+        ).filter(
+            #Resultado.id_escaneo.in_(ids_escaneo_especificos),
+            Resultado.dominio == dominio,
+            Resultado.codigo_respuesta == 200,
+            Resultado.meta_description_falta != 0 or Resultado.meta_description_menos_70_caracteres != 0
+            or Resultado.desc_short != 0 or Resultado.desc_long != 0 or Resultado.meta_description_duplicado != 0 or Resultado.meta_description_mas_155_caracteres != 0
+            #Resultado.tiempo_respuesta > 0,
+            #Resultado.tiempo_respuesta.isnot(None),  # Filtrar resultados con tiempo_respuesta no nulo
+            #Resultado.tiempo_respuesta != '',
+            #Resultado.tiempo_respuesta.isnot(False) #,  # Filtrar resultados con tiempo_respuesta False
+            #Resultado.tiempo_respuesta.isnot(None)
+            #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
+        )
+        #.filter(
+        #    ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        #.filter(
+        #    ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/documents/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%redirect%')
+        #        )  # Excluir URLs que contengan 'redirect'
+        .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        .filter(
+            Resultado.tipo_documento.like('%text%'))
+        #.filter(Resultado.lang.in_(['es','ca','en','fr']))
+        .all())
+    # Consulta para obtener la información de carga agrupada por segundos
+    resultados_agrupados = {}
+
+    # Utilizamos una sola consulta para mejorar la eficiencia
+    resultados_por_escaneo = (
+        db.session.query(
+            Resultado.id_escaneo,
+            Resultado.dominio,
+            case(
+                (and_(Resultado.e_viewport != 1,
+                      Resultado.e_viewport.isnot(None)),
+                 'Sin etiqueta viewport'),
+                (and_(Resultado.html_valid != 1,
+                      Resultado.html_valid.isnot(None)),
+                 'Sin estructura HTML valida'),
+                (and_(Resultado.responsive_valid != 1,
+                      Resultado.responsive_valid.isnot(None)),
+                 'No cumple con estándares '),
+                (and_(Resultado.valid_aaa != 1,
+                      Resultado.valid_aaa.isnot(None)),
+                 'No validan con WACG - AAA '),
+                else_=
+                'Otros motivos'  # Puedes cambiar 'Otra etiqueta' por lo que desees
+            ).label('intervalo_carga'),
+            func.count().label('count')).filter(
+                Resultado.id_escaneo.in_(ids_escaneo_especificos),
+                Resultado.codigo_respuesta == 200).
+        filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%redirect%')
+                )  # Excluir URLs que contengan 'redirect'
+        .group_by(Resultado.id_escaneo, 'intervalo_carga',
+                  Resultado.dominio).all())
+
+    # Procesamos los resultados para estructurarlos en un diccionario
+    for resultado in resultados_por_escaneo:
+        id_escaneo = resultado.id_escaneo
+        dominio = resultado.dominio
+        intervalo_carga = resultado.intervalo_carga
+        count = resultado.count
+
+        if id_escaneo not in resultados_agrupados:
+            resultados_agrupados[id_escaneo] = []
+
+        resultados_agrupados[id_escaneo].append(
+            (dominio, intervalo_carga, count))
+
+    # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.id_escaneo.in_(ids_escaneo_especificos)).all())
+
+    # Enviamos los resultados al template
+    return render_template('tools/seo/salud_seo.html',
+                           dominio_url=dominio,
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           resultados=paginas_salud,
+                           detalles=resultados_agrupados,
+                           resumen=sumarios,
+                           indicador_1=len(paginas_salud),
+                           indicador_2=((len(paginas_salud) * 100) /
+                                        total_paginas),
+                           indicador_3=total_paginas)
+
 
 
 @app.route('/seo/posicionamiento')
@@ -680,12 +801,6 @@ def seo_keywords():
     return render_template('tools/seo/seo_keywords.html')
 
 
-@app.route('/seo/traffic')
-@login_required
-def seo_traffic():
-    return render_template('tools/seo/seo_traffic.html')
-
-
 @app.route('/seo/competencia')
 @login_required
 def seo_competencia():
@@ -696,12 +811,6 @@ def seo_competencia():
 @login_required
 def seo_backlinks():
     return render_template('tools/seo/seo_backlinks.html')
-
-
-@app.route('/seo/indexing')
-@login_required
-def seo_indexing():
-    return render_template('tools/seo/seo_indexing.html')
 
 
 @app.route('/seo/resumen')
@@ -1249,22 +1358,11 @@ def enlaces_rotos_dominio(domain):
                            indicador_3=total_paginas)
 
 
-@app.route('/usabilidad/broken-links')
-@login_required
-def usa_broken_links():
-    return render_template('tools/usa/usa_broken_links.html')
-
-
 @app.route('/usabilidad/font-colors')
 @login_required
 def usa_font_colors():
     return render_template('tools/usa/usa_font_colors.html')
 
-
-@app.route('/usabilidad/form')
-@login_required
-def usa_form():
-    return render_template('tools/usa/usa_form.html')
 
 
 @app.route('/usabilidad/nav')
@@ -1741,11 +1839,6 @@ def legibilidad(dominio):
                            indicador_3=total_paginas)
 
 
-@app.route('/usabilidad/w3c')
-@login_required
-def usa_w3c():
-    return render_template('tools/usa/usa_w3c.html')
-
 
 @app.route('/analisis-aaa/<string:dominio>')
 @login_required
@@ -1906,11 +1999,6 @@ def acc_contraste():
     return render_template('tools/acc/acc_contraste.html')
 
 
-@app.route('/accesibilidad/imagenes')
-@login_required
-def acc_images():
-    return render_template('tools/acc/acc_images.html')
-
 
 @app.route('/accesibilidad/lectores')
 @login_required
@@ -1934,12 +2022,6 @@ def acc_sintax():
 @login_required
 def acc_structure():
     return render_template('tools/acc/acc_structure.html')
-
-
-@app.route('/accesibilidad/validators')
-@login_required
-def acc_validators():
-    return render_template('tools/acc/acc_validators.html')
 
 
 @app.route('/ortografia/<string:dominio>')
@@ -2121,130 +2203,6 @@ def ortografia(dominio):
                            indicador_3=total_paginas)
 
 
-@app.route('/diccionarios/spanish')
-@login_required
-def dicc_spanish():
-
-    results = (
-        db.session.query(Resultado).filter(
-            Resultado.codigo_respuesta == 404).filter(
-                Resultado.dominio.in_(DOMINIOS_ESPECIFICOS))
-        #.filter(Resultado.id_escaneo.in_(ids_escaneo_especificos))
-        .filter(
-            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%redirect%')
-                )  # Excluir URLs que contengan 'redirect'
-        .all())
-
-    # Consulta para obtener la información de carga agrupada por segundos
-    resultados_agrupados = {}
-    resultados_agrupados_dos = {}
-
-    resultados_por_escaneo = (
-        db.session.query(
-            Resultado.id_escaneo,
-            Resultado.dominio,
-            #Resultado.codigo_respuesta == 404,
-            case(
-                # (Resultado.codigo_respuesta == 200, 'Correctos'),
-                # (Resultado.codigo_respuesta == 404, 'Rotos'),
-                # (Resultado.codigo_respuesta == 500, 'Error del servidor'),
-                # (Resultado.codigo_respuesta == 503, '503'),
-                (Resultado.pagina.like('%#%'), 'Interno'),
-                (Resultado.pagina.like('%redirect=%'), 'Redirección'),
-                (Resultado.pagina.like('%?%'), 'Dinamicos'),
-                (Resultado.pagina.like('%pdf%'), 'PDF - DOC'),
-                (Resultado.pagina.like('%estaticos%'), 'Estático'),
-                (Resultado.pagina.like('%assets%'), 'Asset'),
-                (Resultado.pagina.like('%extranet%'), 'Extranet'),
-                (Resultado.pagina.like('%intranet%'), 'Intranet'),
-                (Resultado.pagina.like('%visor%'), 'Visor'),
-                else_='HTML'  # Puedes cambiar 'Otra etiqueta' por lo que desees
-            ).label('intervalo_carga'),
-            func.count().label('count')).filter(
-                Resultado.id_escaneo.in_(ids_escaneo_especificos),
-                Resultado.codigo_respuesta == 404)
-        #.filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
-        #.filter(~Resultado.pagina.like('%redirect%'))  # Excluir URLs que contengan 'redirect'
-        .group_by(Resultado.id_escaneo, 'intervalo_carga',
-                  Resultado.dominio).all())
-
-    # Procesamos los resultados para estructurarlos en un diccionario
-    for resultado in resultados_por_escaneo:
-        id_escaneo = resultado.id_escaneo
-        dominio = resultado.dominio
-        intervalo_carga = resultado.intervalo_carga
-        count = resultado.count
-
-        if id_escaneo not in resultados_agrupados:
-            resultados_agrupados[id_escaneo] = []
-
-        resultados_agrupados[id_escaneo].append(
-            (dominio, intervalo_carga, count))
-
-    # Utilizamos una sola consulta para mejorar la eficiencia
-    resultados_por_escaneo = (
-        db.session.query(
-            Resultado.id_escaneo, Resultado.dominio,
-            case((Resultado.enlaces_inseguros >= 1, 'Enlaces inseguros'),
-                 else_='Otros').label('intervalo_carga'),
-            func.count().label('count')).filter(
-                Resultado.id_escaneo.in_(ids_escaneo_especificos),
-                Resultado.codigo_respuesta == 404)
-
-        #.filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
-        #.filter(~Resultado.pagina.like('%redirect%'))  # Excluir URLs que contengan 'redirect'
-        .group_by(Resultado.id_escaneo, 'intervalo_carga',
-                  Resultado.dominio).all())
-
-    # Procesamos los resultados para estructurarlos en un diccionario
-    for resultado in resultados_por_escaneo:
-        id_escaneo = resultado.id_escaneo
-        dominio = resultado.dominio
-        intervalo_carga = resultado.intervalo_carga
-        count = resultado.count
-
-        if id_escaneo not in resultados_agrupados_dos:
-            resultados_agrupados_dos[id_escaneo] = []
-
-        resultados_agrupados_dos[id_escaneo].append(
-            (dominio, intervalo_carga, count))
-
-    # Consulta para obtener las filas correspondientes de la tabla Sumario
-    sumarios = (db.session.query(Sumario).filter(
-        Sumario.id_escaneo.in_(ids_escaneo_especificos)).all())
-
-    # Convertir objetos Sumario a diccionarios
-    sumarios_dict = []
-    for sumario in sumarios:
-        sumario_dict = {}
-        for column in class_mapper(Sumario).columns:
-            sumario_dict[column.name] = getattr(sumario, column.name)
-        sumarios_dict.append(sumario_dict)
-
-    # Consulta para obtener las filas correspondientes de la tabla Sumario
-    evoluciones = (
-        db.session.query(Sumario)  #.dominio, Sumario.total_404, Sumario.fecha)
-        .all())
-
-    # Convertir objetos Sumario a diccionarios
-    evoluciones_dict = []
-    for evolucion in evoluciones:
-        evolucion_dict = {}
-        for column in class_mapper(Sumario).columns:
-            evolucion_dict[column.name] = getattr(evolucion, column.name)
-        evoluciones_dict.append(evolucion_dict)
-
-    return render_template('tools/dicc/dicc_spanish.html',
-                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
-                           evolucion=json.dumps(evoluciones_dict),
-                           resultados=results,
-                           resumen=sumarios,
-                           detalles=resultados_agrupados,
-                           detalles_dos=resultados_agrupados_dos,
-                           graficos=json.dumps(sumarios_dict))
-
-
 @app.route('/ortografia/<int:resultado_id>')
 @login_required
 def mostrar_html_copy(resultado_id):
@@ -2319,11 +2277,7 @@ def diccionario():
                            indicador_1=len(palabras_diccionario))
 
 
-#
-#
 # DICCIONARIOS
-#
-
 
 @app.route('/agregar_palabras_bulk', methods=['POST'])
 def agregar_palabras_bulk():
@@ -2411,18 +2365,6 @@ def borrar_palabra(id):
         'palabra': palabra[1]
     } for palabra in palabras]
     return jsonify({'palabras_diccionario': palabras_diccionario})
-
-
-@app.route('/diccionarios/english')
-@login_required
-def dicc_english():
-    return render_template('tools/dicc/dicc_english.html')
-
-
-@app.route('/diccionarios/catalan')
-@login_required
-def dicc_catalan():
-    return render_template('tools/dicc/dicc_catalan.html')
 
 
 @app.route('/diagnosis/dominios')
