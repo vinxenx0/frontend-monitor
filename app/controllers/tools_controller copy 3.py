@@ -18,9 +18,10 @@ import urllib.parse
 from urllib.parse import parse_qs, unquote
 from flask import Flask, render_template, request, redirect, url_for, session
 
+
+
 ids_escaneo_especificos = IDS_ESCANEO
 dominios_especificos = DOMINIOS_ESPECIFICOS
-
 
 # Decorador de contexto para pasar variables globales a todas las plantillas
 @app.context_processor
@@ -30,6 +31,8 @@ def inject_global_variables():
                 hora_fin=HORA_FIN,
                 estado_spider=ESTADO_SPIDER,
                 url_base=URL_BASE)
+
+
 
 
 # Implementación del filtro fromjson
@@ -590,11 +593,11 @@ def enlaces_rotos_dominio(domain):
 
     # Consulta para obtener el campo Sumario.total_paginas
     total_paginas_result = db.session.query(Sumario.total_paginas).filter(
-        Sumario.fecha == fechas_seleccionadas[0],
-        Sumario.dominio == domain).first()
+        Sumario.fecha == fechas_seleccionadas[0], Sumario.dominio == domain).first()
 
     # Almacenar el valor de Sumario.total_paginas en una variable
     total_paginas = total_paginas_result[0] if total_paginas_result else None
+
 
     #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
 
@@ -723,9 +726,11 @@ def enlaces_rotos_dominio(domain):
                            detalles=resultados_agrupados,
                            detalles_dos=resultados_agrupados_dos,
                            graficos=json.dumps(sumarios_dict),
-                           indicador_1=len(results),
-                           indicador_2=((len(results) * 100) / total_paginas),
-                           indicador_3=total_paginas)
+                           indicador_1 = len(results),
+                           indicador_2 = ( ( len(results) * 100 ) / total_paginas ),
+                           indicador_3 = total_paginas
+                           )
+
 
 
 @app.route('/usabilidad/broken-links')
@@ -887,8 +892,7 @@ def analisis_aaa(dominio):
 
     # Consulta para obtener el campo Sumario.total_paginas
     total_paginas_result = db.session.query(Sumario.total_paginas).filter(
-        Sumario.fecha == fechas_seleccionadas[0],
-        Sumario.dominio == dominio).first()
+        Sumario.fecha == fechas_seleccionadas[0], Sumario.dominio == dominio).first()
 
     # Almacenar el valor de Sumario.total_paginas en una variable
     total_paginas = total_paginas_result[0] if total_paginas_result else None
@@ -991,7 +995,6 @@ def analisis_aaa(dominio):
             sumario_dict[column.name] = getattr(sumario, column.name)
         sumarios_dict.append(sumario_dict)
 
-
 # Consulta para obtener las filas correspondientes de la tabla Sumario
     evoluciones = (
         db.session.query(Sumario)  #.dominio, Sumario.total_404, Sumario.fecha)
@@ -1014,10 +1017,10 @@ def analisis_aaa(dominio):
                            resultados=paginas_wcagaaa,
                            detalles=resultados_agrupados,
                            resumen=sumarios,
-                           indicador_1=len(paginas_wcagaaa),
-                           indicador_2=((len(paginas_wcagaaa) * 100) /
-                                        total_paginas),
-                           indicador_3=total_paginas)
+                           indicador_1 = len(paginas_wcagaaa),
+                           indicador_2 = ( ( len(paginas_wcagaaa) * 100 ) / total_paginas ),
+                           indicador_3 = total_paginas
+                           )
 
 
 @app.route('/accesibilidad/compatible')
@@ -1082,8 +1085,7 @@ def ortografia(dominio):
 
     # Consulta para obtener el campo Sumario.total_paginas
     total_paginas_result = db.session.query(Sumario.total_paginas).filter(
-        Sumario.fecha == fechas_seleccionadas[0],
-        Sumario.dominio == dominio).first()
+        Sumario.fecha == fechas_seleccionadas[0], Sumario.dominio == dominio).first()
 
     # Almacenar el valor de Sumario.total_paginas en una variable
     total_paginas = total_paginas_result[0] if total_paginas_result else None
@@ -1217,7 +1219,6 @@ def ortografia(dominio):
             sumario_dict[column.name] = getattr(sumario, column.name)
         sumarios_dict.append(sumario_dict)
 
-
 # Consulta para obtener las filas correspondientes de la tabla Sumario
     evoluciones = (
         db.session.query(Sumario)  #.dominio, Sumario.total_404, Sumario.fecha)
@@ -1241,10 +1242,10 @@ def ortografia(dominio):
                            detalles_dos=resultados_agrupados_dos,
                            detalles=resultados_agrupados,
                            resumen=sumarios,
-                           indicador_1=len(paginas_ortografia),
-                           indicador_2=((len(paginas_ortografia) * 100) /
-                                        total_paginas),
-                           indicador_3=total_paginas)
+                           indicador_1 = len(paginas_ortografia),
+                           indicador_2 = ( ( len(paginas_ortografia) * 100 ) / total_paginas ),
+                           indicador_3 = total_paginas
+                           )
 
 
 @app.route('/diccionarios/spanish')
@@ -1432,17 +1433,13 @@ def mostrar_html_copy(resultado_id):
 @app.route('/diccionario')
 @login_required
 def diccionario():
-    palabras = (db.session.query(Diccionario.id, Diccionario.palabra,
-                                 Diccionario.idioma).all())
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
 
-    palabras_diccionario = [{
-        'id': palabra[0],
-        'palabra': palabra[1],
-        'idioma': palabra[2]
-    } for palabra in palabras]
-    return render_template('tools/dicc/visor_diccionario.html',
-                           palabras_diccionario=palabras_diccionario)
-
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
+    return render_template('tools/dicc/visor_diccionario.html', palabras_diccionario = palabras_diccionario)
 
 #
 #
@@ -1454,88 +1451,62 @@ def diccionario():
 def agregar_palabras_bulk():
     data = json.loads(request.data)
     palabras = data['palabras']  # Obtener la lista de palabras del JSON
-    idioma = data['idioma']  # Obtener el idioma del JSON
     nuevas_entradas = []
-
     for palabra in palabras:
         if palabra.strip():  # Verificar si la palabra no está en blanco
-            nueva_entrada = Diccionario(palabra=palabra.strip(), idioma=idioma)
+            nueva_entrada = Diccionario(palabra=palabra.strip())
             nuevas_entradas.append(nueva_entrada)
-
     db.session.add_all(nuevas_entradas)
     db.session.commit()
-
-    palabras = (db.session.query(Diccionario.id, Diccionario.palabra,
-                                 Diccionario.idioma).all())
-
-    palabras_diccionario = [{
-        'id': palabra[0],
-        'palabra': palabra[1],
-        'idioma': palabra[2]
-    } for palabra in palabras]
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
     return jsonify({'palabras_diccionario': palabras_diccionario})
 
 
 @app.route('/agregar_palabra', methods=['POST'])
 def agregar_palabra():
     nueva_palabra = request.form['palabra']
-    nuevo_idioma = request.form['idioma']  # Agrega la lógica para obtener el idioma desde el formulario
-
-    nueva_entrada = Diccionario(palabra=nueva_palabra, idioma=nuevo_idioma)
+    nueva_entrada = Diccionario(palabra=nueva_palabra)
     db.session.add(nueva_entrada)
     db.session.commit()
-
     palabras = (
-        db.session.query(Diccionario.id, Diccionario.palabra,
-                         Diccionario.idioma)  # Incluye la columna 'idioma'
-        .all())
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
 
-    palabras_diccionario = [{
-        'id': palabra[0],
-        'palabra': palabra[1],
-        'idioma': palabra[2],
-    } for palabra in palabras]
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
     return jsonify({'palabras_diccionario': palabras_diccionario})
-
 
 @app.route('/editar_palabra', methods=['POST'])
 def editar_palabra():
     id = request.form['id']
     palabra = request.form['palabra']
-    nuevo_idioma = request.form[
-        'idioma']  # Agrega la lógica para obtener el idioma desde el formulario
-
     palabra_editar = Diccionario.query.get(id)
     palabra_editar.palabra = palabra
-    palabra_editar.idioma = nuevo_idioma  # Actualiza la columna 'idioma'
     db.session.commit()
-
     palabras = (
-        db.session.query(Diccionario.id, Diccionario.palabra,
-                         Diccionario.idioma)  # Incluye la columna 'idioma'
-        .all())
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
 
-    palabras_diccionario = [{
-        'id': palabra[0],
-        'palabra': palabra[1],
-        'idioma': palabra[2]
-    } for palabra in palabras]
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
     return jsonify({'palabras_diccionario': palabras_diccionario})
-
 
 @app.route('/borrar_palabra/<int:id>', methods=['DELETE'])
 def borrar_palabra(id):
     palabra_borrar = Diccionario.query.get_or_404(id)
     db.session.delete(palabra_borrar)
     db.session.commit()
-    palabras = (db.session.query(Diccionario.id, Diccionario.palabra).all())
+    palabras = (
+        db.session.query(Diccionario.id, Diccionario.palabra)
+        .all()
+    )
 
-    palabras_diccionario = [{
-        'id': palabra[0],
-        'palabra': palabra[1]
-    } for palabra in palabras]
+    palabras_diccionario = [{'id': palabra[0], 'palabra': palabra[1]} for palabra in palabras]
     return jsonify({'palabras_diccionario': palabras_diccionario})
-
 
 @app.route('/diccionarios/english')
 @login_required
@@ -1585,6 +1556,7 @@ def tools_config():
     return render_template('tools/config.html')
 
 
+
 @app.route('/resultados-popup', methods=['GET'])
 def resultados_popup():
 
@@ -1622,7 +1594,6 @@ def resultados_popup():
     print(resultados)
 
     return render_template('resultado_popup.html', resultados=resultados)
-
 
 # return render_template('resultado_popup.html', resultados=resultados_dict)
 
@@ -1718,7 +1689,6 @@ def contar_enlaces(response_text, url):
 
     # Verificar enlaces rotos
 
-
 # enlaces_rotos = [enlace for enlace in enlaces_salientes if not verificar_enlace(enlace)]
 
     return {
@@ -1746,3 +1716,4 @@ def verificar_enlace(enlace):
             response.status_code == 301 or response.status_code == 302)
     except requests.RequestException:
         return False
+

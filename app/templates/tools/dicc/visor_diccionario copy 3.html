@@ -28,19 +28,7 @@
 
 <button id="addRow">Add Row</button>
 
-<form id="addWordForm">
-    <label for="nuevaPalabra">Nueva Palabra:</label>
-    <input type="text" id="nuevaPalabra" name="nuevaPalabra" required>
 
-    <label for="selectIdioma">Idioma:</label>
-    <select id="selectIdioma" name="idioma">
-        <option value="Spanish">Spanish</option>
-        <option value="Catalonian">Catalonian</option>
-        <!-- Agrega más opciones según sea necesario -->
-    </select>
-
-    <button type="submit">Agregar Palabra</button>
-</form>
 
 
 <table id="example" class="display">
@@ -111,25 +99,6 @@
         });
 
 
-        // Evento submit del formulario
-    $('#addWordForm').submit(function (event) {
-        event.preventDefault();
-        var nuevaPalabra = $('#nuevaPalabra').val();
-        var idioma = $('#selectIdioma').val();
-
-        // Verificar si la palabra no está vacía
-        if (nuevaPalabra.trim() !== "") {
-            $.ajax({
-                url: '/agregar_palabra',
-                method: 'POST',
-                data: { palabra: nuevaPalabra, idioma: idioma },
-                success: function (response) {
-                    actualizarTabla(response.palabras_diccionario);
-                }
-            });
-        }
-    });
-    
         $('#bulkForm').submit(function (event) {
             event.preventDefault();
             var palabrasBulk = $('#bulkInput').val().split('\n');  // Convertir a lista de palabras
