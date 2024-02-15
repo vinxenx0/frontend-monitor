@@ -1,0 +1,62 @@
+<!-- app/templates/tools/diag/sitemap.html -->
+{% extends 'tool_base.html' %}
+
+{% block title %}Sitemap{% endblock %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo >= 200 %}
+
+{% elif intervalo >= 100 %}
+
+{% elif intervalo >= 20 %}
+
+{% endif %}
+{% endmacro %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo == '60 a 90 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '30 a 60 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '15 a 30 segundos' %}
+intervalo-color-rojo
+{% endif %}
+{% endmacro %}
+{% set peso_total_img = 0 %}
+
+{% block head %}
+
+<h1 class="mt-4">Sitemap</h1>
+
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Sitemap dominio </li>
+</ol>
+
+{% endblock %}
+
+{% if dominio_url %}
+{% set dominios_ordenados_dos = [dominio_url] %}
+{% else %}
+{% set dominios_ordenados_dos = dominios_ordenados %}
+{%endif%}
+
+{% block content %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Ruta del sitemap</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for path, status in results.items() %}
+        <tr>
+            <td>{{ path }}</td>
+            <td>{{ status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
