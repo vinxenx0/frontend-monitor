@@ -44,8 +44,11 @@
   }
 </style>
 
-<h1 class="mt-4">&Uacute;ltimo Resumen</h1>
+
+
+<h1 class="mt-4">Resumen Accesibilidad</h1>
 <h3 class="mt-4">{{solo_uno}}</h3>
+
 
 <ol class="breadcrumb mb-4">
   <li class="breadcrumb-item active">Informe general del último scan</li>
@@ -72,7 +75,52 @@
       </div>
     </div>
   </div>
+  {% for dominio_id in dominios_ordenados %}
+{% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
+
+<div class="col-md-6 mb-4">
+  <div class="row">
+
+      <div class="col-md-6 mb-4">
+          <div class="card">
+            
+              <div class="card-body text-center" id="porcentajeEnlacesRotosCard">
+                <div class="card-title"><h6>Fecha</h6></div>
+                  <p><strong>{{stat.fecha }}</strong>
+                    de {{ stat.hora_inicio}} a {{stat.hora_fin}}</p>
+              </div>
+              <div class="card-footer">
+                  <small class="text-muted">Duración</small>
+              </div>
+          </div>
+      </div>
+
+
+      <div class="col-md-4 mb-4">
+          <div class="card ">
+            
+              <div class="card-body text-center">
+                <div class="card-title"><h6>Total</h6></div>
+                <p><strong>{{ "{:.0f}".format(stat.total_paginas) }}</strong> páginas vistas</p>
+
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">P&aacute;ginas vistas</small>
+            </div>
+          </div>
+      </div>
+
+  </div>
 </div>
+
+
+
+
+{%endfor%}
+{%endfor%}
+</div>
+
+
 
 <script>
   function changeDomain() {
@@ -239,7 +287,7 @@
               <tr>
                 <td><i class="fa-solid fa-circle-question fa-2xs"></i>Idiomas</td>
                 <td colspan="4">{{ stat.idiomas or 0 }}</td>
-                
+
               </tr>
 
 
@@ -248,10 +296,10 @@
                 <td>Paginas con e. Ortograficos</td>
                 <td>{{ stat.pages_err_orto or 0 }}</td>
                 <td>
-                  ({{ "%0.2f"|format(stat.pages_err_orto  / stat.total_paginas * 100) }}%)
+                  ({{ "%0.2f"|format(stat.pages_err_orto / stat.total_paginas * 100) }}%)
                 </td>
                 <td>
-                  {% set variacion = stat.pages_err_orto  - (stat_ayer.total_paginas or 0) %}
+                  {% set variacion = stat.pages_err_orto - (stat_ayer.total_paginas or 0) %}
                   {% if variacion > 0 %}
                   <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
                       class="fas fa-plus text-danger"></i></span>
@@ -282,7 +330,7 @@
                   {% set total_porcentaje_accesibilidad = total_porcentaje_accesibilidad + (stat.enlaces_inseguros is
                   not none
                   and
-                  (stat.pages_err_orto  / stat.total_paginas) * 100 or 0) %}
+                  (stat.pages_err_orto / stat.total_paginas) * 100 or 0) %}
                 </td>
               </tr>
 
@@ -293,7 +341,7 @@
                   ({{ "%0.2f"|format(stat.tiempo_medio / stat.total_paginas * 100) }}%)
                 </td>
                 <td>
-                  {% set variacion = stat.tiempo_medio  - (stat_ayer.tiempo_medio or 0) %}
+                  {% set variacion = stat.tiempo_medio - (stat_ayer.tiempo_medio or 0) %}
                   {% if variacion > 0 %}
                   <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
                       class="fas fa-plus text-danger"></i></span>
@@ -324,7 +372,7 @@
                   {% set total_porcentaje_accesibilidad = total_porcentaje_accesibilidad + (stat.enlaces_inseguros is
                   not none
                   and
-                  (stat.tiempo_medio  / stat.total_paginas) * 100 or 0) %}
+                  (stat.tiempo_medio / stat.total_paginas) * 100 or 0) %}
                 </td>
               </tr>
 
@@ -376,7 +424,7 @@
                   ({{ "%0.2f"|format(stat.html_count / stat.total_paginas * 100) }}%)
                 </td>
                 <td>
-                  {% set variacion = stat.html_count  - (stat_ayer.html_count  or 0) %}
+                  {% set variacion = stat.html_count - (stat_ayer.html_count or 0) %}
                   {% if variacion > 0 %}
                   <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
                       class="fas fa-plus text-success"></i></span>
@@ -407,17 +455,17 @@
                   {% set total_porcentaje_accesibilidad = total_porcentaje_accesibilidad + (stat.enlaces_inseguros is
                   not none
                   and
-                  (stat.html_count  / stat.total_paginas) * 100 or 0) %}
+                  (stat.html_count / stat.total_paginas) * 100 or 0) %}
                 </td>
               </tr>
               <tr>
                 <td><i class="fa-solid fa-circle-question fa-2xs"></i>Otros</td>
                 <td>{{ stat.others_count or 0 }}</td>
                 <td>
-                  ({{ "%0.2f"|format(stat.others_count  / stat.total_paginas * 100) }}%)
+                  ({{ "%0.2f"|format(stat.others_count / stat.total_paginas * 100) }}%)
                 </td>
                 <td>
-                  {% set variacion = stat.others_count  - (stat_ayer.others_count  or 0) %}
+                  {% set variacion = stat.others_count - (stat_ayer.others_count or 0) %}
                   {% if variacion > 0 %}
                   <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
                       class="fas fa-plus text-danger"></i></span>
@@ -452,7 +500,7 @@
                 </td>
               </tr>
 
-             
+
 
             </tbody>
           </table>
@@ -463,105 +511,106 @@
 
     <div class="col-md-4 mb-4">
       <div class="card">
-       <div class="card-body">
-        <table>
-    <tr>
-      <td colspan="6">
-        <!-- Agrega este div donde quieras mostrar el gráfico -->
-        <div style="width: 400px; height: 400px;">
-          <canvas id="doughnutChart_accesibilidad_{{stat.id_escaneo}}"></canvas>
-        </div>
-      </td>
-    </tr>
-    <tr class="section-footer">
-      <td colspan="5">
-        Accesibilidad Score
-      </td>
-      <td>
-        ({{ "%0.2f"|format(100-(total_porcentaje_accesibilidad / 9 )) }}%)
-      </td>
-    </tr>
+        <div class="card-body">
+          <table>
+            <tr>
+              <td colspan="6">
+                <!-- Agrega este div donde quieras mostrar el gráfico -->
+                <div style="width: 400px; height: 400px;">
+                  <canvas id="doughnutChart_accesibilidad_{{stat.id_escaneo}}"></canvas>
+                </div>
+              </td>
+            </tr>
+            <tr class="section-footer">
+              <td colspan="5">
+                Accesibilidad Score
+              </td>
+              <td>
+                ({{ "%0.2f"|format(100-(total_porcentaje_accesibilidad / 9 )) }}%)
+              </td>
+            </tr>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Obtén los datos de tu backend o define un ejemplo aquí
-        var scores = {{ 100-(total_porcentaje_accesibilidad / 9 )}};
+            <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                // Obtén los datos de tu backend o define un ejemplo aquí
+                var scores = {{ 100-(total_porcentaje_accesibilidad / 9)
+              }};
 
-        var color1 = 'rgb(0, 91, 114)';
-        var color2 = 'rgb(249, 176, 0)';
-
-
-        // Configura los datos para el gráfico
-        var data = {
-          labels: ['Score', 'Total'],
-          datasets: [{
-            data: [scores, 100 - scores], // Ajusta según tus necesidades
-            backgroundColor: [color2, color1],
-            borderColor: color1,
-            borderWidth: 1
-          }]
-        };
+              var color1 = 'rgb(0, 91, 114)';
+              var color2 = 'rgb(249, 176, 0)';
 
 
-        // Configura las opciones del gráfico
-        var options = {
-          cutoutPercentage: 50, // Ajusta este valor según tus preferencias
-          responsive: true,
-        };
+              // Configura los datos para el gráfico
+              var data = {
+                labels: ['Score', 'Total'],
+                datasets: [{
+                  data: [scores, 100 - scores], // Ajusta según tus necesidades
+                  backgroundColor: [color2, color1],
+                  borderColor: color1,
+                  borderWidth: 1
+                }]
+              };
+
+
+              // Configura las opciones del gráfico
+              var options = {
+                cutoutPercentage: 50, // Ajusta este valor según tus preferencias
+                responsive: true,
+              };
 
 
 
-        // Obtén el contexto del canvas y crea el gráfico
-        var ctx = document.getElementById('doughnutChart_accesibilidad_{{ stat.id_escaneo }}').getContext('2d');
-        var doughnutChart = new Chart(ctx, {
-          type: 'doughnut',
-          data: data,
-          options: options
-        });
+              // Obtén el contexto del canvas y crea el gráfico
+              var ctx = document.getElementById('doughnutChart_accesibilidad_{{ stat.id_escaneo }}').getContext('2d');
+              var doughnutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: options
+              });
       });
-    </script>
-    </table>
-         </div>
+            </script>
+          </table>
         </div>
       </div>
+    </div>
 
     <div class="col-md-4 mb-4">
-       <div class="card">
+      <div class="card">
         <div class="card-body">
-    <table class="table">
-      <tbody>
+          <table class="table">
+            <tbody>
 
-        <tr class="table-danger">
-          <td colspan="2" class="section-header">Registro</td>
-        </tr>
-        <tr>
-          <td><i class="fa-solid fa-circle-question fa-2xs"></i>ID</td>
-          <td>{{ stat.id or 'Fail' }}</td>
-        </tr>
-        <tr>
-          <td><i class="fa-solid fa-circle-question fa-2xs"></i>HASH</td>
-          <td><!--
+              <tr class="table-danger">
+                <td colspan="2" class="section-header">Registro</td>
+              </tr>
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>ID</td>
+                <td>{{ stat.id or 'Fail' }}</td>
+              </tr>
+              <tr>
+                <td><i class="fa-solid fa-circle-question fa-2xs"></i>HASH</td>
+                <td><!--
             {{ stat.id_escaneo or 'Fail' }}
           -->
-          </td>
-        </tr>
-        <tr>
-          <td>Hora de Inicio</td>
-          <td>{{ stat.hora_inicio or 'Fail' }}</td>
-        </tr>
-        <tr>
-          <td>Hora de Fin</td>
-          <td>{{ stat.hora_fin or 'Fail' }}</td>
-        </tr>
-        <tr>
-          <td>Fecha</td>
-          <td>{{ stat.fecha or 'Fail' }}</td>
-        </tr>
+                </td>
+              </tr>
+              <tr>
+                <td>Hora de Inicio</td>
+                <td>{{ stat.hora_inicio or 'Fail' }}</td>
+              </tr>
+              <tr>
+                <td>Hora de Fin</td>
+                <td>{{ stat.hora_fin or 'Fail' }}</td>
+              </tr>
+              <tr>
+                <td>Fecha</td>
+                <td>{{ stat.fecha or 'Fail' }}</td>
+              </tr>
 
 
 
-      </tbody>
-    </table>
+            </tbody>
+          </table>
 
         </div>
       </div>
@@ -571,8 +620,8 @@
       document.addEventListener('DOMContentLoaded', function () {
         // Obtén los datos de tu backend o define un ejemplo aquí
 
-        var scores = [{{ total_porcentaje_seo / 2300 }}, {{ 100-(total_porcentaje_usabilidad / 6)}},
-        {{ 100-(total_porcentaje_accesibilidad / 6)}}, {{ total_porcentaje_otros_diagnosticos / 6}}];
+        var scores = [{{ total_porcentaje_seo / 2300 }}, {{ 100-(total_porcentaje_usabilidad / 6) }},
+        {{ 100-(total_porcentaje_accesibilidad / 6) }}, {{ total_porcentaje_otros_diagnosticos / 6}}];
 
       var colors = ['rgb(0, 53, 66)', 'rgb(249, 176, 0)', 'rgb(0, 91, 114)', 'rgb(184, 130, 0)'];
 
@@ -634,4 +683,4 @@
   });
 </script>
 
-    {% endblock %}
+{% endblock %}

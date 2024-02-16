@@ -72,7 +72,6 @@ intervalo-color-rojo
                         <th>e_robots</th>
                         <th>canonicals_falta</th>
                         <th>e_title</th>
-                        <th>e_charset</th>
                         <th>hdirectivas_noindex</th>
                         <th>html_valid</th>
                         <th>htiempo_respuesta</th>
@@ -88,7 +87,6 @@ intervalo-color-rojo
                         <th>e_robots</th>
                         <th>canonicals_falta</th>
                         <th>e_title</th>
-                        <th>e_charset</th>
                         <th>hdirectivas_noindex</th>
                         <th>html_valid</th>
                         <th>htiempo_respuesta</th>
@@ -120,7 +118,6 @@ intervalo-color-rojo
                         <td>{{ result.e_robots }}</td>
                         <td>{{ result.canonicals_falta }}</td>
                         <td>{{ result.e_title }}</td>
-                        <td>{{ result.e_charset }}</td>
                         <td>{{ result.directivas_noindex }}</td>
                         <td>{{ result.html_valid }}</td>
                         
@@ -215,7 +212,7 @@ intervalo-color-rojo
             pageLength: 25, // Establecemos el valor por defecto
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
-                null, null, null, null, null, null, null, null, null
+                null, null, null, null, null,  null, null, null
             ],
             colReorder: {
                 realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real

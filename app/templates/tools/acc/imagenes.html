@@ -100,9 +100,24 @@
                         <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina
                                 }}</a></td>
 
-                        <td>{{ result.alt_vacias }}</td>
-                        <td>{{ result.image_types|length }}</td>
-                        <td>{{ result.imagenes_rotas }}</td>
+                        <td
+                        class="tiempo-celda {% if result.alt_vacias is not none and result.alt_vacias < 2 %} tiempo-verde {% elif result.alt_vacias < 25 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
+                    
+                        {{ result.alt_vacias }}</td>
+                        <td>
+                        {% if result.image_types %}<small>
+                        {% for key, value in result.image_types.items() %}
+                        <b>{% if key == 'null' %}svg{%else %}{{ key }}{%endif%}:</b>{{ value }}</li>
+                        {% endfor %}
+                        {% else %}
+                        <i class="fa-solid fa-lg  fa-circle-exclamation"></i>
+                        </small>
+                        {%endif%}
+
+                        </td>
+                        <td
+                        class="tiempo-celda {% if result.imagenes_rotas is not none and result.imagenes_rotas == 0 %} tiempo-verde {% elif result.imagenes_rotas <= 3 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
+                            {{ result.imagenes_rotas }}</td>
                         <td>{{ result.imagenes|length }}</td>
                         <td>{{ result.images_1MB}}</td>
                          <td>
@@ -120,7 +135,7 @@
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content bg-white text-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias #{{ result.id
+                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">A&aacute;alisis im&aacute;genes #{{ result.id
                                         }}</h5>
                                     <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
@@ -132,22 +147,21 @@
                                             {% if result.imagenes %}
                                                 <div class="image-table">
                                                     <div class="row eveb">
-                                                        <div class="col-md-2 cell"><b>rota</b></div>
+                                                        <div class="col-md-2 cell"><b>#</b></div>
                                                         <div class="col-md-4 cell"><b>Nombre</b></div>
-                                                        <div class="col-md-2 cell"><b>Tamaño (Mb)</b></div>
-                                                        <div class="col-md-2 cell"><b>Tipo de imagen</b></div>
-                                                        <div class="col-md-2 cell"><b>alt-text</b></div>
+                                                        <div class="col-md-2 cell"><b>Peso (Mb)</b></div>
+                                                        <div class="col-md-4 cell"><b>Texto Alternativo</b></div>
                                                     </div>
                                                     {% set peso_total_img = 0 %}
                                                     {% for image in result.imagenes %}
                                                         <div class="{{ 'row odd' if loop.index is odd else 'row even' }}">
-                                                            <div class="col-md-2 cell">{{ image.broken }}</div>
+                                                            <div class="col-md-2 cell">{% if image.broken %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>
+                                                            {%else%} <i class="fa-solid fa-lg  fa-circle-check"></i>{%endif%}</div>
                                                             <div class="col-md-4 cell">
                                                                 <a href="{{ image.url }}" alt="{{ image.url }}" target="_blank">{{ image.filename }}</a>
                                                             </div>
-                                                            <div class="col-md-2 cell">{{ "%.2f"|format(image.size_mb) }}</div>
-                                                            <div class="col-md-2 cell">{{ image.image_type }}</div>
-                                                            <div class="col-md-2 cell">{{ image.alt_text}}</div>
+                                                            <div class="col-md-2 cell">{{ "%.2f"|format(image.size_mb) }}{% if image.size_mb >= 1 %} <i class="fa-solid fa-lg  fa-circle-exclamation"></i>{%endif%}</div>
+                                                            <div class="col-md-2 cell">{% if not image.alt_text %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{%else%}{{ image.alt_text}}{%endif%}</div>
                                                             {% set peso_total_img = peso_total_img + image.size_mb * 1000 %}
                                                         </div>
                                                     {% endfor %}

@@ -46,7 +46,7 @@ intervalo-color-rojo
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Indexabilidad
+            Resultados en Google
         </div>
         <div class="card-body">
             <table id="tabla-resultados" class="table table-striped table-bordered">
@@ -57,33 +57,36 @@ intervalo-color-rojo
                     </tr>
                 </thead>
                 <tbody>
-                    {% for palabra, posicion in posiciones.items() %}
+                    {% for palabra, posicion in posiciones | sort(attribute=1) %}
                     <tr>
-                        <td>{{ palabra }}</td>
-                        <td data-sort="{{ posicion | default(0) }}">{{ posicion or 'Sin posición' }}</td>
+                        <td><a target="_blank" href="https://www.google.es/search?q={{ palabra }}">{{ palabra }}</a></td>
+                        <td data-sort="{{ posicion | default(0) }}"
+                        class="tiempo-celda {% if posicion is not none and posicion <= 3 %} tiempo-verde {% elif posicion <= 5 %} tiempo-amarillo {% elif posicion <=10 %} tiempo-rojo {% endif %}">
+                        {{ posicion | int }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            
+
             <script type="text/javascript">
-                $(document).ready(function() {
+                $(document).ready(function () {
                     $('#tabla-resultados').DataTable({
                         // Definir la columna por la cual se realizará la ordenación inicial
                         order: [[1, 'asc']], // Ordenar por la segunda columna (posición) de forma ascendente al cargar la tabla
                         columnDefs: [
                             {
-                                // Habilitar la ordenación en la segunda columna (posición)
-                                targets: 1, // Índice de la columna (empezando desde 0)
-                                orderable: true, // Permitir la ordenación
-                                type: 'string' // Especificar el tipo de datos como cadena para ordenar alfanuméricamente
+                                targets: 1,
+                                type: 'num'
                             }
                         ]
+
                     });
                 });
             </script>
-            
-            
+
+
+
+
         </div>
     </div>
 </div>

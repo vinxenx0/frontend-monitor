@@ -12,6 +12,8 @@
 
 {% endif %}
 {% endmacro %}
+{% set c_fail = 0 %}
+{% set c_warn = 0 %}
 
 {% block head %}
 
@@ -60,6 +62,8 @@
 -->
 
                         <th>total</th>
+                        <th>errores</th>
+<th>warning</th>
                         <th><i class="fas fa-lightbulb"></i></th>
                     </tr>
                 </thead>
@@ -75,6 +79,8 @@
 -->
 
                         <th>total</th>
+                        <th>errores</th>
+                        <th>warning</th>
                         <th><i class="fas fa-lightbulb"></i></th>
 
                     </tr>
@@ -83,7 +89,7 @@
 
                     {% for result in resultados %}
 
-
+                   
                     <tr>
                         <td><small>{{ result.fecha_escaneo }}</small></td>
                         <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina
@@ -94,8 +100,25 @@
                                         <td>{% if result.valid_aaa != 1 or result.valid_aaa is none %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
                                         <td>{% if result.html_valid != 1 or result.html_valid is none %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
 -->
-
-                        <td>{{ result.wcagaaa|length }}</td>
+{% if result.wcagaaa  %}
+                          
+{% for consejo in result.wcagaaa %}
+{% set is_fail = 'Fail' in consejo.code %}
+    {% if is_fail %}
+        {% set c_fail = c_fail + is_fail %} 
+    {% else %}
+        {% set c_warn = c_warn + 1 %}
+    {% endif %}
+    
+{% endfor %}
+{%endif%}
+                        <td>{{ result.wcagaaa|length }}
+                          
+                        <td>{{ c_fail }}</td>
+                        <td>{{ c_warn }}</td>
+                           
+                         
+                        </td>
 
                         <td>
                             <button type="button" class="btn btn-info" data-bs-toggle="modal"
@@ -189,7 +212,7 @@
             pageLength: 25, // Establecemos el valor por defecto
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
-                null, null, null
+                null, null, null, null, null
             ],
             colReorder: {
                 realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real

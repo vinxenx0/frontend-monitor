@@ -63,30 +63,32 @@
                     <tr>
                         <th>fecha</th>
                         <th>dirección</th>
-                        <th>num_palabras</th>
+                        <th>palabras</th>
+                        <th>ortografia</th>
                         <th>frases</th>
-                        <th>media_palabras_frase</th>
-                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>flesh_score</th>
-                        <th>errores_ortograficos</th>
+                        <th>palabras*frase</th>
+                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>score</th>
                         <th>idioma</th>
-                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>content_valid</th>
-                        <th>tipo_documento</th>
-                        <th><i class="fas fa-lightbulb"></i></th>
+                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>html</th>
+                        <!--
+                         <th><i class="fas fa-lightbulb"></i></th>
+                         -->
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
                         <th>fecha</th>
                         <th>dirección</th>
-                        <th>num_palabras</th>
+                        <th>palabras</th>
+                        <th>ortografia</th>
                         <th>frases</th>
-                        <th>media_palabras_frase</th>
-                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>flesh_score</th>
-                        <th>errores_ortograficos</th>
+                        <th>palabras*frase</th>
+                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>score</th>
                         <th>idioma</th>
-                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>content_valid</th>
-                        <th>tipo_documento</th>
-                        <th><i class="fas fa-lightbulb"></i></th>
+                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>html</th>
+                        <!--
+                         <th><i class="fas fa-lightbulb"></i></th>
+                         -->
                     </tr>
                 </tfoot>
                 <tbody>
@@ -94,18 +96,19 @@
                     {% for result in resultados %}
                     <!--
 
-                        Resultado.fecha_escaneo,
-            Resultado.dominio,
-            Resultado.pagina,
-            Resultado.lang,
-            Resultado.num_palabras,
-            Resultado.frases,
-            Resultado.,
-            Resultado.flesh_score,
-            Resultado.e,
-            Resultado.id,
-            Resultado.tipo_documento,
-            Resultado.content_valid 
+                      <tr>
+                        <th>fecha</th>
+                        <th>dirección</th>
+                        <th>num_palabras</th>
+                        <th>errores_ortograficos</th>
+                        <th>frases</th>
+                        <th>media_palabras_frase</th>
+                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>flesh_score</th>
+                        <th>idioma</th>
+                        <th><i class="fa-solid fa-circle-question fa-2xs"></i>content_valid</th>
+                        <th>tipo_documento</th>
+                        <th><i class="fas fa-lightbulb"></i></th>
+                    </tr>
                     -->
                     <tr>
                         <td><small>{{ result.fecha_escaneo }}</small></td>
@@ -113,18 +116,32 @@
                                 }}</a></td>
 
                         <td>{{ result.num_palabras }}</td>
-                        <td>{{ result.frases }}</td>
-                        <td>{{ result.media_palabras_frase }}</td>
-                        <td>{{ result.flesh_score }}</td>
-                        <td>{{ result.num_errores_ortograficos }}</td>
+
+                        <td class="tiempo-celda {% if result.num_errores_ortograficos is not none and result.num_errores_ortograficos < 5 %} tiempo-verde {% elif result.num_errores_ortograficos < 25 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
+                            {{ result.num_errores_ortograficos }}</td>
+
+                            <td>{{ result.frases }}</td>
+                            <td>{{ result.media_palabras_frase }}</td>
+
+                            <td
+                            class="tiempo-celda {% if result.flesh_score is not none and result.flesh_score > 90 %} tiempo-verde {% elif result.flesh_score > 50 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
+
+                            {{ result.flesh_score }}
+                        </td>
+
                         <td>{{ result.lang }}</td>
+                        
                         <td>{% if result.content_valid != 0 %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{%
                             else %}<i class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
 
 
 
+                       
 
-                        <td>{{ result.tipo_documento }}</td>
+
+
+                       
+<!--
                         <td>
                             <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                 data-bs-target="#infoModal{{ result.id }}">
@@ -132,7 +149,7 @@
                             </button>
 
                         </td>
-
+-->
                     </tr>
 
                     <div class="modal fade" id="infoModal{{ result.id }}" tabindex="-1"
@@ -218,7 +235,7 @@
                 null, null, // Primera columna numérica
                 null, // Segunda columna numérica
                 null, // Tercera columna numérica
-                null, null,null,  { type: 'numeric' }, null, null
+                null, null, null, null
             ],
             colReorder: {
                 realtime: true // Opcional: ajusta a true si quieres redimensionamiento en tiempo real

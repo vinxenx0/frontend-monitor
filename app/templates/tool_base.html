@@ -63,7 +63,7 @@
                                             <p class="lead text-dark">errores encontrados</p>
                                         </div>
                                         <div class="card-footer">
-                                            <small class="text-muted">P&aacute;ginas con Errores</small>
+                                            <small class="text-muted">P&aacute;ginas a revisar</small>
                                         </div>
                                     </div>
                                 </div>
@@ -75,7 +75,7 @@
                                         <div class="card-body text-center">
                                             <h3 class="display-4 {% if indicador_2 > 50 %} text-light {%endif%}"><span
                                                     id="totalEnlacesRotos_">{{"%.2f"|format(indicador_2)}}%</span></h3>
-                                            <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}">totales</p>
+                                            <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}">de {{indicador_3}}</p>
                                         </div>
                                         <div class="card-footer">
                                             <small class="{% if indicador_2 > 50 %} text-light {%endif%}">Total</small>

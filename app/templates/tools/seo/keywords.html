@@ -1,7 +1,7 @@
-<!-- app/templates/seo/encabezados.html -->
+<!-- app/templates/seo/keywords.html -->
 {% extends 'tool_base.html' %}
 
-{% block title %}Velocidad{% endblock %}
+{% block title %}Keywords{% endblock %}
 
 {% macro get_intervalo_color_class(intervalo) %}
 {% if intervalo >= 200 %}
@@ -26,10 +26,10 @@ intervalo-color-rojo
 
 {% block head %}
 
-<h1 class="mt-4">Encabezados</h1>
+<h1 class="mt-4">Keywords</h1>
 
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Encabezados en el dominio </li>
+    <li class="breadcrumb-item active">Keywords </li>
 </ol>
 
 {% endblock %}
@@ -72,8 +72,8 @@ intervalo-color-rojo
                         <th>e_robots</th>
                         <th>c_keywords</th>
                         <th>c_robots</th>
-                        <th>directivas_noindex</th>
-                        <th>tipo_documento</th>
+                        <th>oindex</th>
+                        <th>tipo</th>
 
                         <th><i class="fas fa-lightbulb"></i></th>
 
@@ -87,8 +87,8 @@ intervalo-color-rojo
                         <th>e_robots</th>
                         <th>c_keywords</th>
                         <th>c_robots</th>
-                        <th>directivas_noindex</th>
-                        <th>tipo_documento</th>
+                        <th>noindex</th>
+                        <th>tipo</th>
                         <th><i class="fas fa-lightbulb"></i></th>
 
 
@@ -114,13 +114,35 @@ intervalo-color-rojo
                         <!-- <td>{{ result.id }}</td> -->
                         <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina
                                 }}</a></td>
-                        <td>{{ result.e_keywords }}</td>
-                        <td>{{ result.e_robots }}</td>
+                        
+
+                        <td data-order="{% if result.e_keywords != 1 or result.e_keywords is none %}0{% else %}1{% endif %}">
+                            {% if result.e_keywords != 1 or result.e_keywords is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                        </td>
+
+                        <td data-order="{% if result.e_robots != 1 or result.e_robots is none %}0{% else %}1{% endif %}">
+                            {% if result.e_robots != 1 or result.e_robots is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                        </td>
+
                         <td>{{ result.c_keywords }}</td>
                         <td>{{ result.c_robots }}</td>
                         
                         
-                        <td>{{ result.directivas_noindex }} </td>
+                        <td data-order="{% if result.directivas_noindex != 0 or result.directivas_noindex is none %}0{% else %}1{% endif %}">
+                            {% if result.directivas_noindex != 0 or result.directivas_noindex is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                        </td>
                       
                         <td>{% if 'text/html' in result.tipo_documento  %}HTML
                             {% elif 'image' in result.tipo_documento %}IMAGEN
@@ -141,7 +163,7 @@ intervalo-color-rojo
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content bg-white text-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias velocidad #{{
+                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Info extra #{{
                                         result.id }}</h5>
                                     <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
@@ -149,7 +171,7 @@ intervalo-color-rojo
 
                                 <div class="modal-body">
                                     <div class="suggestion">
-                                        <div class="label"><b>Headings:</b></div>
+                                        <div class="label"><b>Meta tags:</b></div>
                                         <div class="value">
                                             {% if result.meta_tags %}
                                             {% for consejo in result.meta_tags %}
