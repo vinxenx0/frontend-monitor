@@ -40,7 +40,6 @@ intervalo-color-rojo
                     <th>origen</th>
                     <th>url rota</th>
                     <th>interno</th>
-                    <th>tipo</th>
                     <th>pdf</th>
                     <th>tiempo</th>
 
@@ -54,7 +53,6 @@ intervalo-color-rojo
                     <th>origen</th>
                     <th>Url rota</th>
                     <td>interno</td>
-                    <th>tipo</th>
                     <th>pdf</th>
                     <th>tiempo</th>
 
@@ -68,7 +66,7 @@ intervalo-color-rojo
                     <td><a href="{{ result.parent_url }}" target="_blank">{{ result.parent_url }}</a></td>
                     <td><a style="color:red;" href="{{ result.pagina }}" target="_blank">{{ result.pagina }}</a></td>
                     <td>{% if '#' in result.pagina %}<i class="fa-solid fa-check"></i>{% endif %}</td>
-                    <td>{{ result.tipo_documento }}</td>
+                   
                     <td>{% if 'pdf' in result.pagina %} <i class="fa-solid fa-check"></i> {%endif%}</td>
                     <td
                         class="tiempo-celda {% if result.tiempo_medio is not none and result.tiempo_respuesta <= 5 %} tiempo-verde {% elif result.tiempo_respuesta <= 15 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
@@ -120,7 +118,7 @@ intervalo-color-rojo
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
                 //{ type: 'date', format: 'YYYY-MM-DD' },
-                null, null, null, null, null, null
+                null, null, null,  null, null
             ]
         });
 

@@ -112,7 +112,11 @@
                                 class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
 
 
-                        <td>{{ result.tipo_documento }}</td>
+                        <td>{% if 'text/html' in result.tipo_documento  %}HTML
+                            {% elif 'image' in result.tipo_documento %}IMAGEN
+                            {% elif 'pdf' in result.tipo_documento %}PDF
+                            {%endif%}
+                        </td>
                         <td>{{ result.lang }}</td>
                         <td>
                             <button type="button" class="btn btn-info" data-bs-toggle="modal"

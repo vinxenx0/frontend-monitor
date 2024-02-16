@@ -1,0 +1,241 @@
+<!-- app/templates/config.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Estilos para textarea en modo de solo lectura */
+    textarea[readonly] {
+        background-color: #f8f9fa; /* Color de fondo */
+        opacity: 0.6; /* Opacidad reducida */
+        cursor: not-allowed; /* Cursor no permitido */
+    }
+</style>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Configuración</h1>
+        <div class="card control-card mb-4">
+            <div class="card-body">
+                <div class="mb-3 status-section">
+                  <div>
+                     <i class="fas fa-info-circle status-icon text-primary"></i>
+                     <span class="status-text">Estado: <strong>Activo</strong></span>
+                  </div>
+                  <div>
+                     <i class="fas fa-history status-icon text-success"></i>
+                     <span class="status-text">Ultima ejecución: <strong>{{ first_end_time }}</strong></span>
+                  </div>
+               </div>
+               <div class="control-buttons">
+                  <button class="btn btn-primary" type="button"><i class="fas fa-play"></i> Start</button>
+                  <button class="btn btn-warning" type="button"><i class="fas fa-pause"></i> Pause</button>
+                  <button class="btn btn-danger" type="button"><i class="fas fa-stop"></i> Stop</button>
+               </div>
+            </div>
+        </div>
+
+        <div class="row">
+                <div class="card mt-5 mb-3 col-md-6" style="margin-right: 20px;">
+                    <div class="card-body">
+                        <div class="mb-4 ">
+                        <h5 class="card-title">Dominios</h5>
+                          
+                            <textarea class="form-control" id="dominios" rows="5" readonly>
+                                "https://www.mc-mutual.com"
+                                "https://mejoratuabsentismo.mc-mutual.com"
+                                "https://prevencion.mc-mutual.com"</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-5 mb-3 col-md-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                        <h5 class="card-title"><b>Configuración de Frecuencia</b></h5>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="1dia"> 1 Día
+                                </label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="3dias"> 3 Días
+                                </label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="5dias" checked> 5 Días
+                                </label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="9dias"> 9 Días
+                                </label>
+                            </div>
+                           
+                        </form>
+                    </div>
+                </div>
+        </div>
+        <div class="row">
+            <h5 class="card-title">Exclusiones</h5>
+            <div class="card mt-5 mb-3 col-md-6"  style="margin-right: 20px;">
+                    <div class="card-body">
+                        
+                        <div class="mb-3">
+                            <label for="urlExcluidas" class="form-label"><b>URLs Excluidas</b></label>
+                            <textarea class="form-control" id="urlExcluidas" rows="18" readonly>
+                                '/openid/',
+                                '/tu_perfil/empresas/gestion_absentismo',
+                                '/tu_perfil/empresas/prevencion_riesgos_laborales/',
+                                '/solicitud-volante-asistencial',
+                                '/contenidos/opencms/modulesdemo/',
+                                '/contenidos/opencms/release/',
+                                '/contenidos/opencms/webprivada/',
+                                '/contenidos/opencms/alkacon-documentation/',
+                                '/contenidos/opencms/No_indexar/',
+                                '/contenidos/opencms/demo_de/',       
+                                '/contenidos/opencms/demo_en/',
+                                '/contenidos/opencms/demopages/',
+                                '/contenidos/opencms/plantillaCarpetas/',
+                                '/contenidos/opencms/common/',
+                                '/contenidos/opencms/extranet/',
+                                '/contenidos/opencms/webpublica/boletin/',
+                                '/group/mc-mutual/',
+                                '/es/group/mc-mutual/',
+                                '/ca/group/mc-mutual/',
+                                '/pcoWeb/',
+                                '/documents/20143/1080189/',
+                                '/EnqRiesgosPsicosociales'
+                                '/evaluacion-riesgos-psicosociales',
+                                "/asset_publisher/".
+                                "/documents/",
+                                "/estaticos/",
+                                "productos",
+                                "tel:"</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-5 mb-3 col-md-4">
+                    <div class="card-body">
+                        
+                        <div class="mb-3">
+                            <label for="extensionesExcluidas" class="form-label"><b>Extensiones Excluidas</b></label>
+                            <textarea class="form-control" id="extensionesExcluidas" rows="12" readonly>
+                                ".apk",
+                                ".mp4",
+                                ".avi",
+                                ".msi",
+                                ".zip",
+                                ".7z",
+                                ".rar",
+                                ".mpeg",
+                                ".mp3"</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            
+            <div class="card mt-5 mb-3 col-md-10">
+                    <div class="card-body">
+                        
+                        <div class="mb-3">
+                            <label for="keywords" class="form-label"><b>Palabras Clave</b></label>
+                            <textarea class="form-control" id="keywords" rows="20" readonly>
+                                "Mutua de accidentes",
+                                "Mutua de accidentes laborales",
+                                "Mutua colaboradora con la Seguridad social",
+                                "Mutua Seguridad Social",
+                                'seguros de mutua', 'comparativa de mutuas',
+                                'mejor mutua de salud',
+                                'cómo elegir una mutua',
+                                'mutua de seguros',
+                                'opiniones sobre mutuas',
+                                'mutua de salud precios',
+                                'qué cubre una mutua',
+                                'mutua médica',
+                                'mutua de accidentes',
+                                'mutua de ahorro',
+                                'mutua de trabajo',
+                                'mutua de coche',
+                                'mutua de fisioterapia',
+                                'mutua de enfermedades',
+                                'mutua dental',
+                                'mutua de previsión',
+                                'mutua de pensiones',
+                                'mutua familiar',
+                                'mutua de protección',
+                                'mutua de jubilación',
+                                'mutua de vida',
+                                'mutua de prevención',
+                                'mutua de asistencia',
+                                'mutua de responsabilidad',
+                                'mutua de cuidado', 'mutua de cobertura',
+                                'mutua de indemnización',
+                                'mutua integral',
+                                'mutua de atención',
+                                'mutua de emergencia',
+                                'mutua de bienestar',
+                                'mutua de protección',
+                                'mutua de asesoramiento',
+                                'mutua de orientación',
+                                'mutua de consulta',
+                                'mutua de orientación',
+                                'mutua de investigación',
+                                'mutua de análisis',
+                                'mutua de evaluación',
+                                'mutua de revisión',
+                                'mutua de exploración'
+                                'cobertura mutua de accidentes de trabajo',
+                                'cómo elegir una mutua de accidentes laborales',
+                                'comparativa de mutuas de accidentes',
+                                'beneficios de tener mutua de accidentes laborales',
+                                'mutua laboral para empresas pequeñas',
+                                'pasos para afiliarse a una mutua de accidentes',
+                                'mutua de accidentes vs. seguro de trabajo',
+                                'tasas de mutuas de accidentes',
+                                'requisitos para solicitar indemnización laboral',
+                                'guía para reclamar a una mutua por accidente',
+                                'mutua de accidentes obligatoria',
+                                'consultoría en seguridad laboral',
+                                'mutua de accidentes y enfermedades profesionales',
+                                'mutua de accidentes para autónomos',
+                                'indemnización por incapacidad laboral',
+                                'evaluación de riesgos en el trabajo',
+                                'mutua de accidentes de trabajo precios',
+                                'derechos del trabajador ante un accidente laboral',
+                                'mutua de accidentes de trabajo opiniones',
+                                'protocolo de actuación ante un accidente laboral',
+                                'mutua de accidentes de trabajo para empleados públicos',
+                                'prevención de accidentes laborales en la construcción',
+                                'mutua de accidentes y enfermedades laborales',
+                                'cobertura de una mutua de accidentes laborales',
+                                'reclamación de indemnización por accidente laboral',
+                                'mutua de accidentes de trabajo para autónomos',
+                                'medidas de seguridad en el trabajo',
+                                'mutua de accidentes de trabajo para empleados privados',
+                                'qué hacer en caso de accidente laboral',
+                                'mutua de accidentes de trabajo para empresas grandes',
+                                'legislación sobre accidentes laborales',
+                                'mutua de accidentes y enfermedades laborales precios',
+                                'informe médico para indemnización laboral',
+                                'mutua de accidentes de trabajo para contratistas',
+                                'derechos del empleador en caso de accidente laboral',
+                                'mutua de accidentes de trabajo para sector industrial',
+                                'cursos de prevención de riesgos laborales',
+                                'mutua de accidentes y enfermedades laborales opiniones',
+                                'responsabilidad del empleador en accidentes laborales',
+                                'mutua de accidentes de trabajo para trabajadores temporales',
+                                'ergonomía en el lugar de trabajo',
+                                'mutua de accidentes de trabajo para sector servicios'</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+
+
+{% endblock %}

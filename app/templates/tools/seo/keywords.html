@@ -1,7 +1,7 @@
-<!-- app/templates/usa/analisis_aaa.html -->
+<!-- app/templates/seo/keywords.html -->
 {% extends 'tool_base.html' %}
 
-{% block title %}An&aacute;lisis WCAG-AA{% endblock %}
+{% block title %}Keywords{% endblock %}
 
 {% macro get_intervalo_color_class(intervalo) %}
 {% if intervalo >= 200 %}
@@ -12,19 +12,25 @@
 
 {% endif %}
 {% endmacro %}
-{% set c_fail = 0 %}
-{% set c_warn = 0 %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo == '60 a 90 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '30 a 60 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '15 a 30 segundos' %}
+intervalo-color-rojo
+{% endif %}
+{% endmacro %}
+{% set peso_total_img = 0 %}
 
 {% block head %}
 
-<h1 class="mt-4">An&aacute;lisis WCAG-AA</h1>
+<h1 class="mt-4">Keywords</h1>
 
 <ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">
-        <h5>Resultados para {{dominio_url}}</h5>
-    </li>
+    <li class="breadcrumb-item active">Keywords </li>
 </ol>
-
 
 {% endblock %}
 
@@ -36,122 +42,143 @@
 
 {% block content %}
 
-
-
-
-
-
 <div class="row">
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Analisis AAA
+            Etiquetas H
         </div>
         <div class="card-body">
 
             <table id="datatablesSimple" class="display">
                 <thead>
                     <tr>
+                        <!--
+                     Resultado.fecha_escaneo, 
+                         Resultado.dominio,
+                         Resultado.pagina, 
+                         Resultado.lang, 
+                         Resultado.e_keywords,
+                         Resultado.e_robots, 
+                         Resultado.c_robots,
+                         Resultado.id, 
+                         Resultado.c_keywords,
+                         Resultado.directivas_noindex,
+                         Resultado.meta_tags
+                        -->
                         <th>fecha</th>
-                        <th>dirección</th>
-                        <!--                                  
-                                  <th>viewport</th>
-                                  <th>responsive</th>
-                                  <th>aaaa</th>
-                                  <th>html</th>
--->
+                        <th>pagina</th>
+                        <th>e_keywords</th>
+                        <th>e_robots</th>
+                        <th>c_keywords</th>
+                        <th>c_robots</th>
+                        <th>oindex</th>
+                        <th>tipo</th>
 
-                        <th>total</th>
-                        <th>errores</th>
-<th>warning</th>
                         <th><i class="fas fa-lightbulb"></i></th>
+
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
                         <th>fecha</th>
-                        <th>dirección</th>
-                        <!--                                
-                                  <th>viewport</th>
-                                  <th>responsive</th>
-                                  <th>errores</th>
-                                  <th>html</th>
--->
-
-                        <th>total</th>
-                        <th>errores</th>
-                        <th>warning</th>
+                        <th>pagina</th>
+                        <th>e_keywords</th>
+                        <th>e_robots</th>
+                        <th>c_keywords</th>
+                        <th>c_robots</th>
+                        <th>noindex</th>
+                        <th>tipo</th>
                         <th><i class="fas fa-lightbulb"></i></th>
+
 
                     </tr>
                 </tfoot>
                 <tbody>
-
                     {% for result in resultados %}
+                    <!--
+                        <th>fecha</th>
+                        <th>pagina</th>
+                        <th>e_keywords</th>
+                        <th>e_robots</th>
+                        <th>c_keywords</th>
+                        <th>c_robots</th>
+                        <th>directivas_noindex</th>
 
-                   
+                        <th><i class="fas fa-lightbulb"></i></th>
+
+                    -->
                     <tr>
                         <td><small>{{ result.fecha_escaneo }}</small></td>
+
+                        <!-- <td>{{ result.id }}</td> -->
                         <td><a href="{{ result.pagina }}" alt="{{ result.pagina }}" target="_blank">{{ result.pagina
                                 }}</a></td>
-                        <!--   
-                                     <td>{% if result.e_viewport != 1 or result.e_viewport is none %}<i class="fa-solid fa-lg fa-circle-exclamation"></i>{% else %}<i class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
-                                        <td>{% if result.response_valid != 1 or result.response_valid is none %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i class="fa-solid  fa-lg fa-check"></i>{% endif %}</td>
-                                        <td>{% if result.valid_aaa != 1 or result.valid_aaa is none %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
-                                        <td>{% if result.html_valid != 1 or result.html_valid is none %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
--->
-{% if result.wcagaaa  %}
-                          
-{% for consejo in result.wcagaaa %}
-{% set is_fail = 'Fail' in consejo.code %}
-    {% if is_fail %}
-        {% set c_fail = c_fail + is_fail %} 
-    {% else %}
-        {% set c_warn = c_warn + 1 %}
-    {% endif %}
-    
-{% endfor %}
-{%endif%}
-                        <td>{{ result.wcagaaa|length }}
-                          
-                        <td>{{ c_fail }}</td>
-                        <td>{{ c_warn }}</td>
-                           
-                         
+                        
+
+                        <td data-order="{% if result.e_keywords != 1 or result.e_keywords is none %}0{% else %}1{% endif %}">
+                            {% if result.e_keywords != 1 or result.e_keywords is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
                         </td>
 
+                        <td data-order="{% if result.e_robots != 1 or result.e_robots is none %}0{% else %}1{% endif %}">
+                            {% if result.e_robots != 1 or result.e_robots is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ result.c_keywords }}</td>
+                        <td>{{ result.c_robots }}</td>
+                        
+                        
+                        <td data-order="{% if result.directivas_noindex != 0 or result.directivas_noindex is none %}0{% else %}1{% endif %}">
+                            {% if result.directivas_noindex != 0 or result.directivas_noindex is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                        </td>
+                      
+                        <td>{% if 'text/html' in result.tipo_documento  %}HTML
+                            {% elif 'image' in result.tipo_documento %}IMAGEN
+                            {% elif 'pdf' in result.tipo_documento %}PDF
+                            {%endif%}
+                        </td>
                         <td>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                             <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                 data-bs-target="#infoModal{{ result.id }}">
                                 <i class="fas fa-plus"></i>
                             </button>
-
+                          
                         </td>
 
                     </tr>
-
                     <div class="modal fade" id="infoModal{{ result.id }}" tabindex="-1"
                         aria-labelledby="infoModalLabel{{ result.id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content bg-white text-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias #{{ result.id
-                                        }}</h5>
+                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Info extra #{{
+                                        result.id }}</h5>
                                     <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
+
                                 <div class="modal-body">
                                     <div class="suggestion">
-                                        <div class="label">Todas las validaciones:</div>
+                                        <div class="label"><b>Meta tags:</b></div>
                                         <div class="value">
-                                            {% if result.wcagaaa %}
-                                            {% for consejo in result.wcagaaa %}
-                                            {% set is_fail = 'Fail' in consejo.code %}
-                                            <div
-                                                class="{{ 'row odd' if loop.index is odd else 'row even' }} {% if is_fail %}bg-danger text-white{% else %}bg-warning text-dark{% endif %}">
-                                                <div class="col-md-4"><strong>{{ consejo.code }}</strong> </div>
-                                                <div class="col-md-4">{{ consejo.message }}</div>
-                                                <div class="col-md-4">{{ consejo.context }}</div>
+                                            {% if result.meta_tags %}
+                                            {% for consejo in result.meta_tags %}
+                                            <div class="{{ 'row odd' if loop.index is odd else 'row even' }}">
+                                                <div class="col-md-4"><strong>{{ consejo.name}}</strong> </div>
+                                                <div class="col-md-4">{{ consejo.content}}</div>
+
 
                                             </div>
 
@@ -162,20 +189,23 @@
                                             </div>
                                             {% endif %}
                                         </div>
+                                        <hr />
                                     </div>
+
+                           
+                                  
                                 </div>
                             </div>
                         </div>
                     </div>
-        </div>
-        {% endfor %}
-        </tbody>
-        </table>
 
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
     </div>
 </div>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -206,13 +236,13 @@
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas", // Agregamos el mensaje de información arriba
             },
             responsive: true,
-            dom: 'Blfrtip', // Agregamos 'l' para incluir el dropdown de longitud de pÃ¡gina
+            dom: 'Blfrtip', // Agregamos 'l' para incluir el dropdown de longitud de página
             buttons: ['copy', 'csv', 'excel', 'pdf'],
             lengthMenu: [10, 25, 50, 100, 200], // Definimos los valores por defecto del dropdown
             pageLength: 25, // Establecemos el valor por defecto
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
-                null, null, null, null, null
+                null, null, null, null, null, null, null,null
             ],
             colReorder: {
                 realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real
@@ -282,10 +312,4 @@
     dataTable.on('draw.dt', updateCustomInfo);
     dataTable.on('length.dt', updateCustomInfo);
 </script>
-
-
-
-
-
-
 {% endblock %}

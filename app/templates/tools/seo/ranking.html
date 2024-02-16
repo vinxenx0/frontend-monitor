@@ -1,0 +1,94 @@
+<!-- app/templates/seo/ranking.html -->
+{% extends 'tool_base.html' %}
+
+{% block title %}Ranking{% endblock %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo >= 200 %}
+
+{% elif intervalo >= 100 %}
+
+{% elif intervalo >= 20 %}
+
+{% endif %}
+{% endmacro %}
+
+{% macro get_intervalo_color_class(intervalo) %}
+{% if intervalo == '60 a 90 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '30 a 60 segundos' %}
+intervalo-color-rojo
+{% elif intervalo == '15 a 30 segundos' %}
+intervalo-color-rojo
+{% endif %}
+{% endmacro %}
+{% set peso_total_img = 0 %}
+
+{% block head %}
+
+<h1 class="mt-4">Ranking</h1>
+
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Ranking keywords dominio </li>
+</ol>
+
+{% endblock %}
+
+{% if dominio_url %}
+{% set dominios_ordenados_dos = [dominio_url] %}
+{% else %}
+{% set dominios_ordenados_dos = dominios_ordenados %}
+{%endif%}
+
+{% block content %}
+
+<div class="row">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Resultados en Google
+        </div>
+        <div class="card-body">
+            <table id="tabla-resultados" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Palabra Clave</th>
+                        <th>Posición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for palabra, posicion in posiciones | sort(attribute=1) %}
+                    <tr>
+                        <td><a target="_blank" href="https://www.google.es/search?q={{ palabra }}">{{ palabra }}</a></td>
+                        <td data-sort="{{ posicion | default(0) }}"
+                        class="tiempo-celda {% if posicion is not none and posicion <= 3 %} tiempo-verde {% elif posicion <= 5 %} tiempo-amarillo {% elif posicion <=10 %} tiempo-rojo {% endif %}">
+                        {{ posicion | int }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#tabla-resultados').DataTable({
+                        // Definir la columna por la cual se realizará la ordenación inicial
+                        order: [[1, 'asc']], // Ordenar por la segunda columna (posición) de forma ascendente al cargar la tabla
+                        columnDefs: [
+                            {
+                                targets: 1,
+                                type: 'num'
+                            }
+                        ]
+
+                    });
+                });
+            </script>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

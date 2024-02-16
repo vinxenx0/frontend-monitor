@@ -13,7 +13,26 @@
 
 
                 {% if is_admin() or current_user.role == 'superadmin' %}
+
                 <div class="sb-sidenav-menu-heading">Herramientas</div>
+
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIdiomas"
+                aria-expanded="false" aria-controls="collapseLayouts">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-book-atlas"></i></div>
+                Ortograf&iacute;a
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseIdiomas" aria-labelledby="headingOne"
+                data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %}"
+                        href="/ortografia/www.mc-mutual.com">An&aacute;lisis</a>
+
+                    <a class="nav-link {% if request.endpoint == 'diccionario' %} active {% endif %}"
+                        href="{{ url_for('diccionario') }}">Diccionarios</a>
+            
+                </nav>
+            </div>
 
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseRanks"
                     aria-expanded="false" aria-controls="collapseLayouts">
@@ -31,14 +50,21 @@
                         <a class="nav-link {% if request.endpoint == 'salud_seo' %} active {% endif %}"
                         href="/salud-seo/www.mc-mutual.com">Salud SEO</a>
 
+                        <a class="nav-link {% if request.endpoint == 'obtener_posiciones_dominio' %} active {% endif %}"
+                        href="/ranking/www.mc-mutual.com">Ranking</a>
+
+                        <a class="nav-link {% if request.endpoint == 'keywords' %} active {% endif %}"
+                        href="/keywords/www.mc-mutual.com">Keywords</a>
+
                         <a class="nav-link {% if request.endpoint == 'meta_tags' %} active {% endif %}"
                         href="/meta-tags/www.mc-mutual.com">Meta Tags</a>
 
                         <a class="nav-link {% if request.endpoint == 'encabezados' %} active {% endif %}"
                         href="/encabezados/www.mc-mutual.com">Encabezados</a>
-
+<!--
                         <a class="nav-link {% if request.endpoint == 'indexabilidad' %} active {% endif %}"
                         href="/indexabilidad/www.mc-mutual.com">Indexabilidad</a>
+-->                        
                        <a class="nav-link {% if request.endpoint == 'velocidad_url' %} active {% endif %}"
                             href="/velocidad/www.mc-mutual.com">Velocidad</a>
 
@@ -78,7 +104,10 @@
                             href=" /accesibilidad/resumen/www.mc-mutual.com">Resumen</a>
 
                         <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
-                            href="/analisis-aaa/www.mc-mutual.com">WCAG-AAA</a>
+                            href="/analisis-aaa/www.mc-mutual.com">WCAG-AA</a>
+
+                            <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
+                            href="/responsive/www.mc-mutual.com">Responsive</a>
 
                             <a class="nav-link {% if request.endpoint == 'legibilidad' %} active {% endif %}"
                             href="/legibilidad/www.mc-mutual.com">Legibilidad</a>
@@ -86,65 +115,52 @@
                             <a class="nav-link {% if request.endpoint == 'imagenes' %} active {% endif %}"
                             href="/imagenes/www.mc-mutual.com">Im&aacute;genes</a>
 
-                            <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
-                            href="/responsive/www.mc-mutual.com">Responsive</a>
+                         
                     
 
                     </nav>
                 </div>
 
 
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIdiomas"
-                    aria-expanded="false" aria-controls="collapseLayouts">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-book-atlas"></i></div>
-                    Ortograf&iacute;a
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseIdiomas" aria-labelledby="headingOne"
-                    data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %}"
-                            href="/ortografia/www.mc-mutual.com">An&aacute;lisis</a>
-
-                        <a class="nav-link {% if request.endpoint == 'diccionario' %} active {% endif %}"
-                            href="{{ url_for('diccionario') }}">Diccionarios</a>
-                
-                    </nav>
-                </div>
-
-
-
+              
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMonitores"
-                    aria-expanded="false" aria-controls="collapseLayouts">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-stethoscope"></i></div>
-                    Diagnosticos
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseMonitores" aria-labelledby="headingOne"
-                    data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
+                aria-expanded="false" aria-controls="collapseLayouts">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-stethoscope"></i></div>
+                Diagnosticos
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseMonitores" aria-labelledby="headingOne"
+                data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav">
 
-                        <a class="nav-link {% if request.endpoint == 'seguridad' %} active {% endif %}"
-                            href="/seguridad/www.mc-mutual.com"> Seguridad</a>
+                    <a class="nav-link {% if request.endpoint == 'seguridad' %} active {% endif %}"
+                        href="/seguridad/www.mc-mutual.com"> Seguridad</a>
 
-                    </nav>
-                </div>
+                </nav>
+            </div>
+
+
+                
 
                 {% endif %}
 
                 {% if current_user.role == 'superadmin' %}
                 <div class="sb-sidenav-menu-heading">Sistema</div>
 
+               
+
          
- <a class="nav-link btn-link btn me-3" href="{{ url_for('usuarios') }}">
+ <a class="nav-link btn-link btn me-3 {% if request.endpoint == 'tools_config' %} active {% endif %}" href="/tools/config">
     <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div>
     Configuracion
 </a>
 
-                <a class="nav-link btn-link btn me-3" href="{{ url_for('usuarios') }}">
+                <a class="nav-link btn-link btn me-3 {% if request.endpoint == 'usuarios' %} active {% endif %}" href="{{ url_for('usuarios') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
                     Usuarios
                 </a>
+
+               
    
 
                 {% endif %}

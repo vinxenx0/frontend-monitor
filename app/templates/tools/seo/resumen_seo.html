@@ -44,13 +44,86 @@
   }
 </style>
 
-<h1 class="mt-4">&Uacute;ltimo Resumen</h1>
+<h1 class="mt-4">Resumen SEO</h1>
 <h3 class="mt-4">{{solo_uno}}</h3>
 
 <ol class="breadcrumb mb-4">
   <li class="breadcrumb-item active">Informe general del último scan</li>
 
 </ol>
+
+<div class="row">
+  <div class="col-md-4 mb-4">
+    <div class="card control-form">
+      <div class="card-body text-light ">
+        <h5 class="card-title">Sitios web
+          <span id="loadingSpinnerD" class="spinner-border spinner-border-sm d-none" role="status"
+            aria-hidden="true"></span>
+        </h5>
+        <form id="domainForm">
+          <select class="form-select" id="dominio" name="dominio" onchange="changeDomain()">
+            {% for domain in dominios_ordenados %}
+            <option value="{{ domain }}" {% if domain==dominio %}selected{% endif %}>{{ domain }}</option>
+            {% endfor %}
+          </select>
+        </form>
+
+
+      </div>
+    </div>
+  </div>
+  {% for dominio_id in dominios_ordenados %}
+{% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
+
+<div class="col-md-6 mb-4">
+  <div class="row">
+
+      <div class="col-md-6 mb-4">
+          <div class="card">
+            
+              <div class="card-body text-center" id="porcentajeEnlacesRotosCard">
+                <div class="card-title"><h6>Fecha</h6></div>
+                  <p><strong>{{stat.fecha }}</strong>
+                    de {{ stat.hora_inicio}} a {{stat.hora_fin}}</p>
+              </div>
+              <div class="card-footer">
+                  <small class="text-muted">Duración</small>
+              </div>
+          </div>
+      </div>
+
+
+      <div class="col-md-4 mb-4">
+          <div class="card ">
+            
+              <div class="card-body text-center">
+                <div class="card-title"><h6>Total</h6></div>
+                <p><strong>{{ "{:.0f}".format(stat.total_paginas) }}</strong> páginas vistas</p>
+
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">P&aacute;ginas vistas</small>
+            </div>
+          </div>
+      </div>
+
+  </div>
+</div>
+
+
+
+
+{%endfor%}
+{%endfor%}
+</div>
+
+
+<script>
+  function changeDomain() {
+    var selectedDomain = $("#dominio").val();
+    window.location.href = "/seo/resumen/" + selectedDomain;
+  }
+</script>
 
 <div class="row mt-4">
   {% set total_porcentaje_general = 0 %}
