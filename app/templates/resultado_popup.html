@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,32 +10,33 @@
     <!-- Agrega Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container mt-5">
-        <div class="card">
+        <div class="col-md-8 offset-md-2">
             <div class="card-header">
-                <h3>{{ resultados.url }}></h3>
-                <h5 class="card-title">Resultados del Análisis</h5>
+                <h5 class="card-title">{{ url }}</h5>
             </div>
-            <div class="card-body">
-               <!--
-                <ul>
-                
-                {% for item, valor in resultados.items() %}
-                    <li><strong>{{ item }}</strong>: {{ valor }}</li>
-                {% endfor %}
-                </ul> -->
-                <p>Enlaces rotos {{ resultados.urls|length }}</p>
-                <blockquote>
-                    {{ resultados.urls }}
-                </blockquote>
-            </div>            
+            {% for resultado in resultados|fromjson %}
+            <div class="card">
+                <div class="card-body">
+                    {% if resultado is iterable and resultado is not string %}
+                    {% for key, value in resultado.items() %}
+                    <p class="card-text"><strong>{{ key }}</strong>: {{ value }}</p>
+                    {% endfor %}
+                    {% else %}
+                    <p class="card-text">{{ resultado }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
-    
+
     <!-- Agrega Bootstrap JS y jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
+
 </html>
