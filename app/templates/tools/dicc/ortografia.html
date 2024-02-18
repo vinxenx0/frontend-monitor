@@ -211,27 +211,39 @@
         });
 
 
+               // Agregamos un elemento HTML personalizado arriba de la tabla
+               const customInfo = $('<div id="customInfo"></div>');
+        $('#datatablesSimple_wrapper').prepend(customInfo);
+
+        function updateCustomInfo() {
+            const info = dataTable.page.info();
+            customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
+        }
+
+        // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
+        dataTable.on('draw.dt', updateCustomInfo);
+        dataTable.on('length.dt', updateCustomInfo);
+
+
         // Configuramos el evento de cambio para el dropdown y campos de fecha
-        $('#targetUrlDropdown, #startDate, #endDate').change(updateFilter);
+        $('#startDate, #endDate').change(updateFilter);
 
         // Configuramos el evento de click para el botón de reset
         $('#resetFilters').click(function () {
             // Limpiamos los valores de los controles y actualizamos el filtro
-            $('#targetUrlDropdown').val('');
+            //$('#targetUrlDropdown').val('');
             $('#startDate').val('');
             $('#endDate').val('');
             updateFilter();
         });
 
-
-
         function updateFilter() {
-            var selectedTarget = $('#targetUrlDropdown').val();
+            //var selectedTarget = {{ dominio_url }};
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
 
             // Aplicamos el filtro de URL
-            dataTable.column(1).search(selectedTarget).draw();
+            // dataTable.column(1).search(selectedTarget).draw();
 
 
 
@@ -258,23 +270,10 @@
                 dataTable.draw();
             }
         }
+  
+
     });
-
-    // Agregamos un elemento HTML personalizado arriba de la tabla
-    const customInfo = $('<div id="customInfo"></div>');
-    $('#datatablesSimple_wrapper').prepend(customInfo);
-
-    function updateCustomInfo() {
-        const info = dataTable.page.info();
-        customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
-    }
-
-    // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
-    dataTable.on('draw.dt', updateCustomInfo);
-    dataTable.on('length.dt', updateCustomInfo);
 </script>
-
-
 
 
 {% endblock %}

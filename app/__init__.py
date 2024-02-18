@@ -247,6 +247,7 @@ app.jinja_env.globals.update(enumerate=enumerate)
 
 from app.controllers import services_controller  # Add this line to import the new controller
 from app.controllers import tools_controller  # Add this line to import the new controller
+from app.controllers import spider_controllers
 
 
 # import pdfkit

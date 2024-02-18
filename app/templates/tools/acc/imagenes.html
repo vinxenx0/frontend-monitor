@@ -1,7 +1,7 @@
 <!-- app/templates/acc/imagenes.html -->
 {% extends 'tool_base.html' %}
 
-{% block title %}Accesibilidad imagenes{% endblock %}
+{% block title %}Iimagenes{% endblock %}
 
 {% macro get_intervalo_color_class(intervalo) %}
 {% if intervalo >= 200 %}
@@ -104,8 +104,9 @@
                         class="tiempo-celda {% if result.alt_vacias is not none and result.alt_vacias < 2 %} tiempo-verde {% elif result.alt_vacias < 25 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
                     
                         {{ result.alt_vacias }}</td>
-                        <td>
-                        {% if result.image_types %}<small>
+                        <td>{{ result.image_types|length }}
+                        <!--
+                            {% if result.image_types %}<small>
                         {% for key, value in result.image_types.items() %}
                         <b>{% if key == 'null' %}svg{%else %}{{ key }}{%endif%}:</b>{{ value }}</li>
                         {% endfor %}
@@ -113,7 +114,7 @@
                         <i class="fa-solid fa-lg  fa-circle-exclamation"></i>
                         </small>
                         {%endif%}
-
+                    -->
                         </td>
                         <td
                         class="tiempo-celda {% if result.imagenes_rotas is not none and result.imagenes_rotas == 0 %} tiempo-verde {% elif result.imagenes_rotas <= 3 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
@@ -147,30 +148,25 @@
                                             {% if result.imagenes %}
                                                 <div class="image-table">
                                                     <div class="row eveb">
-                                                        <div class="col-md-2 cell"><b>#</b></div>
-                                                        <div class="col-md-4 cell"><b>Nombre</b></div>
+                                                        <div class="col-md-6 cell"><b>Nombre</b></div>
                                                         <div class="col-md-2 cell"><b>Peso (Mb)</b></div>
                                                         <div class="col-md-4 cell"><b>Texto Alternativo</b></div>
                                                     </div>
                                                     {% set peso_total_img = 0 %}
                                                     {% for image in result.imagenes %}
                                                         <div class="{{ 'row odd' if loop.index is odd else 'row even' }}">
-                                                            <div class="col-md-2 cell">{% if image.broken %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>
-                                                            {%else%} <i class="fa-solid fa-lg  fa-circle-check"></i>{%endif%}</div>
-                                                            <div class="col-md-4 cell">
-                                                                <a href="{{ image.url }}" alt="{{ image.url }}" target="_blank">{{ image.filename }}</a>
+                                                        
+                                                            <div class="col-md-6 cell">
+                                                                {% if image.broken %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>
+                                                            {%else%} <i class="fa-solid fa-lg  fa-circle-check"></i>{%endif%}
+                                                                <a href="{{ image.url }}" alt="{{ image.url }}" target="_blank"> {{ image.filename }}</a>
                                                             </div>
                                                             <div class="col-md-2 cell">{{ "%.2f"|format(image.size_mb) }}{% if image.size_mb >= 1 %} <i class="fa-solid fa-lg  fa-circle-exclamation"></i>{%endif%}</div>
-                                                            <div class="col-md-2 cell">{% if not image.alt_text %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{%else%}{{ image.alt_text}}{%endif%}</div>
-                                                            {% set peso_total_img = peso_total_img + image.size_mb * 1000 %}
+                                                            <div class="col-md-4 cell">{% if not image.alt_text %}<i class="fa-solid fa-lg  fa-circle-exclamation"></i>{%else%}{{ image.alt_text}}{%endif%}</div>
                                                         </div>
                                                     {% endfor %}
                                                 </div>
-                                                <div class="row">
-                                                  <!--
-                <div class="col-md-12"><h5>Peso total IMG: {{ peso_total_img }} Kb</h5></div>
-                                                  -->  
-                                                </div>
+                                                
                                             {% else %}
                                                 <div class="{{ 'row odd' if loop.index0 is odd else 'row even' }}">
                                                     <div class="col-md-12">No hay imágenes disponibles.<br><br></div>
@@ -237,27 +233,39 @@
             }
         });
 
+               // Agregamos un elemento HTML personalizado arriba de la tabla
+        const customInfo = $('<div id="customInfo"></div>');
+        $('#datatablesSimple_wrapper').prepend(customInfo);
+
+        function updateCustomInfo() {
+            const info = dataTable.page.info();
+            customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
+        }
+
+        // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
+        dataTable.on('draw.dt', updateCustomInfo);
+        dataTable.on('length.dt', updateCustomInfo);
+
+
         // Configuramos el evento de cambio para el dropdown y campos de fecha
-        $('#targetUrlDropdown, #startDate, #endDate').change(updateFilter);
+        $('#startDate, #endDate').change(updateFilter);
 
         // Configuramos el evento de click para el botón de reset
         $('#resetFilters').click(function () {
             // Limpiamos los valores de los controles y actualizamos el filtro
-            $('#targetUrlDropdown').val('');
+            //$('#targetUrlDropdown').val('');
             $('#startDate').val('');
             $('#endDate').val('');
             updateFilter();
         });
 
-
-
         function updateFilter() {
-            var selectedTarget = $('#targetUrlDropdown').val();
+            //var selectedTarget = {{ dominio_url }};
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
 
             // Aplicamos el filtro de URL
-            dataTable.column(1).search(selectedTarget).draw();
+            // dataTable.column(1).search(selectedTarget).draw();
 
 
 
@@ -284,21 +292,9 @@
                 dataTable.draw();
             }
         }
+  
+
     });
-
-
-    // Agregamos un elemento HTML personalizado arriba de la tabla
-    const customInfo = $('<div id="customInfo"></div>');
-    $('#datatablesSimple_wrapper').prepend(customInfo);
-
-    function updateCustomInfo() {
-        const info = dataTable.page.info();
-        customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
-    }
-
-    // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
-    dataTable.on('draw.dt', updateCustomInfo);
-    dataTable.on('length.dt', updateCustomInfo);
 </script>
 
 

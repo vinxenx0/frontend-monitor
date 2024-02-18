@@ -5,85 +5,110 @@
 <style>
     /* Estilos para textarea en modo de solo lectura */
     textarea[readonly] {
-        background-color: #f8f9fa; /* Color de fondo */
-        opacity: 0.6; /* Opacidad reducida */
-        cursor: not-allowed; /* Cursor no permitido */
+        background-color: #f8f9fa;
+        /* Color de fondo */
+        opacity: 0.6;
+        /* Opacidad reducida */
+        cursor: not-allowed;
+        /* Cursor no permitido */
     }
 </style>
 
-    <div class="container mt-5">
-        <h1 class="mb-4">Configuración</h1>
-        <div class="card control-card mb-4">
-            <div class="card-body">
-                <div class="mb-3 status-section">
-                  <div>
-                     <i class="fas fa-info-circle status-icon text-primary"></i>
-                     <span class="status-text">Estado: <strong>Activo</strong></span>
-                  </div>
-                  <div>
-                     <i class="fas fa-history status-icon text-success"></i>
-                     <span class="status-text">Ultima ejecución: <strong>{{ first_end_time }}</strong></span>
-                  </div>
-               </div>
-               <div class="control-buttons">
-                  <button class="btn btn-primary" type="button"><i class="fas fa-play"></i> Start</button>
-                  <button class="btn btn-warning" type="button"><i class="fas fa-pause"></i> Pause</button>
-                  <button class="btn btn-danger" type="button"><i class="fas fa-stop"></i> Stop</button>
-               </div>
+<div class="container mt-5">
+    <h1 class="mb-4">Configuración</h1>
+    <div class="card control-card mb-4">
+        <div class="card-body">
+            <div class="mb-3 status-section">
+                <div>
+                    <i class="fas fa-info-circle status-icon text-primary"></i>
+                    <span class="status-text">Estado: <strong>Activo</strong></span>
+                </div>
+                <div>
+                    <i class="fas fa-history status-icon text-success"></i>
+                    <span class="status-text">Ultima ejecución: <strong>{{ first_end_time }}</strong></span>
+                </div>
+            </div>
+            <div class="control-buttons">
+                <button class="btn btn-primary" type="button"><i class="fas fa-play"></i> Start</button>
+                <button class="btn btn-warning" type="button"><i class="fas fa-pause"></i> Pause</button>
+                <button class="btn btn-danger" type="button"><i class="fas fa-stop"></i> Stop</button>
             </div>
         </div>
+    </div>
 
-        <div class="row">
-                <div class="card mt-5 mb-3 col-md-6" style="margin-right: 20px;">
-                    <div class="card-body">
-                        <div class="mb-4 ">
-                        <h5 class="card-title">Dominios</h5>
-                          
-                            <textarea class="form-control" id="dominios" rows="5" readonly>
-                                "https://www.mc-mutual.com"
+    <div class="row">
+        <div class="card mt-5 mb-3 col-md-4" style="margin-right: 20px;">
+            <div class="card-body">
+                <div class="mb-4 ">
+                    <h5 class="card-title">Dominios</h5>
+
+                    <textarea class="form-control" id="dominios" rows="5" readonly>"https://www.mc-mutual.com"
                                 "https://mejoratuabsentismo.mc-mutual.com"
                                 "https://prevencion.mc-mutual.com"</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-5 mb-3 col-md-3" style="margin-right: 20px;">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5 class="card-title"><b>Configuración de Frecuencia</b></h5>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="frecuencia" value="1dia"> 1 Día
+                            </label>
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="frecuencia" value="3dias"> 3 Días
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="frecuencia" value="5dias" checked> 5
+                                Días
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="frecuencia" value="9dias"> 9 Días
+                            </label>
+                        </div>
+
+                    </form>
                 </div>
-                <div class="card mt-5 mb-3 col-md-4">
-                    <div class="card-body">
-                        <div class="mb-4">
-                        <h5 class="card-title"><b>Configuración de Frecuencia</b></h5>
-                        <form>
-                            <div class="mb-3">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="frecuencia" value="1dia"> 1 Día
-                                </label>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="frecuencia" value="3dias"> 3 Días
-                                </label>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="frecuencia" value="5dias" checked> 5 Días
-                                </label>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-check-label">
-                                    <input class="form-check-input" type="radio" name="frecuencia" value="9dias"> 9 Días
-                                </label>
-                            </div>
-                           
-                        </form>
-                    </div>
+            </div>
+             
+        </div>
+        <div class="card mt-5 mb-3 col-md-3">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5 class="card-title"><b>W3C Validator</b></h5>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="validador" value="aa"> WCAG-AAA
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="validador" value="aaa" checked> WCAG-AA
+                            </label>
+                        </div>
+                        
+
+                    </form>
                 </div>
+            </div>
         </div>
         <div class="row">
             <h5 class="card-title">Exclusiones</h5>
-            <div class="card mt-5 mb-3 col-md-6"  style="margin-right: 20px;">
-                    <div class="card-body">
-                        
-                        <div class="mb-3">
-                            <label for="urlExcluidas" class="form-label"><b>URLs Excluidas</b></label>
-                            <textarea class="form-control" id="urlExcluidas" rows="18" readonly>
+            <div class="card mt-5 mb-3 col-md-6" style="margin-right: 20px;">
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label for="urlExcluidas" class="form-label"><b>URLs Excluidas</b></label>
+                        <textarea class="form-control" id="urlExcluidas" rows="18" readonly>
                                 '/openid/',
                                 '/tu_perfil/empresas/gestion_absentismo',
                                 '/tu_perfil/empresas/prevencion_riesgos_laborales/',
@@ -112,15 +137,15 @@
                                 "/estaticos/",
                                 "productos",
                                 "tel:"</textarea>
-                        </div>
                     </div>
                 </div>
-                <div class="card mt-5 mb-3 col-md-4">
-                    <div class="card-body">
-                        
-                        <div class="mb-3">
-                            <label for="extensionesExcluidas" class="form-label"><b>Extensiones Excluidas</b></label>
-                            <textarea class="form-control" id="extensionesExcluidas" rows="12" readonly>
+            </div>
+            <div class="card mt-5 mb-3 col-md-4">
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label for="extensionesExcluidas" class="form-label"><b>Extensiones Excluidas</b></label>
+                        <textarea class="form-control" id="extensionesExcluidas" rows="12" readonly>
                                 ".apk",
                                 ".mp4",
                                 ".avi",
@@ -130,18 +155,18 @@
                                 ".rar",
                                 ".mpeg",
                                 ".mp3"</textarea>
-                        </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-            
+        </div>
+        <div class="row">
+
             <div class="card mt-5 mb-3 col-md-10">
-                    <div class="card-body">
-                        
-                        <div class="mb-3">
-                            <label for="keywords" class="form-label"><b>Palabras Clave</b></label>
-                            <textarea class="form-control" id="keywords" rows="20" readonly>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label for="keywords" class="form-label"><b>Palabras Clave</b></label>
+                        <textarea class="form-control" id="keywords" rows="20" readonly>
                                 "Mutua de accidentes",
                                 "Mutua de accidentes laborales",
                                 "Mutua colaboradora con la Seguridad social",
@@ -228,13 +253,13 @@
                                 'mutua de accidentes de trabajo para trabajadores temporales',
                                 'ergonomía en el lugar de trabajo',
                                 'mutua de accidentes de trabajo para sector servicios'</textarea>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
     </div>
+
+</div>
 
 
 

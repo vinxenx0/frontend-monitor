@@ -6,16 +6,13 @@ from flask_login import login_required
 from app import app, db
 from sqlalchemy import and_, desc, distinct, func, case
 from app.models.database import Resultado, Sumario, Diccionario
-from config import DOMINIOS_ESPECIFICOS, URL_BASE
+from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER
 from sqlalchemy.orm import class_mapper
 from flask import request
-from bs4 import BeautifulSoup
 import requests
-from flask import render_template, request, redirect, url_for
-from urllib.parse import parse_qs, unquote
-from flask import render_template, request, redirect, url_for, session
-from urllib.parse import urlparse, urljoin
+from flask import render_template, request
+from flask import render_template, request, session
 from googlesearch import search
 
 ids_escaneo_especificos = IDS_ESCANEO
@@ -28,9 +25,13 @@ def inject_global_variables():
     return dict(fecha_escaneo=FECHA_ESCANEO,
                 hora_inicio=HORA_INICIO,
                 hora_fin=HORA_FIN,
-                estado_spider=ESTADO_SPIDER,
-                url_base=URL_BASE)
+                estado_spider=ESTADO_SPIDER
+    )
 
+@app.context_processor
+def inject_global_variables():
+    return dict(url_base=URL_BASE)
+               
 
 # Implementación del filtro fromjson
 def fromjson(value):
@@ -1888,19 +1889,21 @@ def legibilidad(domain):
             #Resultado.errores_ortograficos == False #,  # Filtrar resultados con tiempo_respuesta False
             #Resultado.tiempo_respuesta.isnot(None)
             #~func.isnan(Resultado.tiempo_respuesta),  # Filtrar resultados que no sean números (nan)
-        ).filter(
-            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
-        .filter(Resultado.tipo_documento.like('%text%')).filter(
-            ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%/asset_publisher/%')
-                )  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%/document_library/%')
-                )  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%estaticos%')
-                )  # Excluir URLs que contengan '#'
+        )
+        #.filter(
+        #    ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(Resultado.tipo_documento.like('%text%'))
+        #.filter(
+        #    ~Resultado.pagina.like('%pdf%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/asset_publisher/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%/document_library/%')
+        #        )  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%estaticos%')
+        #        )  # Excluir URLs que contengan '#'
         #.filter(~Resultado.pagina.like('%/document_library/%'))  # Excluir URLs que contengan '#'
-        .filter(~Resultado.pagina.like('%redirect%')
-                )  # Excluir URLs que contengan 'redirect'
+        #.filter(~Resultado.pagina.like('%redirect%')
+        #        )  # Excluir URLs que contengan 'redirect'
         .filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
         #.filter(Resultado.lang.in_(['es','ca','en','fr']))
         .all())
@@ -2132,7 +2135,7 @@ def ortografia(domain):
             #Resultado.id_escaneo.in_(ids_escaneo_especificos),
             Resultado.dominio == domain,
             Resultado.codigo_respuesta == 200,
-            Resultado.num_errores_ortograficos >= 1,
+            Resultado.num_errores_ortograficos != 0,
             #Resultado.wcagaaa.isnot(None),  # Seleccionar solo cuando wcagaaa no es None
             #Resultado.e_viewport != 1 or Resultado.html_valid != 1 or Resultado.responsive_valid != 1
             #Resultado.tiempo_respuesta > 0,
@@ -2477,166 +2480,6 @@ def tools_config():
     return render_template('config.html')
 
 
-@app.route('/resultados-popup', methods=['GET'])
-def resultados_popup():
-
-    print("popup-url\t\n")
-
-    # print(resultados)# resultados = request.args.to_dict(flat=False)  # Obtiene los valores de la cadena de consulta como un diccionario
-
-    #  resultados_str = request.args.get('resultados', '')
-
-    # Decodifica la cadena de consulta y convierte a un diccionario con listas de valores
-    #  resultados_dict = parse_qs(unquote(resultados_str))
-
-    # Convierte los valores a enteros
-    #  resultados_dict = {key: int(value[0]) for key, value in resultados_dict.items()}
-
-    #  print(resultados_dict)
-    #   print(resultados)
-
-    # resultados = request.args.get('resultados')
-    #  print(resultados)
-    #   if resultados:
-    #       resultados_dict = parse_qs(unquote(resultados))
-    # Convierte los valores a enteros
-    #        resultados_dict = {key: int(value[0]) for key, value in resultados_dict.items()}
-    #   else:
-    #       resultados_dict = None
-
-    #   print("popup-url dict \t\n")
-    #    print(resultados_dict)
-
-    # resultados = session.pop('resultados')
-    resultados = session.get('resultados', None)
-
-    print("popup-url session \t\n")
-    print(resultados)
-
-    return render_template('resultado_popup.html', resultados=resultados)
-
-
-# return render_template('resultado_popup.html', resultados=resultados_dict)
-
-
-@app.route('/analizar-url', methods=['POST', 'GET'])
-def analizar_url():
-    url = request.form.get('url')
-    response = requests.get(url, timeout=180)
-    resultados = contar_enlaces(response.text, url)
-
-    # Construye manualmente la cadena de consulta
-    resultados_str_encoded = '&'.join(
-        [f"{key}={value}" for key, value in resultados.items()])
-
-    print("analizar-url\t\n")
-
-    print(resultados)
-
-    resultados_str = request.args.get('resultados', '')
-    resultados_dict = parse_qs(unquote(resultados_str))
-
-    # Convierte los valores a enteros
-    resultados_dict = {
-        key: int(value[0])
-        for key, value in resultados_dict.items()
-    }
-
-    print('resultados dict')
-    # Imprime los resultados en la consola para verificar
-    print(resultados_dict)
-
-    # return render_template('resultado_popup.html', resultados=resultados)
-    # return resultados_popup(resultados=resultados)
-    # return redirect(url_for('resultados_popup'), resultados)
-    #  return redirect(url_for('resultados_popup', resultados=resultados_str_encoded))
-    #    return redirect(url_for('resultados_popup', resultados=resultados_str_encoded))
-
-    #
-    # Almacena los resultados en la sesión
-    session['resultados'] = resultados
-
-    print('resultados')
-    print(session['resultados'])
-
-    return redirect(url_for('resultados_popup'))
-
-
-def contar_enlaces(response_text, url):
-    soup = BeautifulSoup(response_text, 'html.parser')
-    base_url = urlparse(url).scheme + "://" + urlparse(url).hostname
-
-    enlaces_rotos_url = []
-    enlaces_rotos = 0
-
-    # Enlaces totales y enlaces inseguros
-    enlaces = soup.find_all('a', href=True)
-    enlaces_en_documento = [
-        enlace['href'] for enlace in enlaces
-    ]  #  if not enlace['href'].startswith(('http://', 'https://'))]
-
-    #enlaces_inseguros = [enlace['href'] for enlace in enlaces if enlace['href'].startswith('http://')]
-
-    # Enlaces internos y enlaces internos únicos
-    #enlaces_internos = [urljoin(base_url, enlace['href']) for enlace in enlaces if not enlace['href'].startswith(('http://', 'https://'))]
-    #enlaces_internos_unicos = list(set(enlaces_internos))
-
-    # Enlaces JS únicos
-    #enlaces_js_unicos = [enlace['href'] for enlace in enlaces if enlace.get('href') and enlace['href'].startswith('javascript:')]
-
-    # Enlaces salientes y enlaces salientes únicos
-    #enlaces_salientes = [urljoin(base_url, enlace['href']) for enlace in enlaces if enlace.get('href') and enlace['href'].startswith(('http://', 'https://'))]
-    #enlaces_salientes_unicos = list(set(enlaces_salientes))
-
-    # Enlaces salientes JS únicos
-    #enlaces_salientes_js_unicos = [enlace['href'] for enlace in enlaces_salientes if enlace.startswith('javascript:')]
-
-    # Enlaces salientes externos y enlaces salientes externos únicos
-    #enlaces_salientes_externos = [enlace for enlace in enlaces_salientes if not urlparse(enlace).hostname == urlparse(url).hostname]
-    #enlaces_salientes_externos_unicos = list(set(enlaces_salientes_externos))
-
-    # Enlaces salientes JS externos únicos
-    #enlaces_salientes_js_externos_unicos = [enlace for enlace in enlaces_salientes_js_unicos if not urlparse(enlace).hostname == urlparse(url).hostname]
-
-    for enlace in enlaces_en_documento:  # enlaces_salientes:
-        enlace_absoluto = urljoin(base_url, enlace)
-        if urlparse(enlace_absoluto).hostname == urlparse(
-                url).hostname and not verificar_enlace(enlace_absoluto):
-            enlaces_rotos_url.append(enlace_absoluto)
-            enlaces_rotos += 1
-
-    # Verificar enlaces rotos
-
-
-# enlaces_rotos = [enlace for enlace in enlaces_salientes if not verificar_enlace(enlace)]
-
-    return {
-        "url": url,
-        #"total_enlaces": len(enlaces),
-        #"enlaces_rotos": enlaces_rotos,
-        #"enlaces_inseguros": len(enlaces_inseguros),
-        #"enlaces_internos": len(enlaces_internos),
-        #"enlaces_internos_unicos": len(enlaces_internos_unicos),
-        #"enlaces_js_unicos": len(enlaces_js_unicos),
-        #"enlaces_salientes": len(enlaces_salientes),
-        #"enlaces_salientes_unicos": len(enlaces_salientes_unicos),
-        #"enlaces_salientes_js_unicos": len(enlaces_salientes_js_unicos),
-        #"enlaces_salientes_externos": len(enlaces_salientes_externos),
-        #"enlaces_salientes_externos_unicos": len(enlaces_salientes_externos_unicos),
-        #"enlaces_salientes_js_externos_unicos": len(enlaces_salientes_js_externos_unicos),
-        "urls": enlaces_rotos_url
-    }
-
-
-def verificar_enlace(enlace):
-    try:
-        response = requests.head(enlace, timeout=5)
-        return response.status_code == 200 and not (
-            response.status_code == 301 or response.status_code == 302)
-    except requests.RequestException:
-        return False
-
-
 @app.route('/sitemap/<string:domain>')
 def sitemap(domain):
     results = check_sitemap(domain)
@@ -2881,3 +2724,18 @@ def obtener_posicion_dominio(palabra_clave,
         print(f"Error para '{palabra_clave}': {e}")
 
     return posicion
+
+@app.route('/resultados-popup', methods=['GET'])
+def resultados_popup():
+
+    print("popup-url\t\n")
+
+    # resultados = session.pop('resultados')
+    resultados = session.get('resultados', None)
+    url = session.get('url', None)
+
+    print("popup-url session \t\n")
+    print(resultados)
+
+    return render_template('resultado_popup.html', resultados=resultados, url=url)
+
