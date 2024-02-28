@@ -11245,3 +11245,9 @@ body {
 nav > span {
 color:#ccc!important;
 }
+
+
+.fa-solid, .fa-regular, th {
+  text-align: center!important;
+  margin:0 auto!important;
+}

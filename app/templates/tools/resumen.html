@@ -53,13 +53,78 @@ td.section-header {
 
 </ol>
 
-<form id="domainForm">
-  <select class="form-select" id="dominio" name="dominio" onchange="changeDomain()">
-      {% for domain in dominios_ordenados %}
-          <option value="{{ domain }}" {% if domain == dominio %}selected{% endif %}>{{ domain }}</option>
-      {% endfor %}
-  </select>
-</form>
+<div class="row">
+<div class="col-md-4">
+  <div class="card control-form">
+      <div class="card-body text-light ">
+          <h5 class="card-title">Sitios web
+              <span id="loadingSpinnerD" class="spinner-border spinner-border-sm d-none"
+                  role="status" aria-hidden="true"></span>
+          </h5>
+          <form id="targetUrlDropdown">
+              <select class="form-select" id="dominio" name="domain"
+                  onchange="changeDomain()">
+                  {% for domain in dominios_ordenados %}
+                  <option value="{{ domain }}" {% if domain==dominio_url %}selected{% endif
+                      %}>{{ domain }}</option>
+                  {% endfor %}
+              </select>
+          </form>
+
+      </div>
+  </div>
+</div>
+<div class="col-md-4">
+  <div class="row">
+<!--
+
+<div class="col-md-6 mb-4">
+  <div class="row">
+
+      <div class="col-md-4 mb-4">
+          <div class="card">
+              <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
+                  <h3 class="display-4" id="porcentajeEnlacesDato"><span
+                          id="porcentajeEnlacesRotos_"> </span></h3>
+                  <p class="lead text-dark">avisos</p>
+              </div>
+              <div class="card-footer">
+                  <small class="text-muted">P&aacute;ginas a revisar</small>
+              </div>
+          </div>
+      </div>
+
+
+      <div class="col-md-4 mb-4">
+          <div
+              class="card">
+              <div class="card-body text-center">
+                  <h3 class="display-4"><span
+                          id="totalEnlacesRotos_"> %</span></h3>
+                  <p class="lead ">de  </p>
+              </div>
+              <div class="card-footer">
+                  <small class="">Total</small>
+              </div>
+          </div>
+      </div>
+      -->
+     
+      <div class="col-md-3">
+           <!-- Agrega este div donde quieras mostrar el gráfico -->
+           <div style="width: 200px; height: 400px;" class="mb-3">
+            {% for dominio_id in dominios_ordenados %}
+            {% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
+            <canvas id="doughnutChart_global_{{stat.id_escaneo}}"></canvas>
+            {% endfor %}
+            {% endfor %}
+          </div>
+      </div>
+     
+  </div>
+</div>
+
+
 
 <script>
 function changeDomain() {
@@ -68,8 +133,9 @@ function changeDomain() {
 }
 </script>
 
+<div class="row">
+  <!-- Columna izquierda con el GrÃ¡fico doughnut para el total de 404 de los 3 dominios -->
 
-<div class="row mt-4">
   {% set total_porcentaje_general = 0 %}
   {% set total_porcentaje_seccion = 0 %}
   {% set total_porcentaje_seo = 0 %}
@@ -78,11 +144,11 @@ function changeDomain() {
   {% set total_porcentaje_otros_diagnosticos = 0 %}
 
 
-  <div class="row mt-4">
     {% for dominio_id in dominios_ordenados %}
     {% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
     {% set stat_ayer = resumen_ayer %}
     {% set stat_quince = resumen_quince %}
+
     <div class="col-md-4 mb-4">
     
       <h6>{{ stat.dominio }}</h6>
@@ -94,10 +160,7 @@ function changeDomain() {
       <div class="card">
         <div class="card-body">
 
-          <!-- Agrega este div donde quieras mostrar el gráfico -->
-          <div style="width: 400px; height: 400px;" class="mb-3">
-            <canvas id="doughnutChart_global_{{stat.id_escaneo}}"></canvas>
-          </div>
+        
 
           <table class="table mb-3">
 
@@ -1190,6 +1253,16 @@ function changeDomain() {
             </tbody>
           </table>
 
+          </div>
+          </div>
+          </div>
+     
+    
+  
+          <div class="col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+
           <table class="table">
             <tbody>
 
@@ -1498,6 +1571,18 @@ function changeDomain() {
 
             </tbody>
           </table>
+
+  
+        </div>
+      </div>
+      </div>
+ 
+
+
+      <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+
 
           <table class="table">
             <tbody>
@@ -1907,6 +1992,17 @@ function changeDomain() {
             </tbody>
           </table>
 
+        </div>
+      </div>
+      </div>
+ 
+
+
+      <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+
+
           <table class="table">
             <tbody>
 
@@ -2238,6 +2334,18 @@ function changeDomain() {
               </script>
             </tbody>
           </table>
+
+
+        </div>
+      </div>
+      </div>
+ 
+
+
+      <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+
 
           <table class="table">
             <tbody>

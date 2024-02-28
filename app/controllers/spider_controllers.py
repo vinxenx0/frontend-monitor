@@ -10,7 +10,6 @@ import langid
 from PIL import Image
 import subprocess
 from app import app
-from app.models.database import Diccionario
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO
 from bs4 import BeautifulSoup
@@ -19,6 +18,8 @@ from flask import request, redirect, url_for, session
 from urllib.parse import urlparse, urljoin
 import requests
 from bs4 import BeautifulSoup
+from flask import request
+from io import BytesIO
 
 ids_escaneo_especificos = IDS_ESCANEO
 dominios_especificos = DOMINIOS_ESPECIFICOS
@@ -60,6 +61,7 @@ def tool_popup(tool):
          resultados = extraer_meta_tags(url)
     elif tool == 'ortografia':
          resultados = analizar_ortografia(url)
+         print(resultados)
     elif tool == 'seguridad':
          resultados = extraer_meta_tags(url)
     else:
@@ -84,8 +86,8 @@ def analizar_ortografia(url):
 
     idioma_detectado = obtener_idioma_desde_url(url)  #detectar_idioma(texto)
     response = requests.get(url)
+    modified_html = response.text
     texto = extraer_texto_visible(response.text)
-    
 
     speller = aspell.Speller('lang', idioma_detectado)
 
@@ -118,8 +120,29 @@ def analizar_ortografia(url):
     ]
 
     print(list(errores_ortograficos))
+
+    #send_file(html_archivo, attachment_filename='resultado.html', as_attachment=True)
+    for palabra in errores_ortograficos:
+        # Encontrar la posición de la palabra en el HTML original
+        start_index = modified_html.find(palabra)
+
+        if start_index != -1:
+            modified_html = (
+                modified_html[:start_index] +
+                f'<span style="background-color:red!important;color:white!important;border:2px solid #fff!important">{palabra}</span>'
+                + modified_html[start_index +
+                                len(palabra):])
+
+    # local
+    file_path = '/home/vinxenxo/frontend-monitor/ortografia-temp.html'
+    #file_path = URL_BASE + 'tmp/ortografia_url.html'
+    with open(file_path, 'w') as f:
+        f.write(modified_html)
+
+    
+  
     return [{"Errores ortograficos:":len(list(errores_ortograficos)),
-             "Palabras:":list(errores_ortograficos)
+             "Palabras:":list(errores_ortograficos), "html:":file_path
              }]
     
 def obtener_idioma_desde_url(url):
