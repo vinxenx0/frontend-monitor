@@ -1,7 +1,7 @@
-<!-- app/templates/tools/usa/enlaces_rotos.html -->
+<!-- app/templates/tools/usa/enlaces.html -->
 {% extends 'tool_base.html' %}
 
-{% block title %}Enlaces Rotos{% endblock %}
+{% block title %}Enlaces{% endblock %}
 
 {% macro get_intervalo_color_class(intervalo) %}
 {% if intervalo == 'Enlaces inseguros' %}
@@ -11,7 +11,7 @@ intervalo-color-rojo
 
 {% block head %}
 
-<h1 class="mt-4">Enlaces rotos </h1>
+<h1 class="mt-4">Enlaces</h1>
 
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item active"><h5>Resultados para {{dominio_url}}</h5></li>
@@ -30,19 +30,46 @@ intervalo-color-rojo
 <div class="card mb-4">
     <div class="card-header">
         <i class="fas fa-table me-1"></i>
-        Enlaces rotos desde el último scan
+        Enlaces desde el último scan
     </div>
     <div class="card-body">
         <table id="datatablesSimple" class="display">
             <thead>
+                <!--
+                    12	enlaces_totales	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	13	<th>enlaces_inseguros</th>	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	14	<th>enlaces_internos</th>	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	15	enlaces_internos_unicos	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	16	<th>enlaces_js_unicos</th>	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	17	<th>enlaces_salientes</th>	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	18	enlaces_salientes_unicos	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	19	enlaces_salientes_js_unicos	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	20	enlaces_salientes_externos	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	21	enlaces_salientes_externos_unicos	int(11)			Sí	NULL			Cambiar Cambiar	Eliminar Eliminar	
+Más Más
+	22	enlaces_salientes_js_externos_unicos
+                -->
                 <tr>
                     <th><i class="fa-regular fa-calendar"></i></th>
                     <th><i class="fa-solid fa-link"></i>url</th>
-                    <th><i class="fa-solid fa-link-slash"></i></th>
+                    <th><i class="fa-solid fa-lock-open"></i></th>	
                     <th><i class="fa-solid fa-anchor"></i></th>
-                    <th><i class="fa-regular fa-file-pdf"></i></th>
+                    <th><i class="fa-solid fa-anchor-circle-check"></i></th>
+                    <th><i class="fa-brands fa-js"></i></th>
+                    <th><i class="fa-solid fa-file-export"></i></th>
+                    <th><i class="fa-solid fa-arrow-up-right-from-square"></i></th>
+                    <th><i class="fa-solid fa-arrows-to-circle"></i></th>
+                    <th><i class="fa-brands fa-node-js"></i></th>
                     <th><i class="fa-regular fa-clock"></i></th>
-
 
                 </tr>
 
@@ -50,11 +77,17 @@ intervalo-color-rojo
             <tfoot>
                 <tr>
                     <th><i class="fa-regular fa-calendar"></i></th>
-                    <th><i class="fa-solid fa-link"></i>url</th>
-                    <th><i class="fa-solid fa-link-slash"></i></th>
+                        <th><i class="fa-solid fa-link"></i>url</th>
+                        <th><i class="fa-solid fa-lock-open"></i></th>	
                     <th><i class="fa-solid fa-anchor"></i></th>
-                    <th><i class="fa-regular fa-file-pdf"></i></th>
+                    <th><i class="fa-solid fa-anchor-circle-check"></i></th>
+                    <th><i class="fa-brands fa-js"></i></th>
+                    <th><i class="fa-solid fa-file-export"></i></th>
+                    <th><i class="fa-solid fa-arrow-up-right-from-square"></i></th>
+                    <th><i class="fa-solid fa-arrows-to-circle"></i></th>
+                    <th><i class="fa-brands fa-node-js"></i></th>
                     <th><i class="fa-regular fa-clock"></i></th>
+
 
                 </tr>
             </tfoot>
@@ -62,11 +95,15 @@ intervalo-color-rojo
                 {% for result in resultados %}
                 <tr>
                     <td><small>{{ result.fecha_escaneo }}</small></td>
-                    <td><a href="{{ result.parent_url }}" target="_blank">{{ result.parent_url }}</a></td>
                     <td><a style="color:red;" href="{{ result.pagina }}" target="_blank">{{ result.pagina }}</a></td>
-                    <td>{% if '#' in result.pagina %}<i class="fa-solid fa-check"></i>{% endif %}</td>
-                   
-                    <td>{% if 'pdf' in result.pagina %} <i class="fa-solid fa-check"></i> {%endif%}</td>
+                    <td>{{ result.enlaces_inseguros }}</td>	
+                    <td>{{ result.enlaces_internos }}</td>
+                    <td>{{ result.enlaces_internos_unicos }}</td>
+                    <td>{{ result.enlaces_js_unicos }}</td>
+                    <td>{{ result.enlaces_salientes }}</td>
+                    <td>{{ result.enlaces_salientes_externos }}</td>
+                    <td>{{ result.enlaces_salientes_externos_unicos }}</td>
+                    <td>{{ result.enlaces_salientes_js_externos_unicos }}</td>
                     <td
                         class="tiempo-celda {% if result.tiempo_medio is not none and result.tiempo_respuesta <= 5 %} tiempo-verde {% elif result.tiempo_respuesta <= 15 %} tiempo-amarillo {% else %} tiempo-rojo {% endif %}">
                         {{ result.tiempo_respuesta }}
@@ -117,7 +154,7 @@ intervalo-color-rojo
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
                 //{ type: 'date', format: 'YYYY-MM-DD' },
-                null, null, null,  null, null
+                null, null, null,  null, null, null, null, null, null, null
             ]
         });
 

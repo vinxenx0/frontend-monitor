@@ -35,7 +35,7 @@ DOMINIOS_ESPECIFICOS = ["www.mc-mutual.com","mejoratuabsentismo.mc-mutual.com","
 
 SECRET_KEY = 'your_secret_key_here'
 
-URL_BASE = "https://mc-monitor.zonnox.net"
+URL_BASE = "https://mc-monitor.zonnox.net/"
 
 URL_OFFLINE = ""
 
