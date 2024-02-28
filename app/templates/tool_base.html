@@ -107,12 +107,12 @@
                                     <div
                                         class="card {% if indicador_2 > 50 %} bg-danger {% elif indicador_2 > 25 %} bg-warning {%else%} bg-success{%endif%}">
                                         <div class="card-body text-center">
-                                            <h3 class="display-4 {% if indicador_2 > 50 %} text-light {%endif%}"><span
+                                            <h3 class="display-4 {% if indicador_2 > 50 %} text-light {%endif%}" style="color: #fff!important;"><span
                                                     id="totalEnlacesRotos_">{{"%.2f"|format(indicador_2)}}%</span></h3>
-                                            <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}">de {{"%.0f"|format(indicador_3)}}</p>
+                                            <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}" style="color:#fff">de {{"%.0f"|format(indicador_3)}}</p>
                                         </div>
                                         <div class="card-footer">
-                                            <small class="{% if indicador_2 > 50 %} text-light {%endif%}">Total</small>
+                                            <small class="{% if indicador_2 > 50 %} text-light {%endif%}" style="text-align:center;color: #fff!important;">Total</small>
                                         </div>
                                     </div>
                                 </div>

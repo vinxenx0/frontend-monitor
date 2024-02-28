@@ -52,10 +52,25 @@
     
                                         </div>
 
-                                    <div>
-                                        <button class="mt-4 btn btn-primary" type="submit">Agregar Palabras en
-                                            Bulk</button>
-                                    </div>
+                                        <div>
+                                            <button id="submitButton" class="mt-4 btn btn-primary" type="submit" onclick="mostrarSpinner()">Agregar Palabras en Bulk
+                                                <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            </button>
+                                        </div>
+
+                                        <script>
+                                            function mostrarSpinner() {
+                                                // Mostrar el spinner al hacer clic en el botón
+                                                document.getElementById("loadingSpinner").classList.remove("d-none");
+                                        
+                                                // Simular una acción (puede ser una llamada AJAX o cualquier otra operación)
+                                                setTimeout(function () {
+                                                    // Ocultar el spinner después de un tiempo de simulación (por ejemplo, 3 segundos)
+                                                    document.getElementById("loadingSpinner").classList.add("d-none");
+                                                }, 3000); // 3000 milisegundos = 3 segundos
+                                            }
+                                        </script>
+                                        
                                 </form>
 
                             </div>
@@ -98,10 +113,23 @@
                                 <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
                                     <h3 class="display-4" id="porcentajeEnlacesDato"><span
                                             id="porcentajeEnlacesRotos_">{{indicador_1}}</span></h3>
-                                    <p class="lead text-dark">total palabras</p>
+                                    <p class="lead text-dark">palabras excluidas</p>
                                 </div>
                                 <div class="card-footer">
-                                    <small class="text-muted">Palabras excluidas</small>
+                                    <small class="text-muted">Mi Diccionario</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 mb-4">
+                            <div class="card">
+                                <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
+                                    <h3 class="display-4" id="porcentajeEnlacesDato"><span
+                                            id="porcentajeEnlacesRotos_">679</span></h3>
+                                    <p class="lead text-dark">palabras incluidas</p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">Lista Blanca</small>
                                 </div>
                             </div>
                         </div>
