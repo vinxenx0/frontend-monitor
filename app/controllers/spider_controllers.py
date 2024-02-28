@@ -2,6 +2,8 @@
 
 import imghdr
 from io import BytesIO
+import json
+from sqlalchemy.orm import class_mapper
 import re
 import string
 import aspell
@@ -9,7 +11,8 @@ import textstat
 import langid
 from PIL import Image
 import subprocess
-from app import app
+from app import app, db
+from app.models.database import Diccionario
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO
 from bs4 import BeautifulSoup
@@ -77,16 +80,27 @@ def tool_popup(tool):
 
 def analizar_ortografia(url):
 
-    PALABRAS_DICCIONARIO = [
-                #row.palabra for row in session.query(Diccionario).all()
-            ]
+    # Obtener todas las palabras de la base de datos
+    palabras = [palabra.palabra for palabra in db.session.query(Diccionario).all()]
+
+    # Convertir la lista de palabras a formato JSON
+    PALABRAS_DICCIONARIO = json.dumps(palabras)
+
+    print("diccionario db: ")
+    print(PALABRAS_DICCIONARIO)
+
+    #PALABRAS_DICCIONARIO = [
+    #            row.palabra for row in session.query(Diccionario).all()
+    #        ]
      
     errores_ortograficos = None  # Inicializa como None en lugar de una lista vacía
     palabras = set()  # Usamos un conjunto para almacenar las palabras únicas
 
     idioma_detectado = obtener_idioma_desde_url(url)  #detectar_idioma(texto)
     response = requests.get(url)
-    modified_html = response.text
+    # Obtener el contenido de la página web
+    # Codificar el contenido a UTF-8
+    modified_html = response.content.decode('utf-8')
     texto = extraer_texto_visible(response.text)
 
     speller = aspell.Speller('lang', idioma_detectado)
@@ -107,7 +121,7 @@ def analizar_ortografia(url):
     }
 
     # Filtra palabras que tengan TODOS los signos de puntuación, interrogación, exclamación, caracteres especiales o símbolos de moneda
-    caracteres_especiales = string.punctuation + '¡!¿?$€£@#%^&*()_-+=[]{}|;:,.<>/"'
+    caracteres_especiales = string.punctuation + '“”»«¡!¿?$€£@#%^&*()_-+=[]{}|;:,.<>/"'
     palabras = {
         palabra
         for palabra in palabras
@@ -122,16 +136,36 @@ def analizar_ortografia(url):
     print(list(errores_ortograficos))
 
     #send_file(html_archivo, attachment_filename='resultado.html', as_attachment=True)
-    for palabra in errores_ortograficos:
+    #for palabra in errores_ortograficos:
         # Encontrar la posición de la palabra en el HTML original
-        start_index = modified_html.find(palabra)
+    #    start_index = modified_html.find(palabra)
 
+    #    if start_index != -1:
+    #        modified_html = (
+    #            modified_html[:start_index] +
+    #            f'<span style="background-color:red!important;color:white!important;border:2px solid #fff!important">{palabra}</span>'
+    #            + modified_html[start_index +
+    #                            len(palabra):])
+
+    for palabra in errores_ortograficos:
+        # Buscar la etiqueta <body> en el HTML
+        start_body_index = modified_html.find('<body>')
+        
+        # Si no encuentra la etiqueta <body>, buscar en todo el documento
+        if start_body_index == -1:
+            start_index = modified_html.find(palabra)
+        else:
+            # Encontrar la posición de la palabra en el HTML original después de la etiqueta <body>
+            start_index = modified_html.find(palabra, start_body_index)
+        
         if start_index != -1:
             modified_html = (
                 modified_html[:start_index] +
                 f'<span style="background-color:red!important;color:white!important;border:2px solid #fff!important">{palabra}</span>'
                 + modified_html[start_index +
                                 len(palabra):])
+
+
 
     # local
     file_path = '/home/vinxenxo/frontend-monitor/ortografia-temp.html'

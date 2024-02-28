@@ -5,7 +5,7 @@ from flask import render_template, jsonify, request
 from flask_login import login_required
 from app import app, db
 from sqlalchemy import and_, desc, distinct, func, case
-from app.models.database import Resultado, Sumario, Diccionario
+from app.models.database import Resultado, Sumario, Diccionario, Diccionario_usuario
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER
 from sqlalchemy.orm import class_mapper

@@ -46,7 +46,7 @@ td.section-header {
 </style>
 
 <h1 class="mt-4">&Uacute;ltimo Resumen</h1>
-<h3 class="mt-4">{{solo_uno}}</h3>
+
 
 <ol class="breadcrumb mb-4">
   <li class="breadcrumb-item active">Informe general del último scan</li>
@@ -74,7 +74,19 @@ td.section-header {
       </div>
   </div>
 </div>
-<div class="col-md-4">
+<!--
+<div class="col-md-3">
+  
+  <h6>{{ solo_uno }}</h6>
+  <p class="card-text text-dark">
+    <strong> stat.fecha </strong><br />
+    <small><b> stat.hora_inicio -  stat.hora_fin</b></small>
+</p>
+
+</div>
+-->
+
+<div class="col-md-6">
   <div class="row">
 <!--
 
@@ -109,17 +121,18 @@ td.section-header {
           </div>
       </div>
       -->
-     
-      <div class="col-md-3">
+      {% for dominio_id in dominios_ordenados %}
+      {% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
+      <div class="col-md-3 mb-3" style="margin-left: 18px;">
            <!-- Agrega este div donde quieras mostrar el gráfico -->
-           <div style="width: 200px; height: 400px;" class="mb-3">
-            {% for dominio_id in dominios_ordenados %}
-            {% for stat in resumen if stat.id_escaneo in ids_especificos and stat.dominio == dominio_id %}
+           <div style="width: 200px; height: 200px;">
+            
             <canvas id="doughnutChart_global_{{stat.id_escaneo}}"></canvas>
-            {% endfor %}
-            {% endfor %}
+           
           </div>
       </div>
+      {% endfor %}
+      {% endfor %}
      
   </div>
 </div>
@@ -133,7 +146,7 @@ function changeDomain() {
 }
 </script>
 
-<div class="row">
+
   <!-- Columna izquierda con el GrÃ¡fico doughnut para el total de 404 de los 3 dominios -->
 
   {% set total_porcentaje_general = 0 %}
@@ -149,13 +162,11 @@ function changeDomain() {
     {% set stat_ayer = resumen_ayer %}
     {% set stat_quince = resumen_quince %}
 
+    <div class="row">
+    <h3 class="mt-4">{{stat.dominio}}</h3>
     <div class="col-md-4 mb-4">
     
-      <h6>{{ stat.dominio }}</h6>
-      <p class="card-text text-dark">
-        <strong>{{ stat.fecha }}</strong><br />
-        <small><b>{{ stat.hora_inicio}} - {{ stat.hora_fin}}</b></small>
-    </p>
+    
 
       <div class="card">
         <div class="card-body">
@@ -1194,7 +1205,7 @@ function changeDomain() {
               <tr>
                 <td colspan="6">
                   <!-- Agrega este div donde quieras mostrar el gráfico -->
-                  <div style="width: 400px; height: 400px;">
+                  <div style="width: 200px; height: 200px;">
                     <canvas id="doughnutChart_seo_{{stat.id_escaneo}}"></canvas>
                   </div>
                 </td>
@@ -1259,7 +1270,7 @@ function changeDomain() {
      
     
   
-          <div class="col-md-4 mb-4">
+          <div class="col-md-3 mb-4">
           <div class="card">
             <div class="card-body">
 
@@ -1516,7 +1527,7 @@ function changeDomain() {
               <tr>
                 <td colspan="6">
                   <!-- Agrega este div donde quieras mostrar el gráfico -->
-                  <div style="width: 400px; height: 400px;">
+                  <div style="width: 200px; height: 200px;">
                     <canvas id="doughnutChart_usabilidad_{{stat.id_escaneo}}"></canvas>
                   </div>
                 </td>
@@ -1935,7 +1946,7 @@ function changeDomain() {
               <tr>
                 <td colspan="6">
                   <!-- Agrega este div donde quieras mostrar el gráfico -->
-                  <div style="width: 400px; height: 400px;">
+                  <div style="width: 200px; height: 200px;">
                     <canvas id="doughnutChart_accesibilidad_{{stat.id_escaneo}}"></canvas>
                   </div>
                 </td>
@@ -2281,7 +2292,7 @@ function changeDomain() {
               <tr>
                 <td colspan="6">
                   <!-- Agrega este div donde quieras mostrar el gráfico -->
-                  <div style="width: 400px; height: 400px;">
+                  <div style="width: 200px; height: 200px;">
                     <canvas id="doughnutChart_otros_{{stat.id_escaneo}}"></canvas>
                   </div>
                 </td>
@@ -2342,7 +2353,7 @@ function changeDomain() {
  
 
 
-      <div class="col-md-4 mb-4">
+      <div class="col-md-3 mb-4">
       <div class="card">
         <div class="card-body">
 
@@ -2359,10 +2370,7 @@ function changeDomain() {
               </tr>
               <tr>
                 <td><i class="fa-solid fa-circle-question fa-2xs"></i>HASH</td>
-                <td><!--
-                  {{ stat.id_escaneo or 'Fail' }}
-                -->
-                </td>
+                
               </tr>
               <tr>
                 <td>Hora de Inicio</td>
@@ -2383,9 +2391,9 @@ function changeDomain() {
           </table>
         </div>
       </div>
-    </div>
-
-
+    
+  
+</div>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         // Obtén los datos de tu backend o define un ejemplo aquí

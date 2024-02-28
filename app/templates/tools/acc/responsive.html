@@ -45,28 +45,30 @@
          <table id="datatablesSimple" class="display">
             <thead>
                <tr>
-                  <th><i class="fa-regular fa-calendar"></i></th>
-                  <th><i class="fa-solid fa-globe"></i></th>
-                  <th><i class="fa-solid fa-link"></i>url</th>
+                  <th><i title="fecha_escaneo"  class="fa-regular fa-calendar"></i></th>
+                  <th><i title="dominio"  class="fa-solid fa-globe"></i></th>
+                  <th><i title="url"  class="fa-solid fa-link"></i>url</th>
                   <th>viewport</th>
                   <th>responsive</th>
                   <th>aaaa</th>
                   <th>html</th>
-                  <th><i class="fas fa-lightbulb"></i></th>
-                  <th><i class="fa-solid fa-language"></i></th>
+                  <th><i title="idioma"  class="fa-solid fa-language"></i></th>
+                  <th><i title="ayuda"  class="fas fa-lightbulb"></i></th>
+                  
                </tr>
             </thead>
             <tfoot>
                <tr>
-                  <th><i class="fa-regular fa-calendar"></i></th>
-                  <th><i class="fa-solid fa-globe"></i></th>
-                  <th><i class="fa-solid fa-link"></i>url</th>
+                  <th><i title="fecha_escaneo"  class="fa-regular fa-calendar"></i></th>
+                  <th><i title="dominio"  class="fa-solid fa-globe"></i></th>
+                  <th><i title="url"  class="fa-solid fa-link"></i>url</th>
                   <th>viewport</th>
                   <th>responsive</th>
                   <th>aaaa</th>
                   <th>html</th>
-                  <th><i class="fas fa-lightbulb"></i></th>
-                  <th><i class="fa-solid fa-language"></i></th>
+                  <th><i title="idioma"  class="fa-solid fa-language"></i></th>
+                  <th><i title="ayuda"  class="fas fa-lightbulb"></i></th>
+                 
                </tr>
             </tfoot>
             <tbody>
@@ -89,6 +91,9 @@
                         class="fa-solid fa-lg  fa-circle-exclamation"></i>{% else %}<i
                         class="fa-solid fa-lg  fa-check"></i>{% endif %}</td>
                   <td>
+                     <small>{{ result.lang }}</small>
+                  </td>
+                  <td>
                      {% if result.responsive_valid is not none and result.responsive_valid != 1 %}
                      <button type="button" class="btn btn-info" data-bs-toggle="modal"
                         data-bs-target="#infoModal{{ result.id }}">
@@ -96,9 +101,7 @@
                      </button>
                      {% endif %}
                   </td>
-                  <td>
-                     <small>{{ result.lang }}</small>
-                  </td>
+                
                </tr>
                {% if result.responsive_valid is not none and result.responsive_valid != 1 %}
 

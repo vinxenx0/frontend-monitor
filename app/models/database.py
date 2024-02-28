@@ -110,11 +110,21 @@ class Resultado(db.Model):
     h2_no_secuencial = Column(Integer)
 
 class Diccionario(db.Model):
-    __tablename__ = 'diccionario'
+    __tablename__ = 'diccionario_usuario'
+    #__tablename__ = 'diccionario'
     id = Column(Integer, primary_key=True, autoincrement=True)
     palabra = Column(String(255))
     idioma = Column(String(50))
-    
+
+
+class Diccionario_usuario(db.Model):
+    __tablename__ = 'diccionario'
+    #__tablename__ = 'diccionario_usuario'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    palabra = Column(String(255))
+    idioma = Column(String(50))
+   
+
 class Sumario(db.Model):
     __tablename__ = 'sumario'
     id = Column(Integer, primary_key=True, autoincrement=True)
