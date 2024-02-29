@@ -2884,14 +2884,14 @@ def obtener_posicion_dominio(palabra_clave,
 @app.route('/resultados-popup', methods=['GET'])
 def resultados_popup():
 
-    print("popup-url\t\n")
+    #print("popup-url\t\n")
 
     # resultados = session.pop('resultados')
     resultados = session.get('resultados', None)
     url = session.get('url', None)
 
-    print("popup-url session \t\n")
-    print(resultados)
+    #print("popup-url session \t\n")
+    #print(resultados)
 
     return render_template('resultado_popup.html', resultados=resultados, url=url)
 
