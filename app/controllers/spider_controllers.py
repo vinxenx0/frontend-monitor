@@ -87,10 +87,11 @@ def analizar_ortografia(url):
     
    
     # Obtener todas las palabras de la base de datos
-    #palabras = [palabra.palabra for palabra in session.query(Diccionario_usuario).all()]
+    palabras_a_revisar = [palabra.palabra for palabra in session.query(Diccionario_usuario).all()]
 
     # Obtener todas las palabras de la base de datos y añadir a la lista existente
-    palabras_a_revisar =[palabra.palabra for palabra in db.session.query(Diccionario).all()]
+    palabras_a_revisar.extend([palabra.palabra for palabra in db.session.query(Diccionario).all()])
+
 
     # Cerrar la sesión después de obtener los datos
     session.close()
