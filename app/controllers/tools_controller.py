@@ -1144,6 +1144,153 @@ def velocidad_url(domain):
                            indicador_3=total_paginas)
 
 
+@app.route('/rescue')
+@login_required
+def rescue():
+    # IDs de escaneo específicos
+    #ids_escaneo_especificos = ['4b99956ba942f7986ccc2e5c992c3a2a111385bfdbbfa2223818c6a8d9e28510',\
+    #    '41038960d6084d0e2ba5416c0c2a52777cc40e119b7c69fb0aeaa4b8231cd2e0',\
+    #    '5b485f2d386e81e56d67e6f1663d7d965f69985e11d771e56b0caf6f5ecb0849'
+    #  ]  # Reemplaza con los IDs específicos que se proporcionarán
+
+    #ids_escaneo_especificos = IDS_ESCANEO
+
+    # Modificar la consulta para seleccionar las 7 últimas fechas sin repetir
+    results = (db.session.query(distinct(Sumario.fecha)).order_by(
+        Sumario.fecha.desc()).limit(1).all())
+
+    # Obtener los resultados para las fechas seleccionadas
+    fechas_seleccionadas = [result[0] for result in results]
+
+    #.filter(func.date(Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+
+    #print(fechas_seleccionadas)
+    #
+    # Consulta principal para obtener todas las URLs que coincidan con los IDs de escaneo proporcionados
+    results = (
+        db.session.query(Resultado).filter(
+            Resultado.codigo_respuesta == 404).filter(
+                Resultado.dominio.in_(DOMINIOS_ESPECIFICOS)).filter(
+                    func.date(
+                        Resultado.fecha_escaneo).in_(fechas_seleccionadas))
+        #.filter(Resultado.id_escaneo.in_(ids_escaneo_especificos))
+        .filter(
+            ~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        .filter(~Resultado.pagina.like('%redirect%')
+                )  # Excluir URLs que contengan 'redirect'
+        .all())
+
+    # Consulta para obtener la información de carga agrupada por segundos
+    resultados_agrupados = {}
+    resultados_agrupados_dos = {}
+
+    resultados_por_escaneo = (
+        db.session.query(
+            Resultado.id_escaneo,
+            Resultado.dominio,
+            #Resultado.codigo_respuesta == 404,
+            case(
+                # (Resultado.codigo_respuesta == 200, 'Correctos'),
+                # (Resultado.codigo_respuesta == 404, 'Rotos'),
+                # (Resultado.codigo_respuesta == 500, 'Error del servidor'),
+                # (Resultado.codigo_respuesta == 503, '503'),
+                (Resultado.pagina.like('%#%'), 'Interno'),
+                (Resultado.pagina.like('%redirect=%'), 'Redirección'),
+                (Resultado.pagina.like('%?%'), 'Dinamicos'),
+                (Resultado.pagina.like('%pdf%'), 'PDF - DOC'),
+                (Resultado.pagina.like('%estaticos%'), 'Estático'),
+                (Resultado.pagina.like('%assets%'), 'Asset'),
+                (Resultado.pagina.like('%extranet%'), 'Extranet'),
+                (Resultado.pagina.like('%intranet%'), 'Intranet'),
+                (Resultado.pagina.like('%visor%'), 'Visor'),
+                else_='HTML'  # Puedes cambiar 'Otra etiqueta' por lo que desees
+            ).label('intervalo_carga'),
+            func.count().label('count')).filter(
+                Resultado.id_escaneo.in_(IDS_ESCANEO),
+                Resultado.codigo_respuesta == 404)
+        #.filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%redirect%'))  # Excluir URLs que contengan 'redirect'
+        .group_by(Resultado.id_escaneo, 'intervalo_carga',
+                  Resultado.dominio).all())
+
+    # Procesamos los resultados para estructurarlos en un diccionario
+    for resultado in resultados_por_escaneo:
+        id_escaneo = resultado.id_escaneo
+        dominio = resultado.dominio
+        intervalo_carga = resultado.intervalo_carga
+        count = resultado.count
+
+        if id_escaneo not in resultados_agrupados:
+            resultados_agrupados[id_escaneo] = []
+
+        resultados_agrupados[id_escaneo].append(
+            (dominio, intervalo_carga, count))
+
+    # Utilizamos una sola consulta para mejorar la eficiencia
+    resultados_por_escaneo = (
+        db.session.query(
+            Resultado.id_escaneo, Resultado.dominio,
+            case((Resultado.enlaces_inseguros >= 1, 'Enlaces inseguros'),
+                 else_='Otros').label('intervalo_carga'),
+            func.count().label('count')).filter(
+                Resultado.id_escaneo.in_(ids_escaneo_especificos),
+                Resultado.codigo_respuesta == 404)
+
+        #.filter(~Resultado.pagina.like('%#%'))  # Excluir URLs que contengan '#'
+        #.filter(~Resultado.pagina.like('%redirect%'))  # Excluir URLs que contengan 'redirect'
+        .group_by(Resultado.id_escaneo, 'intervalo_carga',
+                  Resultado.dominio).all())
+
+    # Procesamos los resultados para estructurarlos en un diccionario
+    for resultado in resultados_por_escaneo:
+        id_escaneo = resultado.id_escaneo
+        dominio = resultado.dominio
+        intervalo_carga = resultado.intervalo_carga
+        count = resultado.count
+
+        if id_escaneo not in resultados_agrupados_dos:
+            resultados_agrupados_dos[id_escaneo] = []
+
+        resultados_agrupados_dos[id_escaneo].append(
+            (dominio, intervalo_carga, count))
+
+    # Consulta para obtener las filas correspondientes de la tabla Sumario
+    sumarios = (db.session.query(Sumario).filter(
+        Sumario.id_escaneo.in_(ids_escaneo_especificos)).all())
+
+    # Convertir objetos Sumario a diccionarios
+    sumarios_dict = []
+    for sumario in sumarios:
+        sumario_dict = {}
+        for column in class_mapper(Sumario).columns:
+            sumario_dict[column.name] = getattr(sumario, column.name)
+        sumarios_dict.append(sumario_dict)
+
+    # Consulta para obtener las filas correspondientes de la tabla Sumario
+    evoluciones = (
+        db.session.query(Sumario)  #.dominio, Sumario.total_404, Sumario.fecha)
+        .all())
+
+    # Convertir objetos Sumario a diccionarios
+    evoluciones_dict = []
+    for evolucion in evoluciones:
+        evolucion_dict = {}
+        for column in class_mapper(Sumario).columns:
+            evolucion_dict[column.name] = getattr(evolucion, column.name)
+        evoluciones_dict.append(evolucion_dict)
+
+    # Envía los resultados al template
+    return render_template('tools/usa/rescue.html',
+                           dominios_ordenados=DOMINIOS_ESPECIFICOS,
+                           evolucion=json.dumps(evoluciones_dict),
+                           resultados=results,
+                           resumen=sumarios,
+                           detalles=resultados_agrupados,
+                           detalles_dos=resultados_agrupados_dos,
+                           graficos=json.dumps(sumarios_dict))
+
+
+
 @app.route('/enlaces-rotos')
 @login_required
 def enlaces_rotos():
