@@ -2,6 +2,12 @@
 
 {% extends 'base.html' %}
 
+{% if dominio_url %}
+{% set dominios_ordenados_dos = [dominio_url] %}
+{% else %}
+{% set dominios_ordenados_dos = dominios_ordenados %}
+{%endif%}
+
 {% block content %}
 <script>
   $(function () {
@@ -49,7 +55,7 @@ td.section-header {
 
 
 <ol class="breadcrumb mb-4">
-  <li class="breadcrumb-item active">Informe general del último scan</li>
+  <li class="breadcrumb-item active">Informe general del último scan {{ dominio_url }}</li>
 
 </ol>
 
@@ -65,8 +71,7 @@ td.section-header {
               <select class="form-select" id="dominio" name="domain"
                   onchange="changeDomain()">
                   {% for domain in dominios_ordenados %}
-                  <option value="{{ domain }}" {% if domain==dominio_url %}selected{% endif
-                      %}>{{ domain }}</option>
+                  <option value="{{ domain }}" {% if domain==dominio_url %}selected{% endif %}>{{ domain }}</option>
                   {% endfor %}
               </select>
           </form>
@@ -1823,7 +1828,9 @@ function changeDomain() {
                 <td>PDFs</td>
                 <td>{{ stat.pdf_count or 0 }}</td>
                 <td>
+		  {% if stat.pdf_count is not none and stat.pdf_count != 0 %}
                   ({{ "%0.2f"|format(stat.pdf_count / stat.pdf_count * 100) }}%)
+		{%endif%}
                 </td>
                 <td>
                   {% set variacion = stat.pdf_count - (stat_ayer.pdf_count or 0) %}

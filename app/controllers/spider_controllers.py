@@ -12,7 +12,7 @@ import langid
 from PIL import Image
 import subprocess
 from app import app, db
-from app.models.database import Diccionario, Diccionario_usuario
+from app.models.database import Diccionario
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO
 from bs4 import BeautifulSoup
@@ -23,8 +23,6 @@ import requests
 from bs4 import BeautifulSoup
 from flask import request
 from io import BytesIO
-from sqlalchemy.orm import sessionmaker
-
 
 ids_escaneo_especificos = IDS_ESCANEO
 dominios_especificos = DOMINIOS_ESPECIFICOS
@@ -66,6 +64,7 @@ def tool_popup(tool):
          resultados = extraer_meta_tags(url)
     elif tool == 'ortografia':
          resultados = analizar_ortografia(url)
+         print(resultados)
     elif tool == 'seguridad':
          resultados = extraer_meta_tags(url)
     else:
@@ -74,34 +73,21 @@ def tool_popup(tool):
 
     session['resultados'] = resultados
     session['url'] = url
-    session.modified = True  # Marcar la sesión como modificada para asegurar que se guarde
 
     return redirect(url_for('resultados_popup'))
 
+
+
 def analizar_ortografia(url):
 
-    Session = sessionmaker(bind=db.engine)
-    session = Session()
-    session.expire_on_commit = False
-
-    
-   
     # Obtener todas las palabras de la base de datos
-    palabras_a_revisar = [palabra.palabra for palabra in session.query(Diccionario_usuario).all()]
-
-    # Obtener todas las palabras de la base de datos y añadir a la lista existente
-    palabras_a_revisar.extend([palabra.palabra for palabra in db.session.query(Diccionario).all()])
-
-
-    # Cerrar la sesión después de obtener los datos
-    session.close()
-
+    palabras = [palabra.palabra for palabra in db.session.query(Diccionario).all()]
 
     # Convertir la lista de palabras a formato JSON
-    palabras_a_revisar = json.dumps(palabras_a_revisar)
+    PALABRAS_DICCIONARIO = json.dumps(palabras)
 
-    print("diccionario db: ")
-    print(palabras_a_revisar)
+    #print("diccionario db: ")
+    #print(PALABRAS_DICCIONARIO)
 
     #PALABRAS_DICCIONARIO = [
     #            row.palabra for row in session.query(Diccionario).all()
@@ -130,10 +116,9 @@ def analizar_ortografia(url):
     palabras = {
         palabra
         for palabra in texto_limpio.split()
-        if palabra.lower() not in palabras_a_revisar
+        if palabra not in PALABRAS_DICCIONARIO
         and len(palabra) >= 4
     }
-
 
     # Filtra palabras que tengan TODOS los signos de puntuación, interrogación, exclamación, caracteres especiales o símbolos de moneda
     caracteres_especiales = string.punctuation + '“”»«¡!¿?$€£@#%^&*()_-+=[]{}|;:,.<>/"'
@@ -143,28 +128,11 @@ def analizar_ortografia(url):
         if not all(c in caracteres_especiales for c in palabra)
     }
 
-
-    # Filtrar palabras que no están en el diccionario
-    palabras = [palabra for palabra in palabras if palabra not in palabras_a_revisar]
-
-    print("fase 22")
-    print(palabras)
-
-
-    # Chequeo del speller para palabras que no están en el diccionario
-    errores_ortograficos = [
-        palabra for palabra in palabras_a_revisar if not speller.check(palabra)
-    ]
-
-
     # Errores ortográficos solo para palabras que no están en la lista excluida y no cumplen con el chequeo del speller
     errores_ortograficos = [
-        palabra for palabra in palabras if not speller.check(palabra)
+        palabra for palabra in palabras if not speller.check(palabra) and palabra not in PALABRAS_DICCIONARIO
+        and palabra.lower() not in PALABRAS_DICCIONARIO and palabra.upper() not in PALABRAS_DICCIONARIO
     ]
-
-    print("fase 3 ")
-    print(errores_ortograficos)
-
 
     #print(list(errores_ortograficos))
 
@@ -201,9 +169,8 @@ def analizar_ortografia(url):
 
 
     # local
-    file_path = '/home/vinxenxo/frontend-monitor/ortografia-temp.html'
+    file_path = '/var/www/html/offline/ortografia-temp.html'
     file_url = URL_BASE + '/offline/ortografia-temp.html'
-    #file_path = URL_BASE + 'tmp/ortografia_url.html'
     with open(file_path, 'w') as f:
         f.write(modified_html)
 
