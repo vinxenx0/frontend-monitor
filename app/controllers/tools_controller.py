@@ -1,11 +1,11 @@
 # app/controllers/tools_controller.py
 
 import json
-from flask import render_template, jsonify, request
+from flask import redirect, render_template, jsonify, request, url_for
 from flask_login import login_required
 from app import app, db
 from sqlalchemy import and_, desc, distinct, func, case
-from app.models.database import Resultado, Sumario, Diccionario, Diccionario_usuario
+from app.models.database import Resultado, Sumario, Diccionario, Diccionario_usuario, Configuracion
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER
 from sqlalchemy.orm import class_mapper
@@ -2750,7 +2750,48 @@ def diag_textos_legales():
 @app.route('/tools/config')
 @login_required
 def tools_config():
-    return render_template('config.html')
+        # Obtener la última configuración de la base de datos
+    ultima_configuracion = Configuracion.query.order_by(Configuracion.id.desc()).first()
+    return render_template('config.html', configuracion=ultima_configuracion)
+    #return render_template('config.html')
+
+@app.route('/tools/config/update', methods=['POST'])
+def actualizar_configuracion():
+    try:
+        # Obtener datos del formulario
+        dominios = []
+        frecuencia = request.form.get('frecuencia_dias')
+        validator = request.form.get('w3c_validator')
+        urlExcluidas = request.form.get('url_Excluidas')
+        extensionesExcluidas = request.form.get('extensiones_Excluidas')
+        keywords = request.form.get('keywords_analizar')
+
+        print(urlExcluidas)
+        # Resto de campos
+
+        # Crear instancia de Configuracion
+        configuracion = Configuracion(
+            dominios_analizar=dominios,
+            frecuencia_dias=frecuencia,
+            w3c_validator = validator,
+            url_Excluidas = urlExcluidas,
+            extensiones_Excluidas = extensionesExcluidas,
+            keywords_analizar = keywords,
+            is_running = 0
+            # Resto de campos
+        )
+        # Guardar en la base de datos
+        db.session.add(configuracion)
+        db.session.commit()
+
+        # Redirigir a una página de éxito
+        return redirect(url_for('tools_config'))
+        #ultima_configuracion = Configuracion.query.order_by(Configuracion.id.desc()).first()
+        #return render_template('config.html', configuracion=ultima_configuracion)
+        #return render_template('config.html')
+    except Exception as e:
+        # Manejar errores
+        return "Error al actualizar la configuración: " + str(e)
 
 
 @app.route('/sitemap/<string:domain>')

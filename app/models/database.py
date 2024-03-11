@@ -128,6 +128,12 @@ class Configuracion(db.Model):
     __tablename__ = 'configuracion'
     id = Column(Integer, primary_key=True)
     is_running = Column(Boolean)
+    dominios_analizar = Column(JSON)
+    frecuencia_dias = Column(Integer)
+    w3c_validator = Column(String(255))
+    url_Excluidas = Column(JSON)
+    extensiones_Excluidas = Column(JSON)
+    keywords_analizar = Column(JSON)
 
 
 class Sumario(db.Model):
