@@ -28,8 +28,11 @@
                     <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %}"
                         href="/ortografia/www.mc-mutual.com">An&aacute;lisis</a>
 
-                    <a class="nav-link {% if request.endpoint == 'diccionario' %} active {% endif %}"
-                        href="{{ url_for('diccionario') }}">Diccionarios</a>
+		    <a class="nav-link {% if request.endpoint == 'visor_excluidas' %} active {% endif %}"
+                        href="{{ url_for('visor_excluidas') }}">Excluidas</a>
+
+                    <a class="nav-link {% if request.endpoint == 'visor_whitelist' %} active {% endif %}"
+                        href="{{ url_for('visor_whitelist') }}">Lista Blanca</a>
             
                 </nav>
             </div>

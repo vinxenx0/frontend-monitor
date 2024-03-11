@@ -1,6 +1,6 @@
 from app import db
 from datetime import datetime
-from sqlalchemy import func, create_engine, Column, Integer, String, Text, DateTime, JSON, desc, update, Float
+from sqlalchemy import func, create_engine, Boolean, Column, Integer, String, Text, DateTime, JSON, desc, update, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError, OperationalError
@@ -110,20 +110,31 @@ class Resultado(db.Model):
     h2_no_secuencial = Column(Integer)
 
 class Diccionario(db.Model):
-    __tablename__ = 'diccionario_usuario'
-    #__tablename__ = 'diccionario'
+    #__tablename__ = 'diccionario_usuario'
+    __tablename__ = 'diccionario'
     id = Column(Integer, primary_key=True, autoincrement=True)
     palabra = Column(String(255))
     idioma = Column(String(50))
 
 
 class Diccionario_usuario(db.Model):
-    __tablename__ = 'diccionario'
-    #__tablename__ = 'diccionario_usuario'
+    #__tablename__ = 'diccionario'
+    __tablename__ = 'diccionario_usuario'
     id = Column(Integer, primary_key=True, autoincrement=True)
     palabra = Column(String(255))
     idioma = Column(String(50))
-   
+
+class Configuracion(db.Model):
+    __tablename__ = 'configuracion'
+    id = Column(Integer, primary_key=True)
+    is_running = Column(Boolean)
+    dominios_analizar = Column(JSON)
+    frecuencia_dias = Column(Integer)
+    w3c_validator = Column(String(255))
+    url_Excluidas = Column(JSON)
+    extensiones_Excluidas = Column(JSON)
+    keywords_analizar = Column(JSON)
+
 
 class Sumario(db.Model):
     __tablename__ = 'sumario'
