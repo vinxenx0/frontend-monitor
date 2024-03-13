@@ -109,6 +109,13 @@ class Resultado(db.Model):
     h2_falta = Column(Integer)
     h2_no_secuencial = Column(Integer)
 
+
+class Keywords(db.Model):
+    __tablename__ = 'keywords'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    keyword = Column(String(255))
+    rank = Column(Integer)
+
 class Diccionario(db.Model):
     #__tablename__ = 'diccionario_usuario'
     __tablename__ = 'diccionario'

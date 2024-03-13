@@ -5,7 +5,7 @@ from flask import redirect, render_template, jsonify, request, url_for
 from flask_login import login_required
 from app import app, db
 from sqlalchemy import and_, desc, distinct, func, case
-from app.models.database import Resultado, Sumario, Diccionario, Diccionario_usuario, Configuracion
+from app.models.database import Resultado, Sumario, Diccionario, Diccionario_usuario, Configuracion, Keywords
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER
 from sqlalchemy.orm import class_mapper
@@ -2759,7 +2759,7 @@ def tools_config():
 def actualizar_configuracion():
     try:
         # Obtener datos del formulario
-        dominios = []
+        dominios = "https://www.mc-mutual.com\r\nhttps://mejoratuabsentismo.mc-mutual.com\r\nhttps://prevencion.mc-mutual.com"
         frecuencia = request.form.get('frecuencia_dias')
         validator = request.form.get('w3c_validator')
         urlExcluidas = request.form.get('url_Excluidas')
@@ -2837,70 +2837,14 @@ def check_sitemap(url):
 @app.route('/ranking/<string:domain>')
 def obtener_posiciones_dominio(domain):
     palabras_clave_ejemplo = [
-        "Mutua de accidentes", "Mutua de accidentes laborales",
-        "Mutua colaboradora con la Seguridad social", "Mutua Seguridad Social",
-        'seguros de mutua', 'comparativa de mutuas', 'mejor mutua de salud',
-        'cómo elegir una mutua', 'mutua de seguros', 'opiniones sobre mutuas',
-        'mutua de salud precios', 'qué cubre una mutua', 'mutua médica',
-        'mutua de accidentes', 'mutua de ahorro', 'mutua de trabajo',
-        'mutua de coche', 'mutua de fisioterapia', 'mutua de enfermedades',
-        'mutua dental', 'mutua de previsión', 'mutua de pensiones',
-        'mutua familiar', 'mutua de protección', 'mutua de jubilación',
-        'mutua de vida', 'mutua de prevención', 'mutua de asistencia',
-        'mutua de responsabilidad', 'mutua de cuidado', 'mutua de cobertura',
-        'mutua de indemnización', 'mutua integral', 'mutua de atención',
-        'mutua de emergencia', 'mutua de bienestar', 'mutua de protección',
-        'mutua de asesoramiento', 'mutua de orientación', 'mutua de consulta',
-        'mutua de orientación', 'mutua de investigación', 'mutua de análisis',
-        'mutua de evaluación', 'mutua de revisión', 'mutua de exploración'
-        'cobertura mutua de accidentes de trabajo',
-        'cómo elegir una mutua de accidentes laborales',
-        'comparativa de mutuas de accidentes',
-        'beneficios de tener mutua de accidentes laborales',
-        'mutua laboral para empresas pequeñas',
-        'pasos para afiliarse a una mutua de accidentes',
-        'mutua de accidentes vs. seguro de trabajo',
-        'tasas de mutuas de accidentes',
-        'requisitos para solicitar indemnización laboral',
-        'guía para reclamar a una mutua por accidente',
-        'mutua de accidentes obligatoria', 'consultoría en seguridad laboral',
-        'mutua de accidentes y enfermedades profesionales',
-        'mutua de accidentes para autónomos',
-        'indemnización por incapacidad laboral',
-        'evaluación de riesgos en el trabajo',
-        'mutua de accidentes de trabajo precios',
-        'derechos del trabajador ante un accidente laboral',
-        'mutua de accidentes de trabajo opiniones',
-        'protocolo de actuación ante un accidente laboral',
-        'mutua de accidentes de trabajo para empleados públicos',
-        'prevención de accidentes laborales en la construcción',
-        'mutua de accidentes y enfermedades laborales',
-        'cobertura de una mutua de accidentes laborales',
-        'reclamación de indemnización por accidente laboral',
-        'mutua de accidentes de trabajo para autónomos',
-        'medidas de seguridad en el trabajo',
-        'mutua de accidentes de trabajo para empleados privados',
-        'qué hacer en caso de accidente laboral',
-        'mutua de accidentes de trabajo para empresas grandes',
-        'legislación sobre accidentes laborales',
-        'mutua de accidentes y enfermedades laborales precios',
-        'informe médico para indemnización laboral',
-        'mutua de accidentes de trabajo para contratistas',
-        'derechos del empleador en caso de accidente laboral',
-        'mutua de accidentes de trabajo para sector industrial',
-        'cursos de prevención de riesgos laborales',
-        'mutua de accidentes y enfermedades laborales opiniones',
-        'responsabilidad del empleador en accidentes laborales',
-        'mutua de accidentes de trabajo para trabajadores temporales',
-        'ergonomía en el lugar de trabajo',
-        'mutua de accidentes de trabajo para sector servicios'
+        "mc-mutual","mc mutua de accidentes"
     ]
     posiciones_totales = {}
     top3_count = 0
     top10_count = 0
 
     for palabra_clave in palabras_clave_ejemplo:
-        posicion = 0  #obtener_posicion_dominio(palabra_clave, domain)
+        posicion = obtener_posicion_dominio(palabra_clave, domain)
         posiciones_totales[palabra_clave] = posicion
 
         if posicion and posicion <= 3:
@@ -2909,93 +2853,8 @@ def obtener_posiciones_dominio(domain):
         if posicion and posicion <= 10:
             top10_count += 1
 
-    posiciones_totales = {
-        'Mutua de accidentes': 6,
-        'Mutua de accidentes laborales': 9,
-        'Mutua colaboradora con la Seguridad social': 5,
-        'Mutua Seguridad Social': 7,
-        'seguros de mutua': None,
-        'comparativa de mutuas': None,
-        'mejor mutua de salud': None,
-        'cómo elegir una mutua': None,
-        'mutua de seguros': None,
-        'opiniones sobre mutuas': None,
-        'mutua de salud precios': None,
-        'qué cubre una mutua': None,
-        'mutua médica': None,
-        'mutua de accidentes': 6,
-        'mutua de ahorro': None,
-        'mutua de trabajo': None,
-        'mutua de coche': None,
-        'mutua de fisioterapia': 6,
-        'mutua de enfermedades': None,
-        'mutua dental': None,
-        'mutua de previsión': None,
-        'mutua de pensiones': None,
-        'mutua familiar': None,
-        'mutua de protección': 3,
-        'mutua de jubilación': None,
-        'mutua de vida': None,
-        'mutua de prevención': None,
-        'mutua de asistencia': None,
-        'mutua de responsabilidad': None,
-        'mutua de cuidado': 10,
-        'mutua de cobertura': None,
-        'mutua de indemnización': None,
-        'mutua integral': 3,
-        'mutua de atención': None,
-        'mutua de emergencia': None,
-        'mutua de bienestar': None,
-        'mutua de asesoramiento': 3,
-        'mutua de orientación': None,
-        'mutua de consulta': None,
-        'mutua de investigación': None,
-        'mutua de análisis': None,
-        'mutua de evaluación': None,
-        'mutua de revisión': None,
-        'mutua de exploracióncobertura mutua de accidentes de trabajo': None,
-        'cómo elegir una mutua de accidentes laborales': None,
-        'comparativa de mutuas de accidentes': None,
-        'beneficios de tener mutua de accidentes laborales': None,
-        'mutua laboral para empresas pequeñas': 12,
-        'pasos para afiliarse a una mutua de accidentes': 1,
-        'mutua de accidentes vs. seguro de trabajo': None,
-        'tasas de mutuas de accidentes': None,
-        'requisitos para solicitar indemnización laboral': None,
-        'guía para reclamar a una mutua por accidente': None,
-        'mutua de accidentes obligatoria': None,
-        'consultoría en seguridad laboral': None,
-        'mutua de accidentes y enfermedades profesionales': None,
-        'mutua de accidentes para autónomos': 12,
-        'indemnización por incapacidad laboral': None,
-        'evaluación de riesgos en el trabajo': None,
-        'mutua de accidentes de trabajo precios': None,
-        'derechos del trabajador ante un accidente laboral': None,
-        'mutua de accidentes de trabajo opiniones': None,
-        'protocolo de actuación ante un accidente laboral': None,
-        'mutua de accidentes de trabajo para empleados públicos': None,
-        'prevención de accidentes laborales en la construcción': 7,
-        'mutua de accidentes y enfermedades laborales': None,
-        'cobertura de una mutua de accidentes laborales': None,
-        'reclamación de indemnización por accidente laboral': None,
-        'mutua de accidentes de trabajo para autónomos': None,
-        'medidas de seguridad en el trabajo': None,
-        'mutua de accidentes de trabajo para empleados privados': None,
-        'qué hacer en caso de accidente laboral': None,
-        'mutua de accidentes de trabajo para empresas grandes': None,
-        'legislación sobre accidentes laborales': None,
-        'mutua de accidentes y enfermedades laborales precios': None,
-        'informe médico para indemnización laboral': None,
-        'mutua de accidentes de trabajo para contratistas': None,
-        'derechos del empleador en caso de accidente laboral': None,
-        'mutua de accidentes de trabajo para sector industrial': None,
-        'cursos de prevención de riesgos laborales': None,
-        'mutua de accidentes y enfermedades laborales opiniones': None,
-        'responsabilidad del empleador en accidentes laborales': None,
-        'mutua de accidentes de trabajo para trabajadores temporales': None,
-        'ergonomía en el lugar de trabajo': None,
-        'mutua de accidentes de trabajo para sector servicios': 10
-    }
+    print("posiciones totales 1")
+    print(posiciones_totales)
 
     # Asignar un valor predeterminado de 0 a los elementos None
     posiciones_totales_con_valor_predeterminado = {
@@ -3008,8 +2867,22 @@ def obtener_posiciones_dominio(domain):
         posiciones_totales_con_valor_predeterminado.items(),
         key=lambda x: x[1])
 
-    print(posiciones_totales)
+        # Guardar o actualizar los resultados en la base de datos
+    for keyword, rank in posiciones_totales.items():
+        # Consultar si la palabra clave ya existe en la base de datos
+        existing_keyword = Keywords.query.filter_by(keyword=keyword).first()
 
+        if existing_keyword:
+            # Si la palabra clave existe, actualizar su rango
+            existing_keyword.rank = rank
+        else:
+            # Si la palabra clave no existe, crear un nuevo registro
+            new_keyword = Keywords(keyword=keyword, rank=rank)
+            db.session.add(new_keyword)
+
+    db.session.commit()
+
+   
     return render_template('tools/seo/ranking.html',
                            dominio_url=domain,
                            dominios_ordenados=DOMINIOS_ESPECIFICOS,
