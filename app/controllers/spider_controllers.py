@@ -12,7 +12,7 @@ import langid
 from PIL import Image
 import subprocess
 from app import app, db
-from app.models.database import Diccionario
+from app.models.database import Diccionario, Diccionario_usuario
 from config import DOMINIOS_ESPECIFICOS, URL_BASE #URL_OFFLINE
 from app import IDS_ESCANEO
 from bs4 import BeautifulSoup
@@ -81,7 +81,9 @@ def tool_popup(tool):
 def analizar_ortografia(url):
 
     # Obtener todas las palabras de la base de datos
-    palabras = [palabra.palabra for palabra in db.session.query(Diccionario).all()]
+    palabras = [palabra.palabra for palabra in db.session.query(Diccionario_usuario).all()]
+    palabras.extend([palabra.palabra for palabra in db.session.query(Diccionario).all()])
+
 
     # Convertir la lista de palabras a formato JSON
     PALABRAS_DICCIONARIO = json.dumps(palabras)
@@ -113,25 +115,27 @@ def analizar_ortografia(url):
 
     #print(PALABRAS_DICCIONARIO)
     # Agrega palabras personalizadas excluidas
-    palabras = {
-        palabra
-        for palabra in texto_limpio.split()
-        if palabra not in PALABRAS_DICCIONARIO
-        and len(palabra) >= 4
-    }
+    #palabras = {
+    #    palabra
+    #    for palabra in texto_limpio.split()
+    #    if palabra not in PALABRAS_DICCIONARIO
+    #    and len(palabra) >= 4
+    #}
 
     # Filtra palabras que tengan TODOS los signos de puntuación, interrogación, exclamación, caracteres especiales o símbolos de moneda
     caracteres_especiales = string.punctuation + '“”»«¡!¿?$€£@#%^&*()_-+=[]{}|;:,.<>/"'
     palabras = {
         palabra
-        for palabra in palabras
+        for palabra in texto_limpio.split()
         if not all(c in caracteres_especiales for c in palabra)
+        if palabra not in PALABRAS_DICCIONARIO
+        and len(palabra) >= 4
     }
 
     # Errores ortográficos solo para palabras que no están en la lista excluida y no cumplen con el chequeo del speller
     errores_ortograficos = [
         palabra for palabra in palabras if not speller.check(palabra) and palabra not in PALABRAS_DICCIONARIO
-        and palabra.lower() not in PALABRAS_DICCIONARIO and palabra.upper() not in PALABRAS_DICCIONARIO
+        and palabra.lower() not in PALABRAS_DICCIONARIO and palabra.upper() not in PALABRAS_DICCIONARIO and palabra.capitalize() not in PALABRAS_DICCIONARIO
     ]
 
     #print(list(errores_ortograficos))
@@ -169,7 +173,8 @@ def analizar_ortografia(url):
 
 
     # local
-    file_path = '/var/www/html/offline/ortografia-temp.html'
+    file_path = '///home/vinxenxo/frontend-monitor/ortografia-temp.html'
+    #file_path = '/var/www/html/offline/ortografia-temp.html'
     file_url = URL_BASE + '/offline/ortografia-temp.html'
     with open(file_path, 'w') as f:
         f.write(modified_html)

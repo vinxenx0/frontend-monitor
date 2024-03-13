@@ -16,6 +16,8 @@ from app.views.user_view import ChangePasswordForm
 #from email_validator import EmailNotValidError
 #from flask_uploads import secure_filename
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 # Get a logger for this module
 logger = logging.getLogger(__name__)
@@ -122,10 +124,13 @@ def usuarios():
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        # Implement password change logic
-        flash('Contraseña cambiada correctamente', 'success')
-        return redirect(url_for('user_profile', user_id=current_user.id))
-
+        if current_user.check_password(form.old_password.data):
+            current_user.set_password(form.new_password.data)
+            db.session.commit()
+            flash('Contraseña cambiada correctamente', 'success')
+            return redirect(url_for('user_profile', user_id=current_user.id))
+        else:
+            flash('La contraseña actual es incorrecta', 'danger')
     return render_template('user/change_password.html', form=form)
 
 
