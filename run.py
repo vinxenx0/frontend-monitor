@@ -8,3 +8,6 @@ if __name__ == '__main__':
    app.run(debug=True)
    # app.run(ssl_context='adhoc')
    #app.run(ssl_context=('.ssl/cert.pem', '.ssl/privkey.pem'), debug=True)
+
+   #app.run(ssl_context=('.ssl/cert.pem', '.ssl/privkey.pem'), host='0.0.0.0', port=5000, debug=True)
+

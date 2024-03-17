@@ -25,7 +25,7 @@
                     <div class="mb-4 ">
                         <h5 class="card-title">Dominios</h5>
 
-                        <textarea class="form-control" id="dominios_analizar" rows="5" readonly>{{ configuracion.dominios_analizar }}
+                        <textarea class="form-control" name="dominios_analizar" id="dominios_analizar" rows="5">{{ configuracion.dominios_analizar }}
                         </textarea>
                     </div>
                 </div>
@@ -66,12 +66,12 @@
                         <h5 class="card-title"><b>W3C Validator</b></h5>
                         <div class="mb-3">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="w3c_validator" value="WCAG2AA" {{ 'checked' if configuracion.w3c_validator == 'aa' else '' }}> WCAG-AAA
+                                <input class="form-check-input" type="radio" name="w3c_validator" value="WCAG2AA" {{ 'checked' if configuracion.w3c_validator == 'WCAG2AA' else '' }}> WCAG-AAA
                             </label>
                         </div>
                         <div class="mb-3">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="w3c_validator" value="WCAG2AAA" {{ 'checked' if configuracion.w3c_validator == 'aaa' else '' }}> WCAG-AA
+                                <input class="form-check-input" type="radio" name="w3c_validator" value="WCAG2AAA" {{ 'checked' if configuracion.w3c_validator == 'WCAG2AAA' else '' }}> WCAG-AA
                             </label>
                         </div>
 

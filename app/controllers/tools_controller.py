@@ -2759,7 +2759,7 @@ def tools_config():
 def actualizar_configuracion():
     try:
         # Obtener datos del formulario
-        dominios = "https://www.mc-mutual.com\r\nhttps://mejoratuabsentismo.mc-mutual.com\r\nhttps://prevencion.mc-mutual.com"
+        dominios = request.form.get('dominios_analizar') #"https://www.mc-mutual.com\r\nhttps://mejoratuabsentismo.mc-mutual.com\r\nhttps://prevencion.mc-mutual.com"
         frecuencia = request.form.get('frecuencia_dias')
         validator = request.form.get('w3c_validator')
         urlExcluidas = request.form.get('url_Excluidas')
