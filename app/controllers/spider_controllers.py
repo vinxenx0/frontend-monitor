@@ -109,7 +109,7 @@ def analizar_ortografia(url):
 
     # Eliminar números y símbolos de moneda, así como exclamaciones, interrogaciones y caracteres similares
     translator = str.maketrans(
-        '', '', string.digits + string.punctuation + '¡!¿?')
+        '', '', string.digits + string.punctuation + '¡!¿?$€£')
     texto_limpio = texto.translate(translator)
 
 
@@ -123,7 +123,7 @@ def analizar_ortografia(url):
     #}
 
     # Filtra palabras que tengan TODOS los signos de puntuación, interrogación, exclamación, caracteres especiales o símbolos de moneda
-    caracteres_especiales = string.punctuation + '“”»«¡!¿?$€£@#%^&*()_-+=[]{}|;:,.<>/"'
+    caracteres_especiales = string.punctuation + '“»«¡!¿?’@#%^&`*()_-+=[]{}|;:,.<>/"'
     palabras = {
         palabra
         for palabra in texto_limpio.split()
@@ -152,6 +152,26 @@ def analizar_ortografia(url):
     #            + modified_html[start_index +
     #                            len(palabra):])
 
+
+
+    #for palabra in errores_ortograficos:
+    #    # Buscar la etiqueta <body> en el HTML
+    #    start_body_index = modified_html.find('<body>')
+        
+        # Si no encuentra la etiqueta <body>, buscar en todo el documento
+    #    if start_body_index == -1:
+    #        start_index = modified_html.find(palabra)
+    #    else:
+            # Encontrar la posición de la palabra en el HTML original después de la etiqueta <body>
+    #        start_index = modified_html.find(palabra, start_body_index)
+        
+    #    if start_index != -1:
+    #        modified_html = (
+    #            modified_html[:start_index] +
+    #            f'<span style="background-color:red!important;color:white!important;border:2px solid #fff!important">{palabra}</span>'
+    #            + modified_html[start_index +
+    #                            len(palabra):])
+
     for palabra in errores_ortograficos:
         # Buscar la etiqueta <body> en el HTML
         start_body_index = modified_html.find('<body>')
@@ -164,11 +184,23 @@ def analizar_ortografia(url):
             start_index = modified_html.find(palabra, start_body_index)
         
         if start_index != -1:
+            # Utilizamos BeautifulSoup para analizar el HTML
+            soup = BeautifulSoup(modified_html, 'html.parser')
+            # Buscamos todas las etiquetas que tengan el atributo 'alt'
+            for tag in soup.find_all(alt=True):
+                # Extraemos el texto de la etiqueta
+                tag_text = tag.get_text()
+                # Verificamos si la palabra está dentro del texto de la etiqueta
+                if palabra in tag_text:
+                    # Si la palabra está dentro del texto de la etiqueta, no la modificamos
+                    continue
+            
+            # Si la palabra no está dentro de ninguna etiqueta 'alt', la reemplazamos
             modified_html = (
                 modified_html[:start_index] +
                 f'<span style="background-color:red!important;color:white!important;border:2px solid #fff!important">{palabra}</span>'
-                + modified_html[start_index +
-                                len(palabra):])
+                + modified_html[start_index + len(palabra):])
+
 
 
 
@@ -360,9 +392,19 @@ def extraer_meta_tags(url): #(response_text, response):
     return meta_tags_info
 
 def extraer_texto_visible(response_text):
+    # soup = BeautifulSoup(response_text, 'html.parser')
+    #soup = BeautifulSoup(response_text, 'html.parser', markup_type='html')
+    #soup = BeautifulSoup(response_text, 'html.parser', parse_only=NoConversionHTMLParser())
+
+    #visible_text = ' '.join(soup.stripped_strings)
+   
     soup = BeautifulSoup(response_text, 'html.parser')
-    visible_text = ' '.join(soup.stripped_strings)
+    for element in soup.find_all(['script', 'style', 'noscript']):  # Eliminar scripts, estilos y contenido sin script
+        element.extract()
+    visible_text = soup.get_text(separator=' ', strip=True)
+
     return visible_text
+
 
 def analizar_legibilidad_url(url) :
     response = requests.get(url, timeout=180)
