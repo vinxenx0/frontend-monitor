@@ -1786,19 +1786,25 @@ function changeDomain() {
                 <td>Tiempo Medio</td>
                 <td>{{ stat.tiempo_medio or 0 }}</td>
                 <td>
+                  {% if stat.tiempo_medio is not none and stat.tiempo_medio != 0 %}
                   ({{ "%0.2f"|format(stat.tiempo_medio / stat.total_paginas * 100) }}%)
+                  {% endif %}
                 </td>
                 <td>
+                  {% if stat.tiempo_medio is not none and stat.tiempo_medio != 0 %}
                   {% set variacion = stat.tiempo_medio - (stat_ayer.tiempo_medio or 0) %}
+                  {% endif %}
+
                   {% if variacion > 0 %}
                   <span data-toggle="tooltip" data-placement="top" title="+{{ variacion }}"><i
                       class="fas fa-plus text-danger"></i></span>
                   {% elif variacion < 0 %} <span data-toggle="tooltip" data-placement="top" title="-{{ variacion }}"><i
                       class="fas fa-minus text-success"></i></span>
-                    {% else %}
+                  {% else %}
                     <span data-toggle="tooltip" data-placement="top" title="={{ variacion }}"><i
                         class="fas fa-equals text-secondary"></i></span>
-                    {% endif %}
+                  {% endif %}
+                   
                 </td>
 
                 <td>
@@ -1817,10 +1823,12 @@ function changeDomain() {
                   class="progreso {% if stat.tiempo_medio  is not none and (stat.tiempo_medio  / stat.total_paginas) * 100 == 100 %} prog-rojo
                 {% elif stat.tiempo_medio is not none and (stat.tiempo_medio  / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
                   <i class="fas fa-circle"></i>
+                  {% if stat.enlaces_inseguros is not none and stat.enlaces_inseguros != 0 %}
                   {% set total_porcentaje_accesibilidad = total_porcentaje_accesibilidad + (stat.enlaces_inseguros is
                   not none
                   and
                   (stat.tiempo_medio / stat.total_paginas) * 100 or 0) %}
+                  {%endif%}
                 </td>
               </tr>
 

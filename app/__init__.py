@@ -1,5 +1,6 @@
 # app/__init__.py
 
+import json
 import os
 import logging
 import traceback
@@ -16,15 +17,18 @@ from flask_babel import Babel, _
 from sqlalchemy.orm import aliased
 from sqlalchemy import and_, distinct, func
 
-from config import DOMINIOS_ESPECIFICOS #, IDS_ESCANEO
+#from config import DOMINIOS_ESPECIFICOS #, IDS_ESCANEO
 
 IDS_ESCANEO = []
+DOMINIOS_ESPECIFICOS = []
+
 
 app = Flask(__name__)
 
 app.config.from_object('config')
 
 app.config['DEBUG'] = True
+
 
 
 # Configure logging
@@ -49,10 +53,24 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Importa las clases Resultado y Sumario
-from app.models.database import Resultado, Sumario, Diccionario
+from app.models.database import Resultado, Sumario, Diccionario, Configuracion
 from app.controllers import user_controller
 from app.views import user_view
 from app.models.user_model import User
+
+
+def get_dominios_analizar():
+    global DOMINIOS_ESPECIFICOS
+    
+    ultima_configuracion = Configuracion.query.order_by(Configuracion.id.desc()).first()
+    dominios_analizar = ultima_configuracion.dominios_analizar.split('\r\n') if ultima_configuracion.dominios_analizar else []
+    # Eliminar espacios en blanco y dominios vacíos
+    DOMINIOS_ESPECIFICOS = [dominio.replace('http://', '').replace('https://', '') for dominio in dominios_analizar if dominio.strip()]
+    #DOMINIOS_ESPECIFICOS = [dominio.replace('http://', '').replace('https://', '') for dominio in dominios_analizar]
+    
+    print("dominios analizar sin config.py")
+    print(DOMINIOS_ESPECIFICOS)
+    return json.dumps(DOMINIOS_ESPECIFICOS)
 
 # Configuración de Flask-Uploads
 #photos = UploadSet('photos', IMAGES)
@@ -178,10 +196,12 @@ def obtener_ultimos_ids_escaneo():
 with app.app_context():
  
     db.create_all()
-    
+
+    get_dominios_analizar()
+
     # Obtiene los últimos IDs de escaneo y actualiza IDS_ESCANEO
     obtener_ultimos_ids_escaneo()
-    
+
     obtener_fecha_escaneo()
     
     obtener_estado_spider()
