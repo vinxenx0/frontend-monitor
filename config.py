@@ -31,7 +31,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 #'d8876252d72462e4de9333d0d5a1884a21f9e0be63bf88f992950646cdb0ed33'
 #           ]  # Reemplaza con los IDs específicos que se proporcionarán
 
-DOMINIOS_ESPECIFICOS = ["www.mc-mutual.com","mejoratuabsentismo.mc-mutual.com","prevencion.mc-mutual.com"]
+DOMINIOS_ESPECIFICOS = []
 
 SECRET_KEY = 'your_secret_key_here'
 

@@ -380,7 +380,9 @@
                 <td>PDFs</td>
                 <td>{{ stat.pdf_count or 0 }}</td>
                 <td>
+                  {% if stat.pdf_count is not none and stat.pdf_count != 0%}
                   ({{ "%0.2f"|format(stat.pdf_count / stat.pdf_count * 100) }}%)
+                  {% endif %}
                 </td>
                 <td>
                   {% set variacion = stat.pdf_count - (stat_ayer.pdf_count or 0) %}

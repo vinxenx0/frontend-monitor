@@ -6,7 +6,7 @@
 
                 <div class="sb-sidenav-menu-heading">Informes</div>
                 <a class="nav-link {% if request.endpoint == 'informe_resumen_dominio' %}active{% endif %}"
-                    href="/informes/resumen/www.mc-mutual.com">
+                    href="/informes/resumen/">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-chart-simple"></i></i></div>
                     Res&uacute;menes
                 </a>
@@ -26,7 +26,7 @@
                 data-bs-parent="#sidenavAccordion">
                 <nav class="sb-sidenav-menu-nested nav">
                     <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %}"
-                        href="/ortografia/www.mc-mutual.com">An&aacute;lisis</a>
+                        href="/ortografia/">An&aacute;lisis</a>
 
 		    <a class="nav-link {% if request.endpoint == 'visor_excluidas' %} active {% endif %}"
                         href="{{ url_for('visor_excluidas') }}">Excluidas</a>
@@ -48,28 +48,28 @@
                     data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link {% if request.endpoint == 'seo_resumen_dominio' %} active {% endif %}"
-                        href="/seo/resumen/www.mc-mutual.com">Resumen</a>
+                        href="/seo/resumen/">Resumen</a>
 
                         <a class="nav-link {% if request.endpoint == 'salud_seo' %} active {% endif %}"
-                        href="/salud-seo/www.mc-mutual.com">Salud SEO</a>
+                        href="/salud-seo/">Salud SEO</a>
 
                         <a class="nav-link {% if request.endpoint == 'obtener_posiciones_dominio' %} active {% endif %}"
-                        href="/ranking/www.mc-mutual.com">Ranking</a>
+                        href="/ranking/">Ranking</a>
 
                         <a class="nav-link {% if request.endpoint == 'keywords' %} active {% endif %}"
-                        href="/keywords/www.mc-mutual.com">Keywords</a>
+                        href="/keywords/">Keywords</a>
 
                         <a class="nav-link {% if request.endpoint == 'meta_tags' %} active {% endif %}"
-                        href="/meta-tags/www.mc-mutual.com">Meta Tags</a>
+                        href="/meta-tags/">Meta Tags</a>
 
                         <a class="nav-link {% if request.endpoint == 'encabezados' %} active {% endif %}"
-                        href="/encabezados/www.mc-mutual.com">Encabezados</a>
+                        href="/encabezados/">Encabezados</a>
 <!--
                         <a class="nav-link {% if request.endpoint == 'indexabilidad' %} active {% endif %}"
                         href="/indexabilidad/www.mc-mutual.com">Indexabilidad</a>
 -->                        
                        <a class="nav-link {% if request.endpoint == 'velocidad_url' %} active {% endif %}"
-                            href="/velocidad/www.mc-mutual.com">Velocidad</a>
+                            href="/velocidad/">Velocidad</a>
 
                     </nav>
                 </div>
@@ -83,16 +83,16 @@
                 <div class="collapse" id="collapseSEO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
                         <a class="nav-link {% if request.endpoint == 'usabilidad_resumen_dominio' %} active {% endif %}"
-                            href=" /usabilidad/resumen/www.mc-mutual.com">Resumen</a>
+                            href=" /usabilidad/resumen/">Resumen</a>
 
                         <a class="nav-link {% if request.endpoint == 'enlaces_rotos_dominio' %} active {% endif %}"
-                            href="/enlaces-rotos/www.mc-mutual.com">Enlaces rotos</a>
+                            href="/enlaces-rotos/">Enlaces rotos</a>
 
                             <a class="nav-link {% if request.endpoint == 'enlaces_dominio' %} active {% endif %}"
-                            href="/enlaces/www.mc-mutual.com">Enlaces</a>
+                            href="/enlaces/">Enlaces</a>
 
                             <a class="nav-link {% if request.endpoint == 'titulos' %} active {% endif %}"
-                            href="/titulos/www.mc-mutual.com">Titulos</a>
+                            href="/titulos/">Titulos</a>
                     
                     </nav>
                 </div>
@@ -107,19 +107,19 @@
                     <nav class="sb-sidenav-menu-nested nav">
                        
                         <a class="nav-link {% if request.endpoint == 'accesibilidad_resumen_dominio' %} active {% endif %}"
-                            href=" /accesibilidad/resumen/www.mc-mutual.com">Resumen</a>
+                            href=" /accesibilidad/resumen/">Resumen</a>
 
                         <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
-                            href="/analisis-aaa/www.mc-mutual.com">WCAG-AA</a>
+                            href="/analisis-aaa/">WCAG-AA</a>
 
                             <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
-                            href="/responsive/www.mc-mutual.com">Responsive</a>
+                            href="/responsive/">Responsive</a>
 
                             <a class="nav-link {% if request.endpoint == 'legibilidad' %} active {% endif %}"
-                            href="/legibilidad/www.mc-mutual.com">Legibilidad</a>
+                            href="/legibilidad/">Legibilidad</a>
 
                             <a class="nav-link {% if request.endpoint == 'imagenes' %} active {% endif %}"
-                            href="/imagenes/www.mc-mutual.com">Im&aacute;genes</a>
+                            href="/imagenes/">Im&aacute;genes</a>
 
                          
                     
@@ -140,7 +140,8 @@
                 <nav class="sb-sidenav-menu-nested nav">
 
                     <a class="nav-link {% if request.endpoint == 'seguridad' %} active {% endif %}"
-                        href="/seguridad/www.mc-mutual.com"> Seguridad</a>
+
+                    href="/seguridad/"> Seguridad</a>
 
                 </nav>
             </div>
