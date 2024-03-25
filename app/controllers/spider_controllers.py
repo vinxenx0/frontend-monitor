@@ -502,6 +502,24 @@ def analizar_imagenes_url(url):
 
     return info_imagenes
 
+#from google import Translator
+from googletrans import Translator
+def traducir_mensajes(process_stdout):
+    # Decodificar la salida del proceso como JSON
+    stdout_json = json.loads(process_stdout)
+
+    # Inicializar el traductor
+    translator = Translator()
+
+    # Traducir los mensajes en cada objeto JSON
+    for item in stdout_json:
+        mensaje_traducido = translator.translate(item["message"], src='en', dest='es').text
+        item["message"] = mensaje_traducido
+
+    # Convertir nuevamente a formato JSON y devolver
+    return json.dumps(stdout_json)
+
+
 def ejecutar_pa11y(url_actual):
     try:
         # Ejecuta pa11y y captura la salida directamente
@@ -517,7 +535,16 @@ def ejecutar_pa11y(url_actual):
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
                                  text=True)
-        return process.stdout
+        #return process.stdout
+        #translator = Translator()
+        #traduccion = translator.translate("hello sir how are you", src='en', dest='es')
+        # Traducir los mensajes y devolver el resultado
+        process_stdout_traducido = traducir_mensajes(process.stdout)
+
+        print("traduss:")
+        print(process_stdout_traducido)
+
+        return process_stdout_traducido
     
     except Exception as e:  # subprocess.CalledProcessError as e:
         error_message = f"Error al ejecutar pa11y para {url_actual}: {e}"

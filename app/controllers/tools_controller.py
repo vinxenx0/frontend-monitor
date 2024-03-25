@@ -2630,7 +2630,7 @@ def editar_palabra_excluidas():
     nuevo_idioma = request.form[
         'idioma']  # Agrega la lógica para obtener el idioma desde el formulario
 
-    palabra_editar = Diccionario.query.get(id)
+    palabra_editar = Diccionario_usuario.query.get(id)
     palabra_editar.palabra = palabra
     palabra_editar.idioma = nuevo_idioma  # Actualiza la columna 'idioma'
     db.session.commit()
