@@ -23,6 +23,8 @@ import requests
 from bs4 import BeautifulSoup
 from flask import request
 from io import BytesIO
+#from google import Translator
+from googletrans import Translator
 
 ids_escaneo_especificos = IDS_ESCANEO
 dominios_especificos = DOMINIOS_ESPECIFICOS
@@ -502,8 +504,22 @@ def analizar_imagenes_url(url):
 
     return info_imagenes
 
-#from google import Translator
-from googletrans import Translator
+def traducir_mensajes(process_stdout):
+    try:
+        # Verificar si la salida del proceso no está vacía y tiene formato JSON válido
+        if process_stdout.strip() and process_stdout.strip().startswith('{'):
+            # Decodificar la salida del proceso como JSON
+            stdout_json = json.loads(process_stdout)
+            # Resto del código para traducir los mensajes...
+        else:
+            print("La salida del proceso no contiene datos JSON válidos.")
+            return []
+    except json.JSONDecodeError as e:
+        print(f"Error al decodificar la salida del proceso: {e}")
+        return []
+
+
+
 def traducir_mensajes(process_stdout):
     # Decodificar la salida del proceso como JSON
     stdout_json = json.loads(process_stdout)
@@ -521,35 +537,35 @@ def traducir_mensajes(process_stdout):
 
 
 def ejecutar_pa11y(url_actual):
-    try:
-        # Ejecuta pa11y y captura la salida directamente
-        #command = f"pa11y --standard WCAG2AAA  --ignore issue-code-1 --ignore issue-code-2 --reporter csv {url_actual}"
-        #command = f"pa11y --standard WCAG2AA  --reporter csv {url_actual}"
-        #print("url p4lly:")
-        #print(url_actual)
-        #command = f"pa11y -e axe -d -T 3 --ignore issue-code-2 --ignore issue-code-1 -r json {url_actual}"
-        command = f"pa11y -T 1 --ignore issue-code-2 --ignore issue-code-1 -r json {url_actual}"
-        process = subprocess.run(command,
-                                 shell=True,
-                                 check=False,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 text=True)
-        #return process.stdout
-        #translator = Translator()
-        #traduccion = translator.translate("hello sir how are you", src='en', dest='es')
-        # Traducir los mensajes y devolver el resultado
-        process_stdout_traducido = traducir_mensajes(process.stdout)
+#    try:
+    # Ejecuta pa11y y captura la salida directamente
+    #command = f"pa11y --standard WCAG2AAA  --ignore issue-code-1 --ignore issue-code-2 --reporter csv {url_actual}"
+    #command = f"pa11y --standard WCAG2AA  --reporter csv {url_actual}"
+    #print("url p4lly:")
+    #print(url_actual)
+    #command = f"pa11y -e axe -d -T 3 --ignore issue-code-2 --ignore issue-code-1 -r json {url_actual}"
+    command = f"pa11y -T 1 --ignore issue-code-2 --ignore issue-code-1 -r json {url_actual} 2>/dev/null"
+    process = subprocess.run(command,
+                                shell=True,
+                                check=False,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True)
+    #return process.stdout
+    #translator = Translator()
+    #traduccion = translator.translate("hello sir how are you", src='en', dest='es')
+    # Traducir los mensajes y devolver el resultado
+    process_stdout_traducido = traducir_mensajes(process.stdout)
 
-        print("traduss:")
-        print(process_stdout_traducido)
+    #print("traduss:")
+    #print(process_stdout_traducido)
 
-        return process_stdout_traducido
+    return process_stdout_traducido
     
-    except Exception as e:  # subprocess.CalledProcessError as e:
-        error_message = f"Error al ejecutar pa11y para {url_actual}: {e}"
-        print(error_message)
-        return []
+ #   except Exception as e:  # subprocess.CalledProcessError as e:
+ #       error_message = f"Error al ejecutar pa11y para {url_actual}: {e}"
+ #       print(error_message)
+ #       return []
 
 def contar_enlaces(response_text, url):
     soup = BeautifulSoup(response_text, 'html.parser')
