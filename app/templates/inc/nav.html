@@ -5,16 +5,29 @@
             <div class="nav">
 
                 <div class="sb-sidenav-menu-heading">Informes</div>
-                <a class="nav-link {% if request.endpoint == 'informe_resumen_dominio' %}active{% endif %}"
+                <a class="nav-link {% if request.endpoint == 'informe_resumen_raiz' %}active{% endif %}"
                     href="/informes/resumen/">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-chart-simple"></i></i></div>
                     Res&uacute;menes
                 </a>
 
 
+
                 {% if is_admin() or current_user.role == 'superadmin' %}
 
                 <div class="sb-sidenav-menu-heading">Herramientas</div>
+
+                <a class="nav-link {% if request.endpoint == 'enlaces_rotos_dominio' %} active {% endif %}"
+                            href="/enlaces-rotos/">Enlaces rotos</a>
+
+                <a class="nav-link {% if request.endpoint == 'ortografia' %} active {% endif %}" href="/ortografia/">Ortografia</a>
+
+                <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
+                href="/analisis-aaa/">WCAG-AA</a>
+
+                <a class="nav-link {% if request.endpoint == 'obtener_posiciones_dominio' %} active {% endif %}"
+                href="/ranking/www.mc-mutual.com">Ranking</a>
+
 
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIdiomas"
                 aria-expanded="false" aria-controls="collapseLayouts">
@@ -54,7 +67,7 @@
                         href="/salud-seo/">Salud SEO</a>
 
                         <a class="nav-link {% if request.endpoint == 'obtener_posiciones_dominio' %} active {% endif %}"
-                        href="/ranking/">Ranking</a>
+                        href="/ranking/www.mc-mutual.com">Ranking</a>
 
                         <a class="nav-link {% if request.endpoint == 'keywords' %} active {% endif %}"
                         href="/keywords/">Keywords</a>

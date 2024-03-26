@@ -14,6 +14,15 @@ mkdir .ssl
 ln -s /usr/local/psa/var/modules/letsencrypt/etc/live/_plesk_domain/* /opt/moonitor/frontend-monitor/.ssl/
 
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install v21.6.0
+nvm use v21.6.0
+npm install -g npm@10.2.4
+
+
+
+npm install -g pa11y
+
 
 # update
 pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U 
