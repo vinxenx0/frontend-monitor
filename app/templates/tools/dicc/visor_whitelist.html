@@ -168,7 +168,7 @@
                                 </td>
                                 <td contenteditable="true" class="editable" data-field="palabra">{{ palabra.palabra }}
                                 </td>
-                                <td class="editable-dropdown" data-field="idioma" data-order="{{ palabra.idioma }}">
+                                <td class="editable-dropdown" data-field="idioma">
                                     <select name="idioma" id="selectIdioma">
                                         <option value="Spanish" {{ 'selected' if palabra.idioma=='Spanish' else '' }}>
                                             Spanish</option>
@@ -178,7 +178,7 @@
                                         <!-- Agrega más opciones según sea necesario -->
                                     </select>
                                 </td>
-
+                                <td data-fiel="orden" data-order="{{palabra.idioma}}">{{palabra.idioma}}</td>
                                 <td>
                                     <button class="delete-row" data-rowid="{{ palabra.id }}">Delete</button>
 
@@ -208,7 +208,7 @@
                 "columns": [
                     null,  // Para la primera columna (ID)
                     null,  // Para la segunda columna (Palabra)
-                    null,
+                    null,null,
                     { "orderable": false }  // Para la tercera columna (Acción)
                 ]
             });
@@ -385,4 +385,5 @@
     </script>
 </body>
 
+</html>
 </html>

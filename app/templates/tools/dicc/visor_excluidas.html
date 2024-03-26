@@ -168,14 +168,16 @@
                                 </td>
                                 <td contenteditable="true" class="editable" data-field="palabra">{{ palabra.palabra }}
                                 </td>
-                                <td class="editable-dropdown" data-field="idioma" data-order="{{ palabra.idioma }}">
+                                <td class="editable-dropdown" data-field="idioma">
                                     <select name="idioma" id="selectIdioma">
-                                        <option value="Spanish" {{ 'selected' if palabra.idioma=='Spanish' else '' }}>Spanish</option>
-                                        <option value="Catalonian" {{ 'selected' if palabra.idioma=='Catalonian' else '' }}>Catalonian</option>
+                                        <option value="Spanish" {{ 'selected' if palabra.idioma=='Spanish' else '' }}>
+                                            Spanish</option>
+                                        <option value="Catalonian" {{ 'selected' if palabra.idioma=='Catalonian' else ''
+                                            }}>Catalonian
+                                        </option>
                                         <!-- Agrega más opciones según sea necesario -->
                                     </select>
                                 </td>
-                                
 
                                 <td>
                                     <button class="delete-row" data-rowid="{{ palabra.id }}">Delete</button>
@@ -203,22 +205,13 @@
     <script>
         $(document).ready(function () {
             var table = $('#example').DataTable({
-                "columnDefs": [
-                  //  { "orderable": false, "targets": [3] }  // Hace que la columna de Acción no sea ordenable
-                ],
                 "columns": [
                     null,  // Para la primera columna (ID)
                     null,  // Para la segunda columna (Palabra)
-                    {
-                        "orderable": true  // Para la tercera columna (Idioma)
-                        //"render": function(data, type, row, meta) {
-                        //    return $('#selectIdioma').find(":selected").text();
-                        //}
-                    },
-                    null  // Para la cuarta columna (Acción)
+                    null,
+                    { "orderable": false }  // Para la tercera columna (Acción)
                 ]
             });
-
 
 
 
