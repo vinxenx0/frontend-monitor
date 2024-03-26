@@ -2549,6 +2549,7 @@ def agregar_palabra():
         'palabra': palabra[1],
         'idioma': palabra[2],
     } for palabra in palabras]
+ 
     return jsonify({'palabras_diccionario': palabras_diccionario})
 
 @app.route('/excluidas/agregar_palabra', methods=['POST'])
@@ -2571,6 +2572,8 @@ def agregar_palabra_excluidas():
         'palabra': palabra[1],
         'idioma': palabra[2],
     } for palabra in palabras]
+
+    print(palabras_diccionario)
     return jsonify({'palabras_diccionario': palabras_diccionario})
 
 @app.route('/excluidas/agregar_palabras_bulk', methods=['POST'])
