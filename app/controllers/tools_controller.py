@@ -49,7 +49,7 @@ app.jinja_env.filters['fromjson'] = fromjson
 
 @app.route('/old/informes/resumen')
 @login_required
-def old_informe_resumen():
+def informe_resumen():
 
     # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas
     sumarios = (
