@@ -1823,12 +1823,10 @@ function changeDomain() {
                   class="progreso {% if stat.tiempo_medio  is not none and (stat.tiempo_medio  / stat.total_paginas) * 100 == 100 %} prog-rojo
                 {% elif stat.tiempo_medio is not none and (stat.tiempo_medio  / stat.total_paginas) * 100 >= 50 %} prog-amarillo {% else %} prog-verde {% endif %}">
                   <i class="fas fa-circle"></i>
-                  {% if stat.enlaces_inseguros is not none and stat.enlaces_inseguros != 0 %}
-                  {% set total_porcentaje_accesibilidad = total_porcentaje_accesibilidad + (stat.enlaces_inseguros is
-                  not none
-                  and
-                  (stat.tiempo_medio / stat.total_paginas) * 100 or 0) %}
-                  {%endif%}
+                  {%  if stat.tiempo_medio  is not none and stat.total_paginas != 0 %}
+                  {% set total_porcentaje_accesibilidad = total_porcentaje_accesibilidad + (stat.tiempo_medio / stat.total_paginas) * 100 %}
+                  {% endif %}
+                
                 </td>
               </tr>
 

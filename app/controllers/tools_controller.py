@@ -7,7 +7,7 @@ from app import app, db
 from sqlalchemy import and_, desc, distinct, func, case
 from app.models.database import Resultado, Sumario, Diccionario, Diccionario_usuario, Configuracion, Keywords
 from config import URL_BASE #URL_OFFLINE, DOMINIOS_ESPECIFICOS,
-from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER, DOMINIOS_ESPECIFICOS
+from app import IDS_ESCANEO, FECHA_ESCANEO, HORA_FIN, HORA_INICIO, ESTADO_SPIDER, DOMINIOS_ESPECIFICOS, KEYWORDS_SEO
 from sqlalchemy.orm import class_mapper
 from flask import request
 import requests
@@ -49,7 +49,7 @@ app.jinja_env.filters['fromjson'] = fromjson
 
 @app.route('/old/informes/resumen')
 @login_required
-def old_informe_resumen():
+def informe_resumen():
 
     # Consulta para obtener los sumarios correspondientes a las IDs de escaneo propuestas
     sumarios = (
@@ -2549,6 +2549,7 @@ def agregar_palabra():
         'palabra': palabra[1],
         'idioma': palabra[2],
     } for palabra in palabras]
+ 
     return jsonify({'palabras_diccionario': palabras_diccionario})
 
 @app.route('/excluidas/agregar_palabra', methods=['POST'])
@@ -2571,6 +2572,8 @@ def agregar_palabra_excluidas():
         'palabra': palabra[1],
         'idioma': palabra[2],
     } for palabra in palabras]
+
+    print(palabras_diccionario)
     return jsonify({'palabras_diccionario': palabras_diccionario})
 
 @app.route('/excluidas/agregar_palabras_bulk', methods=['POST'])
@@ -2630,7 +2633,7 @@ def editar_palabra_excluidas():
     nuevo_idioma = request.form[
         'idioma']  # Agrega la lógica para obtener el idioma desde el formulario
 
-    palabra_editar = Diccionario.query.get(id)
+    palabra_editar = Diccionario_usuario.query.get(id)
     palabra_editar.palabra = palabra
     palabra_editar.idioma = nuevo_idioma  # Actualiza la columna 'idioma'
     db.session.commit()
@@ -2795,15 +2798,13 @@ def check_sitemap(url):
 
 @app.route('/ranking/<string:domain>')
 def obtener_posiciones_dominio(domain):
-    palabras_clave_ejemplo = [
-        "mc-mutual","mc mutua de accidentes"
-    ]
+    palabras_clave_ejemplo = KEYWORDS_SEO
     posiciones_totales = {}
     top3_count = 0
     top10_count = 0
 
     for palabra_clave in palabras_clave_ejemplo:
-        posicion = obtener_posicion_dominio(palabra_clave, domain)
+        posicion = obtener_posicion_dominio(palabra_clave, domain, 10)
         posiciones_totales[palabra_clave] = posicion
 
         if posicion and posicion <= 3:
@@ -2859,7 +2860,8 @@ def obtener_posicion_dominio(palabra_clave,
 
     try:
         # Realiza la búsqueda en Google
-        search_results = search(palabra_clave, num_results=num_resultados)
+        #
+        search_results = search(palabra_clave, num=10, stop=10, pause=2, lang='es')
 
         # Busca la posición del dominio objetivo en los resultados
         for i, result in enumerate(search_results, start=1):

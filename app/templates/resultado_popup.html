@@ -22,11 +22,16 @@
                 <div class="card-body">
                     {% if resultado is iterable and resultado is not string %}
                     {% for key, value in resultado.items() %}
-                    <p class="card-text"><strong>{{ key }}</strong>: {{ value }}</p>
+                    {% if value is string %}{%set is_fail = 'Fail' in value %}{%endif%}
+                    <div class="card-header  {% if is_fail %}bg-danger text-white{% endif %}">                            
+                    <p class="card-text "><strong>{{ key }}</strong>: {{ value }}</p>
+                     </div> 
                     {% endfor %}
                     {% else %}
                     <p class="card-text">{{ resultado }}</p>
+                  
                     {% endif %}
+
                 </div>
             </div>
             {% endfor %}

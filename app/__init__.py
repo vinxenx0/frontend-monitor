@@ -61,12 +61,15 @@ from app.models.user_model import User
 
 def get_dominios_analizar():
     global DOMINIOS_ESPECIFICOS
+    global KEYWORDS_SEO
     
     ultima_configuracion = Configuracion.query.order_by(Configuracion.id.desc()).first()
     dominios_analizar = ultima_configuracion.dominios_analizar.split('\r\n') if ultima_configuracion.dominios_analizar else []
     # Eliminar espacios en blanco y dominios vacíos
     DOMINIOS_ESPECIFICOS = [dominio.replace('http://', '').replace('https://', '') for dominio in dominios_analizar if dominio.strip()]
     #DOMINIOS_ESPECIFICOS = [dominio.replace('http://', '').replace('https://', '') for dominio in dominios_analizar]
+
+    KEYWORDS_SEO = ultima_configuracion.keywords_analizar.split('\r\n')
     
     print("dominios analizar sin config.py")
     print(DOMINIOS_ESPECIFICOS)
