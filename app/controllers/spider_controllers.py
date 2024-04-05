@@ -63,7 +63,7 @@ def tool_popup(tool):
     elif tool == 'salud-seo':
          resultados = extraer_meta_tags(url)
     elif tool == 'ortografia':
-         resultados = analizar_ortografia(url)
+         resultados = resaltar_errores_ortograficos(url) #analizar_ortografia(url)
          print(resultados)
     elif tool == 'seguridad':
          resultados = extraer_meta_tags(url)
@@ -75,6 +75,121 @@ def tool_popup(tool):
     session['url'] = url
 
     return redirect(url_for('resultados_popup'))
+
+
+
+def resaltar_errores_ortograficos(url):
+
+
+    # Obtener todas las palabras de la base de datos
+    palabras = [palabra.palabra for palabra in db.session.query(Diccionario_usuario).all()]
+    palabras.extend([palabra.palabra for palabra in db.session.query(Diccionario).all()])
+
+
+    # Convertir la lista de palabras a formato JSON
+    PALABRAS_DICCIONARIO = json.dumps(palabras)
+
+    errores_ortograficos = None  # Inicializa como None en lugar de una lista vacía
+    palabras = set()  # Usamos un conjunto para almacenar las palabras únicas
+
+    idioma_detectado = obtener_idioma_desde_url(url)  #detectar_idioma(texto)
+    response = requests.get(url)
+    # Obtener el contenido de la página web
+    # Codificar el contenido a UTF-8
+    texto = extraer_texto_visible(response.text)
+
+    speller = aspell.Speller('lang', idioma_detectado)
+
+    # Eliminar números y símbolos de moneda, así como exclamaciones, interrogaciones y caracteres similares
+    translator = str.maketrans(
+        '', '', string.digits + string.punctuation + '¡!¿?$€£')
+    texto_limpio = texto.translate(translator)
+
+    caracteres_especiales = string.punctuation + '“»«¡!¿?’@#%^&`*()_-+=[]{}|;:,.<>/"'
+    palabras = {
+        palabra
+        for palabra in texto_limpio.split()
+        if not all(c in caracteres_especiales for c in palabra)
+        if palabra not in PALABRAS_DICCIONARIO
+        and len(palabra) >= 4
+    }
+
+    errores_ortograficos = [
+        palabra for palabra in palabras if not speller.check(palabra) and palabra not in PALABRAS_DICCIONARIO
+        and palabra.lower() not in PALABRAS_DICCIONARIO and palabra.upper() not in PALABRAS_DICCIONARIO and palabra.capitalize() not in PALABRAS_DICCIONARIO
+    ]
+
+    
+    # Descargar la página web
+    response = requests.get(url)
+    if response.status_code == 200:
+        # Parsear el contenido HTML
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Obtener todo el texto de la página
+        texto_pagina = soup.get_text()
+
+        # Buscar palabras con errores ortográficos y resaltarlas con CSS
+        for error in errores_ortograficos:
+            # Usamos expresiones regulares para encontrar todas las ocurrencias de la palabra con errores ortográficos
+            texto_pagina = re.sub(r'\b' + re.escape(error) + r'\b', f'<span class="error">{error}</span>', texto_pagina, flags=re.IGNORECASE)
+
+        # Generar el contenido HTML con las palabras resaltadas
+        contenido_sin_html = f'''
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Página con errores ortográficos resaltados</title>
+            <style>
+                .error {{
+                    background-color: yellow;
+                }}
+            </style>
+        </head>
+        <body>
+            {texto_pagina}
+        </body>
+        </html>
+        '''
+
+        # Buscar todas las etiquetas de texto (p, div, span, etc.)
+        etiquetas_texto = soup.find_all(text=True)
+
+        # Buscar palabras con errores ortográficos y resaltarlas con CSS
+        for tag in etiquetas_texto:
+            contenido_tag = str(tag)
+            for error in errores_ortograficos:
+                # Usamos expresiones regulares para encontrar todas las ocurrencias de la palabra con errores ortográficos
+                contenido_tag = re.sub(r'\b' + re.escape(error) + r'\b', f'<span style="color:white!important;background-color:red!important">{error}</span>', contenido_tag, flags=re.IGNORECASE)
+            tag.replace_with(BeautifulSoup(contenido_tag, 'html.parser'))  # Creamos un nuevo objeto BeautifulSoup con el contenido modificado
+
+
+        # Generar el contenido HTML con las palabras resaltadas
+        contenido_html = str(soup)
+
+
+        # Guardar el contenido HTML en un archivo
+        with open('pagina_con_errores.html', 'w', encoding='utf-8') as file:
+            file.write(contenido_html)
+        
+        print("Página con errores ortográficos resaltados guardada como 'pagina_con_errores.html'.")
+    else:
+        print("Error al descargar la página web.")
+
+    # local
+    file_path = '///home/vinxenxo/frontend-monitor/ortografia-temp.html'
+    #file_path = '/var/www/html/offline/ortografia-temp.html'
+    file_url = URL_BASE + '/offline/ortografia-temp.html'
+    with open(file_path, 'w') as f:
+        f.write(contenido_html)
+
+    
+  
+    return [{"Errores ortograficos:":len(list(errores_ortograficos)),
+             "Palabras:":list(errores_ortograficos), "html:":file_url
+             }]
 
 
 
