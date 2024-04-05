@@ -13,6 +13,7 @@ FileNotFoundError: [Errno 2] No such file or directory: '/opt/moonitor/frontend-
 mkdir .ssl
 ln -s /usr/local/psa/var/modules/letsencrypt/etc/live/_plesk_domain/* /opt/moonitor/frontend-monitor/.ssl/
 
+pip install google textstat
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 nvm install v21.6.0
