@@ -181,8 +181,8 @@ def resaltar_errores_ortograficos(url):
         print("Error al descargar la página web.")
 
     # local
-    file_path = '///home/vinxenxo/frontend-monitor/ortografia-temp.html'
-    #file_path = '/var/www/html/offline/ortografia-temp.html'
+    #file_path = '///home/vinxenxo/frontend-monitor/ortografia-temp.html'
+    file_path = '/var/www/html/offline/ortografia-temp.html'
     file_url = URL_BASE + '/offline/ortografia-temp.html'
     with open(file_path, 'w') as f:
         f.write(contenido_html)
