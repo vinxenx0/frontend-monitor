@@ -46,7 +46,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            Analisis AAA
+            Analisis AA
         </div>
         <div class="card-body">
 
@@ -62,9 +62,8 @@
                                   <th>html</th>
 -->
 
-                        <th><i title="errores" class="fa-solid fa-square-root-variable"></i></th>
-                        <th><i title="advertencias" class="fa-solid fa-triangle-exclamation"></i></th>
-                        <th><i title="fallos" class="fa-solid fa-exclamation"></i></th>
+                        <th><i title="errores" class="fa-solid fa-triangle-exclamation"></i>errores</th>
+
                         <th><i title="consejos" class="fas fa-lightbulb"></i></th>
                     </tr>
                 </thead>
@@ -79,9 +78,7 @@
                                   <th>html</th>
 -->
 
-                        <th><i title="errores" class="fa-solid fa-square-root-variable"></i></th>
-                        <th><i title="advertencias" class="a fa-triangle-exclamation"></i></th>
-                        <th><i title="fallos" class="fa-solid fa-exclamation"></i></th>
+                        <th><i title="errores" class="a fa-triangle-exclamation"></i>errores</th>
                         <th><i title="consejos" class="fas fa-lightbulb"></i></th>
 
                     </tr>
@@ -130,8 +127,6 @@
 
                         <td>{{ json|length }}
 
-                        <td>{{ c_fail }}</td>
-                        <td>{{ c_warn }}</td>
 
 
                         </td>
@@ -226,7 +221,7 @@
             pageLength: 25, // Establecemos el valor por defecto
             columns: [
                 { type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
-                null, null, null, null, null
+                null, null, null
             ],
             colReorder: {
                 realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real

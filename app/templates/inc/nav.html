@@ -13,8 +13,7 @@
 
 
 
-                {% if is_admin() or current_user.role == 'superadmin' %}
-
+       
                 <div class="sb-sidenav-menu-heading">Herramientas</div>
 
                 <a class="nav-link {% if request.endpoint == 'enlaces_rotos_dominio' %} active {% endif %}"
@@ -27,6 +26,38 @@
 
                 <a class="nav-link {% if request.endpoint == 'obtener_posiciones_dominio' %} active {% endif %}"
                 href="/ranking/www.mc-mutual.com">Ranking</a>
+
+
+
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAcce"
+                aria-expanded="false" aria-controls="collapseLayouts">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-wheelchair fa-fw"></i></div>
+                Accesibilidad
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseAcce" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                <nav class="sb-sidenav-menu-nested nav">
+                   
+                    <a class="nav-link {% if request.endpoint == 'accesibilidad_resumen_dominio' %} active {% endif %}"
+                        href=" /accesibilidad/resumen/">Resumen</a>
+
+                    <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
+                        href="/analisis-aaa/">WCAG-AA</a>
+<!--
+                        <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
+                        href="/responsive/">Responsive</a>
+-->
+                        <a class="nav-link {% if request.endpoint == 'legibilidad' %} active {% endif %}"
+                        href="/legibilidad/">Legibilidad</a>
+
+                        <a class="nav-link {% if request.endpoint == 'imagenes' %} active {% endif %}"
+                        href="/imagenes/">Im&aacute;genes</a>
+
+                     
+                
+
+                </nav>
+            </div>
 
 
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseIdiomas"
@@ -44,8 +75,14 @@
 		    <a class="nav-link {% if request.endpoint == 'visor_excluidas' %} active {% endif %}"
                         href="{{ url_for('visor_excluidas') }}">Excluidas</a>
 
+                        <a class="nav-link {% if request.endpoint == 'visor_excluidas_cat' %} active {% endif %}"
+                        href="{{ url_for('visor_excluidas_cat') }}">Excluidas CAT</a>
+
                     <a class="nav-link {% if request.endpoint == 'visor_whitelist' %} active {% endif %}"
                         href="{{ url_for('visor_whitelist') }}">Lista Blanca</a>
+
+                        <a class="nav-link {% if request.endpoint == 'visor_whitelist_cat' %} active {% endif %}"
+                        href="{{ url_for('visor_whitelist_cat') }}">Lista Blanca CAT</a>
             
                 </nav>
             </div>
@@ -69,9 +106,9 @@
                         <a class="nav-link {% if request.endpoint == 'obtener_posiciones_dominio' %} active {% endif %}"
                         href="/ranking/www.mc-mutual.com">Ranking</a>
 
-                        <a class="nav-link {% if request.endpoint == 'keywords' %} active {% endif %}"
+                       <!-- <a class="nav-link {% if request.endpoint == 'keywords' %} active {% endif %}"
                         href="/keywords/">Keywords</a>
-
+                       -->
                         <a class="nav-link {% if request.endpoint == 'meta_tags' %} active {% endif %}"
                         href="/meta-tags/">Meta Tags</a>
 
@@ -103,42 +140,14 @@
 
                             <a class="nav-link {% if request.endpoint == 'enlaces_dominio' %} active {% endif %}"
                             href="/enlaces/">Enlaces</a>
-
+<!--
                             <a class="nav-link {% if request.endpoint == 'titulos' %} active {% endif %}"
                             href="/titulos/">Titulos</a>
-                    
+             -->       
                     </nav>
                 </div>
 
-                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAcce"
-                    aria-expanded="false" aria-controls="collapseLayouts">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-wheelchair fa-fw"></i></div>
-                    Accesibilidad
-                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                </a>
-                <div class="collapse" id="collapseAcce" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                    <nav class="sb-sidenav-menu-nested nav">
-                       
-                        <a class="nav-link {% if request.endpoint == 'accesibilidad_resumen_dominio' %} active {% endif %}"
-                            href=" /accesibilidad/resumen/">Resumen</a>
-
-                        <a class="nav-link {% if request.endpoint == 'analisis_aaa' %} active {% endif %}"
-                            href="/analisis-aaa/">WCAG-AA</a>
-
-                            <a class="nav-link {% if request.endpoint == 'responsive' %} active {% endif %}"
-                            href="/responsive/">Responsive</a>
-
-                            <a class="nav-link {% if request.endpoint == 'legibilidad' %} active {% endif %}"
-                            href="/legibilidad/">Legibilidad</a>
-
-                            <a class="nav-link {% if request.endpoint == 'imagenes' %} active {% endif %}"
-                            href="/imagenes/">Im&aacute;genes</a>
-
-                         
-                    
-
-                    </nav>
-                </div>
+              
 
 
               
@@ -162,8 +171,7 @@
 
                 
 
-                {% endif %}
-
+         
                 {% if current_user.role == 'superadmin' %}
                 <div class="sb-sidenav-menu-heading">Sistema</div>
 

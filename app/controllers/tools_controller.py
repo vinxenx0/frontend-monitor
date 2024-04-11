@@ -2466,11 +2466,12 @@ def diccionario():
                            palabras_diccionario=palabras_diccionario,
                            indicador_1=len(palabras_diccionario))
 
+
 @app.route('/excluidas')
 @login_required   
 def visor_excluidas():
     palabras = (db.session.query(Diccionario_usuario.id, Diccionario_usuario.palabra,
-                                 Diccionario_usuario.idioma).all())
+                                 Diccionario_usuario.idioma).filter(Diccionario_usuario.idioma == 'Spanish').all())
 
     palabras_diccionario = [{
         'id': palabra[0],
@@ -2481,11 +2482,31 @@ def visor_excluidas():
                            palabras_diccionario=palabras_diccionario,
                            indicador_1=len(palabras_diccionario))
 
+#.filter(Diccionario.idioma == 'Catalonian')
+
+@app.route('/excluidas/cat')
+@login_required   
+def visor_excluidas_cat():
+    palabras = (db.session.query(Diccionario_usuario.id, Diccionario_usuario.palabra,
+                                 Diccionario_usuario.idioma).filter(Diccionario_usuario.idioma == 'Catalonian').all())
+
+    palabras_diccionario = [{
+        'id': palabra[0],
+        'palabra': palabra[1],
+        'idioma': palabra[2]  
+    } for palabra in palabras]
+    return render_template('tools/dicc/visor_excluidas.html',
+                           palabras_diccionario=palabras_diccionario,
+                           indicador_1=len(palabras_diccionario))
+
+
+
+
 @app.route('/lista-blanca')
 @login_required   
 def visor_whitelist():
     palabras = (db.session.query(Diccionario.id, Diccionario.palabra,
-                                 Diccionario.idioma).all())
+                                 Diccionario.idioma).filter(Diccionario.idioma == 'Spanish').all())
 
     palabras_diccionario = [{
         'id': palabra[0],
@@ -2496,6 +2517,21 @@ def visor_whitelist():
                            palabras_diccionario=palabras_diccionario,
                            indicador_1=len(palabras_diccionario))
 
+
+@app.route('/lista-blanca/cat')
+@login_required   
+def visor_whitelist_cat():
+    palabras = (db.session.query(Diccionario.id, Diccionario.palabra,
+                                 Diccionario.idioma).filter(Diccionario.idioma == 'Catalonian').all())
+
+    palabras_diccionario = [{
+        'id': palabra[0],
+        'palabra': palabra[1],
+        'idioma': palabra[2]  
+    } for palabra in palabras]
+    return render_template('tools/dicc/visor_whitelist.html',
+                           palabras_diccionario=palabras_diccionario,
+                           indicador_1=len(palabras_diccionario))
 
 
 
@@ -2842,6 +2878,13 @@ def obtener_posiciones_dominio(domain):
 
     db.session.commit()
 
+    print("copya:")
+    print(posiciones_totales)
+
+    print("copya ord:")
+    print(posiciones_ordenadas)
+# [('mc mutual', 1), ('mutua de accidentes', 999), ('mutua de la seguridad social', 999), ('mutua de accidentes laborales', 999), ('mutua seguridad social', 999), ('mutua colaboradora con la seguridad social', 999), ('', 999), ('                            ', 999)]
+    # posiciones_totales = {'mc mutual': 1, 'mutua de accidentes': None, 'mutua de la seguridad social': None, 'mutua de accidentes laborales': None, 'mutua seguridad social': None, 'mutua colaboradora con la seguridad social': 9, '': None, '                            ': None}
    
     return render_template('tools/seo/ranking.html',
                            dominio_url=domain,
