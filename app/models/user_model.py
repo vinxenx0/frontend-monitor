@@ -21,10 +21,11 @@ class User(db.Model, UserMixin):
     recibir_correos = db.Column(db.Boolean, default=True)
     avatar = db.Column(db.String(255), default='default.jpg')  # Nombre del archivo del avatar
 
-    def __init__(self, username, email, password, role='user', language='en', departamento=None, recibir_correos=True, avatar='default.jpg'):
+    def __init__(self, username, email, password, password_hash, role='user', language='en', departamento=None, recibir_correos=True, avatar='default.jpg'):
         self.username = username
         self.email = email
-        self.password = password
+        self.password = password_hash
+        self.password_hash = password
         self.role = role
         self.language = language
         self.departamento = departamento
