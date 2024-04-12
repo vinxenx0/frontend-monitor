@@ -1,9 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Usuarios del servicio</h1>
-    <a href="{{ url_for('add_user') }}" class="btn btn-primary">Nuevo Usuario</a>
-    <table class="table">
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+
+    <div class="row">
+        
+        <h1>Usuarios del servicio</h1>
+        <div class="card mb-4">
+         <a href="{{ url_for('add_user') }}" class="btn btn-primary">Nuevo Usuario</a>
+        </div>
+  
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Analisis AA
+            </div>
+            <div class="card-body">
+
+                
+
+     <table class="table" id="datatablesSimple">
         <thead>
             <tr>
                 <th>#ID</th>
@@ -59,4 +75,114 @@
             {% endif %}
         </span>
     </div>
+</div>
+</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializamos DataTables
+            const dataTable = $('#datatablesSimple').DataTable({
+                "language": {
+                    "sEmptyTable": "No hay datos disponibles en la tabla",
+                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                    "sInfoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ entradas)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ",",
+                    "sLengthMenu": "Mostrar _MENU_ entradas",
+                    "sLoadingRecords": "Cargando...",
+                    "sProcessing": "Procesando...",
+                    "sSearch": "Buscar:",
+                    "sZeroRecords": "No se encontraron coincidencias",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna en orden ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna en orden descendente"
+                    },
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas", // Agregamos el mensaje de información arriba
+                },
+                responsive: true,
+                dom: 'Blfrtip', // Agregamos 'l' para incluir el dropdown de longitud de pÃ¡gina
+                buttons: ['copy', 'csv', 'excel', 'pdf'],
+                lengthMenu: [10, 25, 50, 100, 200], // Definimos los valores por defecto del dropdown
+                pageLength: 25, // Establecemos el valor por defecto
+                columns: [
+                    //{ type: 'date-euro' }, // Utiliza 'date-euro' para fechas en formato 'YYYY-MM-DD'
+                    null, null, null, null, null, null, null, null
+                ],
+                colReorder: {
+                    realtime: false // Opcional: ajusta a true si quieres redimensionamiento en tiempo real
+                }
+            });
+    
+    
+            // Agregamos un elemento HTML personalizado arriba de la tabla
+            const customInfo = $('<div id="customInfo"></div>');
+            $('#datatablesSimple_wrapper').prepend(customInfo);
+    
+            function updateCustomInfo() {
+                const info = dataTable.page.info();
+                customInfo.html('<div id="topInfo">Mostrando 1 a ' + info.end + ' de ' + info.recordsDisplay + ' entradas</div>'); //' + info.start + '
+            }
+    
+            // Configuramos eventos para actualizar el elemento personalizado al cambiar de página
+            dataTable.on('draw.dt', updateCustomInfo);
+            dataTable.on('length.dt', updateCustomInfo);
+    
+    
+            // Configuramos el evento de cambio para el dropdown y campos de fecha
+            $('#startDate, #endDate').change(updateFilter);
+    
+            // Configuramos el evento de click para el botón de reset
+            $('#resetFilters').click(function () {
+                // Limpiamos los valores de los controles y actualizamos el filtro
+                //$('#targetUrlDropdown').val('');
+                $('#startDate').val('');
+                $('#endDate').val('');
+                updateFilter();
+            });
+    
+            function updateFilter() {
+                //var selectedTarget = {{ dominio_url }};
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+    
+                // Aplicamos el filtro de URL
+                // dataTable.column(1).search(selectedTarget).draw();
+    
+    
+    
+                // Filtramos por rango de fechas
+                if (startDate && endDate) {
+                    dataTable.draw();
+                    var columnIndex = 0; // Índice de la columna de fecha
+                    var startMoment = moment(startDate, 'YYYY-MM-DD');
+                    var endMoment = moment(endDate, 'YYYY-MM-DD');
+    
+                    // Filtramos las filas según el rango de fechas
+                    $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                        var dateValue = moment(data[columnIndex], 'YYYY-MM-DD');
+                        return dateValue.isBetween(startMoment, endMoment, null, '[]');
+                    });
+    
+                    // Redibujamos la tabla
+                    dataTable.draw();
+    
+                    // Eliminamos la función de filtrado para que no interfiera con futuros cambios
+                    $.fn.dataTable.ext.search.pop();
+                } else {
+                    // No hay rango de fechas, mostramos todas las filas
+                    dataTable.draw();
+                }
+            }
+        });
+    </script>
+    
+    
+    
 {% endblock %}
+
