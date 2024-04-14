@@ -29,6 +29,89 @@
 
                     <div class="row">
                         <!-- Columna izquierda con el GrÃ¡fico doughnut para el total de 404 de los 3 dominios -->
+
+                        <div class="col-md-4 mb-4">
+                            <div class="card control-form">
+                                <div class="card-body text-light ">
+                                    <h5 class="card-title">Sitios web
+                                        <span id="loadingSpinnerD" class="spinner-border spinner-border-sm d-none"
+                                            role="status" aria-hidden="true"></span>
+                                    </h5>
+                                    <form id="targetUrlDropdown">
+                                        <select class="form-select" id="dominio" name="domain"
+                                            onchange="changeDomain()">
+                                            {% for domain in dominios_ordenados %}
+                                            <option value="{{ domain }}" {% if domain==dominio_url %}selected{% endif
+                                                %}>{{ domain }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6 mb-4">
+                            <div class="row">
+
+
+                                <div class="col-md-3 mb-4">
+                                    <div class="card">
+                                        <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
+                                            <h3 class="display-4" id="porcentajeEnlacesDato"><span
+                                                    id="porcentajeEnlacesRotos_">{{"%.0f"|format(indicador_3)}}</span>
+                                            </h3>
+                                            <!--  <p class="lead text-dark">páginas</p> -->
+                                        </div>
+                                        <div class="card-footer">
+                                            
+                                            <small class="text-muted">Páginas escaneadas</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 mb-4">
+                                    <div class="card">
+                                        <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
+                                            <h3 class="display-4" id="porcentajeEnlacesDato"><span
+                                                    id="porcentajeEnlacesRotos_">{{indicador_1}}</span></h3>
+                                            <!-- <p class="lead text-dark">avisos</p> -->
+                                        </div>
+                                        <div class="card-footer">
+                                            <small class="text-muted">Avisos encontrados</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-3 mb-4">
+                                    <div
+                                        class="card {% if indicador_2 > 50 %} bg-danger {% elif indicador_2 > 25 %} bg-warning {%else%} bg-success{%endif%}">
+                                        <div class="card-body text-center">
+                                            <h3 class="display-4 {% if indicador_2 > 50 %} text-light {%endif%}"
+                                                style="color: #fff!important;"><span
+                                                    id="totalEnlacesRotos_">{{"%.2f"|format(indicador_2)}}</span></h3>
+                                            <!-- <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}" style="color:#fff">%</p> -->
+                                        </div>
+                                        <div class="card-footer">
+                                            <small class="{% if indicador_2 > 50 %} text-light {%endif%}"
+                                                style="text-align:center;color: #fff!important;">Porcentaje</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-4">
+                                   
+                                        <canvas id="doughnutChart_indicador" width="250px" height="250px"></canvas>
+                                        
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6 mb-4">
                             <div class="custom-form card">
 
@@ -54,99 +137,38 @@
                             var parts = currentUrl.split('/');       // Dividir la URL en partes
                             var newUrl = parts.slice(0, -1).join('/') + '/analizar-url';  // Reemplazar el último segmento de la URL
                             document.getElementById('analizarForm').action = newUrl;  // Asignar la nueva URL al formulario
-                           
+
 
                             $(document).ready(function () {
-                            $('#analizarForm').submit(function (e) {
-                                e.preventDefault();
+                                $('#analizarForm').submit(function (e) {
+                                    e.preventDefault();
 
-                                // Mostrar spinner y cambiar texto del botón
-                                $('#btnText').addClass('d-none');
-                                $('#loadingSpinner').removeClass('d-none');
+                                    // Mostrar spinner y cambiar texto del botón
+                                    $('#btnText').addClass('d-none');
+                                    $('#loadingSpinner').removeClass('d-none');
 
-                                $.ajax({
-                                    type: 'POST',
-                                    url: newUrl, // '/analizar-url',
-                                    data: $('#analizarForm').serialize(),
-                                    success: function (data) {
-                                        // Abre el popup con los resultados
-                                        window.open('/resultados-popup', '_blank', 'width=600,height=400');
-                                    },
-                                    complete: function () {
-                                        // Ocultar spinner y restaurar texto del botón después de completar la solicitud
-                                        $('#loadingSpinner').addClass('d-none');
-                                        $('#btnText').removeClass('d-none');
-                                    }
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: newUrl, // '/analizar-url',
+                                        data: $('#analizarForm').serialize(),
+                                        success: function (data) {
+                                            // Abre el popup con los resultados
+                                            window.open('/resultados-popup', '_blank', 'width=600,height=400');
+                                        },
+                                        complete: function () {
+                                            // Ocultar spinner y restaurar texto del botón después de completar la solicitud
+                                            $('#loadingSpinner').addClass('d-none');
+                                            $('#btnText').removeClass('d-none');
+                                        }
+                                    });
                                 });
                             });
-                        });
 
                         </script>
-                        
 
-
-
-                        <div class="col-md-6 mb-4">
-                            <div class="row">
-
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <div class="card-body text-center text-light" id="porcentajeEnlacesRotosCard">
-                                            <h3 class="display-4" id="porcentajeEnlacesDato"><span
-                                                    id="porcentajeEnlacesRotos_">{{indicador_1}}</span></h3>
-                                            <p class="lead text-dark">avisos</p>
-                                        </div>
-                                        <div class="card-footer">
-                                            <small class="text-muted">P&aacute;ginas a revisar</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-4 mb-4">
-                                    <div
-                                        class="card {% if indicador_2 > 50 %} bg-danger {% elif indicador_2 > 25 %} bg-warning {%else%} bg-success{%endif%}">
-                                        <div class="card-body text-center">
-                                            <h3 class="display-4 {% if indicador_2 > 50 %} text-light {%endif%}" style="color: #fff!important;"><span
-                                                    id="totalEnlacesRotos_">{{"%.2f"|format(indicador_2)}}%</span></h3>
-                                            <p class="lead {% if indicador_2 > 50 %} text-light {%endif%}" style="color:#fff">de {{"%.0f"|format(indicador_3)}}</p>
-                                        </div>
-                                        <div class="card-footer">
-                                            <small class="{% if indicador_2 > 50 %} text-light {%endif%}" style="text-align:center;color: #fff!important;">Total</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-4">
-                                    <canvas id="doughnutChart_indicador" width="250px" height="250px"></canvas>
-                                </div>
-
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <div class="card control-form">
-                                <div class="card-body text-light ">
-                                    <h5 class="card-title">Sitios web
-                                        <span id="loadingSpinnerD" class="spinner-border spinner-border-sm d-none"
-                                            role="status" aria-hidden="true"></span>
-                                    </h5>
-                                    <form id="targetUrlDropdown">
-                                        <select class="form-select" id="dominio" name="domain"
-                                            onchange="changeDomain()">
-                                            {% for domain in dominios_ordenados %}
-                                            <option value="{{ domain }}" {% if domain==dominio_url %}selected{% endif
-                                                %}>{{ domain }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </form>
-
-                                </div>
-                            </div>
-                        </div>
-
-<!--
+                    <!--
                         <div class="col-md-4 mb-4">
                             <div class="card control-form text-light">
                                 <div class="card-body">
@@ -242,7 +264,7 @@
 
         var grafico_indicador = JSON.parse(JSON.stringify(doughnutConfig_www));
 
-        grafico_indicador.data.datasets[0].data = [{{"%.2f"|format(indicador_2)}}, {{ 100-indicador_2}}];
+        grafico_indicador.data.datasets[0].data = [{{ "%.2f"| format(indicador_2) }}, {{ 100-indicador_2 }}];
 
         var ctxDoughnut_total = document.getElementById('doughnutChart_indicador').getContext('2d');
         new Chart(ctxDoughnut_total, grafico_indicador);
@@ -250,7 +272,7 @@
     </script>
 
 
-{% block scripts %} {% endblock %}
+    {% block scripts %} {% endblock %}
 
 
 </body>
