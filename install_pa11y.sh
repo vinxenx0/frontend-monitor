@@ -24,3 +24,7 @@ echo "Verificando la instalación..."
 pa11y --version
 
 echo "¡pa11y se ha instalado correctamente!"
+
+
+# sudo ln -s /home/vinxenxo/.nvm/versions/node/v18.20.0/bin/pa11y /usr/local/bin/
+# ln -s /home/vinxenxo/.nvm/versions/node/v18.20.0/bin/pa11y /home/vinxenxo/frontend-monitor/.venv/bin/
