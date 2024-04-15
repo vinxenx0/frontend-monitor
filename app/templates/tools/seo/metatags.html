@@ -72,16 +72,16 @@ intervalo-color-rojo
                         -->
                         <th><i class="fa-regular fa-calendar"></i></th>
                         <th><i class="fa-solid fa-link"></i>url</th>
-                        <th>metas</th>
-                        <th>desc_c</th>
-                        <th>desc_l</th>
-                        <th>desc_dup</th>
-                        <th>desc_m_155</th>
-                        <th>desc_n_70</th>
-                        <th>desc_falta</th>
-                        <th>og_card</th>
-                        <th>g_title</th>
-                        <th>og_image</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>metas</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>desc corta</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>desc larga</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>desc dupl</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>desc mas 155</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>desc menos 70</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>desc falta</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>og card</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>og title</th>
+                        <th><i title="aviso" class="fa-solid fa-triangle-exclamation"></i>og image</th>
                         <th><i class="fas fa-lightbulb"></i></th>
 
                     </tr>
@@ -144,15 +144,38 @@ intervalo-color-rojo
                         <td>{{ result.meta_description_duplicado }} </td>
                         <td>{{ result.meta_description_mas_155_caracteres }}</td>
                         <td>{{ result.meta_description_menos_70_caracteres }}</td>
-                        <td>{{ result.meta_description_falta }}</td>
                         <td>
-                            {{ result.meta_og_card }}
+                            
+                            {% if result.meta_description_falta is none or result.meta_description_falta == 1 %}
+                            <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+
                         </td>
                         <td>
-                            {{ result.meta_og_title }}
+                            {% if result.meta_og_card != 1 or result.meta_og_card is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                        
                         </td>
                         <td>
-                            {{ result.meta_og_image }}
+                            {% if result.meta_og_title == 0 or result.meta_og_title is none %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                         
+                        </td>
+                        <td>
+                            {% if result.meta_og_image != 1 %}
+                                <i class="fa-solid fa-lg fa-circle-exclamation"></i>
+                            {% else %}
+                                <i class="fa-solid fa-lg  fa-check"></i>
+                            {% endif %}
+                         
                         </td>
                         <td>
                              <button type="button" class="btn btn-info" data-bs-toggle="modal"
@@ -168,7 +191,7 @@ intervalo-color-rojo
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content bg-white text-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias velocidad #{{
+                                    <h5 class="modal-title" id="infoModalLabel{{ result.id }}">Sugerencias #{{
                                         result.id }}</h5>
                                     <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"
                                         aria-label="Close"></button>

@@ -157,12 +157,18 @@ def add_user():
     form = UserProfileForm()
     try:
         #if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
+       
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        print('hashed:')
+        print(hashed_password)
+        
         new_user = User(username=form.username.data,
                         email=form.email.data,
-                        password=hashed_password,
+                        password=form.password.data,
+                        password_hash=hashed_password,
                         role=form.role.data)
+
+        
         db.session.add(new_user)
         db.session.commit()
         flash('Usuario nuevo añadido correctamente!', 'success')
